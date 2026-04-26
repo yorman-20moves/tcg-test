@@ -1,0 +1,516 @@
+name,quantity,base_img,ascended_img,card_type,card_sub_type,faction,group_identity,cost,pa,ph,ma,mh,level_up_condition,formatted_card_text,formatted_level_up_text,card_code,formatted_faction
+"Alvino
+<Subcolor>The Last Call</Subcolor>",,AlvinoTheLastCallv2,AlvinoTheLastCallv2LVLUP,Character,Ascendants,Assholes,Shea's,4,3,4,3,3,"Alvino watches the bar get completely trashed, and he loves it.Once 4 Characters (allied or enemy) have taken a shot from Alvino and suffered permanent MH damage, he levels up.","<AbilityTag><AssholeColor>A Round of Shots</AssholeColor></AbilityTag> (Standard Ability)
+<Spacer>.</Spacer>
+<Immersion>Alvino forces you to drink up, and he doesn't take no for an answer.</Immersion> Once per round, Pay 1 Energy to hand a target Character a drink. They gain a temporary +2 Physical Attack (PA) buff until the end of the Round, but instantly take 1 permanent Mental Health (MH) damage.","<AbilityTag><AssholeColor>A Round of Shots</AssholeColor></AbilityTag> (Standard Ability)
+<Spacer>.</Spacer>
+<Immersion>Alvino forces you to drink up, and he doesn't take no for an answer.</Immersion> Once per round, Pay 1 Energy to hand a target Character a drink. They gain a temporary +2 Physical Attack (PA) buff until the end of the Round, but instantly take 1 permanent Mental Health (MH) damage.
+
+<AbilityTag><AssholeColor>Closing Time</AssholeColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Alvino decides the fun is over, and it's time to kick everyone out.</Immersion> During the Reaction Window, pay 1 Energy to Counter an enemy Character's attack or ability aimed at an allied Character or the controlling player's Life Points. When Alvino successfully counters a character they are immedietly returned to their owners hand.",,Asshole
+"Angel
+<Subcolor>The Smiling Saboteur</Subcolor>",,AngelTheSmilingSaboteur,AngelTheSmilingSaboteurLVLUP,Character,Ascendants,Assholes,Mobb 134,4,4,3,3,3,"Angel finally shows his true colors.Once Angel has successfully siphoned 4 Energy from the opponent, he levels up.","<AbilityTag><AssholeColor>False Savior</AssholeColor></AbilityTag> <icon=""Infiltrator""/>
+<Spacer>.</Spacer>
+<Immersion>Angel smiles right in your face while he picks your pocket.</Immersion> When summoned, place Angel onto the opponent's Board. The opponent takes control of him to attack or pay costs, but they cannot activate his printed abilities, and their other Characters cannot attack him.
+
+<AbilityTag><AssholeColor>The Siphon</AssholeColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>During Phase 1 (The Refresh), force the opponent to change 1 card in their Resource Row to Used (they lose 1 Energy this Round), and the controlling player gains +1 temporary Energy until the end of Phase 3.</Immersion>","<AbilityTag><AssholeColor>False Savior</AssholeColor></AbilityTag> <icon=""Infiltrator""/>
+<Spacer>.</Spacer>
+<Immersion>Angel smiles right in your face while he picks your pocket.</Immersion> When summoned, place Angel onto the opponent's Board. The opponent takes control of him to attack or pay costs, but they cannot activate his printed abilities, and their other Characters cannot attack him.
+
+<AbilityTag><AssholeColor>The Siphon</AssholeColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>During Phase 1 (The Refresh), force the opponent to change 1 card in their Resource Row to Used (they lose 1 Energy this Round), and the controlling player gains +1 temporary Energy until the end of Phase 3.</Immersion>
+
+<AbilityTag><AssholeColor>The Betrayal</AssholeColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Angel snaps the trap shut and ruins them all.</Immersion> The moment he levels up, he deals 4 Mental Attack (MA) damage to every Character on the opponent's Board. As long as he remains face-up, the maximum Mental Health (MH) of all enemy Characters is reduced by 4 (minimum of 1).",,Asshole
+Any,,,,Character,Ascendants,Icons,,,,,,,,,,,Icon
+"Benny Blanco
+<Subcolor>Titan Of The Topshelf</Subcolor>",,BennyBlancoTitanOfTheTopshelf,BennyBlancoTitanOfTheTopshelflvlup,Character,Ascendants,Warmongers,Mobb 134,4,2,5,1,3,"Benny sees his crew hurting and opens the premium stash.When Benny has successfully served [A1 Drinkz] to his allies 3 times throughout the game, he levels up.","<AbilityTag><WarmongerColor>Bouncer</WarmongerColor></AbilityTag> <icon=""Protector""/>
+<Spacer>.</Spacer>
+<Immersion>Benny takes the bullet just to keep his friends breathing.</Immersion> As a Reaction, Benny can intercept one attack per Combat Wave intended for Life Points or another Character, forcefully changing the attacker's target to himself.
+
+<AbilityTag><WarmongerColor>A1 Drinkz</WarmongerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Benny cracks open his personal stash to put his friends back on their feet.</Immersion> Once per round, Pay 1 Energy to grant an allied Character +1 Physical Attack (PA) and heal them for 2 Physical Health (PH).","<AbilityTag><WarmongerColor>Bouncer</WarmongerColor></AbilityTag> <icon=""Protector""/>
+<Spacer>.</Spacer>
+<Immersion>Benny takes the bullet just to keep his friends breathing.</Immersion> As a Reaction, Benny can intercept one attack per Combat Wave intended for Life Points or another Character, forcefully changing the attacker's target to himself.
+
+<AbilityTag><WarmongerColor>A1 Drinkz</WarmongerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Benny cracks open his personal stash to put his friends back on their feet.</Immersion> Once per round, Pay 1 Energy to grant an allied Character +1 Physical Attack (PA) and heal them for 2 Physical Health (PH).
+
+<AbilityTag><WarmongerColor>Premium Stash</WarmongerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Benny pours the good stuff, making his allies hit harder.</Immersion> <AbilityTag><WarmongerColor>A1 Drinkz</WarmongerColor></AbilityTag> now costs 0 Energy to activate, grants +3 Physical Attack (PA), and heals 3 Physical Health (PH).",,Warmonger
+Caleb,,CalebTheRedRingReaper,CalebTheRedRingReaperLVLUP,Character,Ascendants,Assholes,Pwners,3,2,3,2,2,"Caleb starts literally melting the hardware with his toxicity.When Caleb has personally witnessed 3 Characters die while afflicted with either the Exhausted, Silenced, or Stunned status, he levels up.","<AbilityTag><AssholeColor>Teabag</AssholeColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Caleb dances on their bodies and ruins their game.</Immersion> When an enemy Character is Murdered, pay 1 Energy to roll a 6-sided die (d6) and target an enemy Character
+<Spacer>.</Spacer>
+<Immersion>1-3: Inflict Exhausted.</Immersion> 
+4-5
+<Spacer>.</Spacer>
+<Immersion>Inflict Silenced.</Immersion> 
+6
+<Spacer>.</Spacer>
+<Immersion>Inflict Stunned.</Immersion>","<AbilityTag><AssholeColor>Teabag</AssholeColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Caleb dances on their bodies and ruins their game.</Immersion> When an enemy Character is Murdered, pay 1 Energy to roll a 6-sided die (d6) and target an enemy Character
+<Spacer>.</Spacer>
+<Immersion>1-3: Inflict Exhausted.</Immersion> 
+4-5
+<Spacer>.</Spacer>
+<Immersion>Inflict Silenced.</Immersion> 
+6
+<Spacer>.</Spacer>
+<Immersion>Inflict Stunned.</Immersion>
+
+<AbilityTag><AssholeColor>Red Ring of Death</AssholeColor></AbilityTag> (Standard Ability)
+<Spacer>.</Spacer>
+<Immersion>Caleb bricks their system and traps them offline.</Immersion> Once per Round, pay 2 Energy to inflict the <AbilityTag><AssholeColor>Bricked</AssholeColor></AbilityTag> status on an enemy Character. A <AbilityTag><AssholeColor>Bricked</AssholeColor></AbilityTag> Character suffers the effects of both Stunned and Silenced, and this status cannot be removed by card effects.
+
+To reboot and clear this status, the opponent must use their Phase 2 action, pay 1 Energy, and roll a d6
+<Spacer>.</Spacer>
+<Immersion>4-6: The reboot succeeds and the status is cleared.</Immersion>
+
+1-3
+<Spacer>.</Spacer>
+<Immersion>The reboot fails and they remain <AbilityTag><AssholeColor>Bricked</AssholeColor></AbilityTag>.</Immersion>",,Asshole
+"Corazon
+<Subcolor>the Contraband Cassanova</Subcolor>",,CorazontheContrabandCassanova,CorazontheContrabandCassanovaLVLUp,Character,Ascendants,Assholes,Pimp Juice,3,2,4,4,5,"Corazon knows they are hooked, and now it's time to collect.When Corazon has successfully generated a cumulative total of 3 temporary Energy for the opponent across the game, he levels up.","<AbilityTag><AssholeColor>The First Hit is Free</AssholeColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Corazon gives you the first hit as a gift, but the rest will cost you.</Immersion> Whenever he successfully lands a strike on an enemy Character or Life Points, the opponent is forced to add 1 temporary Energy to their Resource Row until the end of the Round.","<AbilityTag><AssholeColor>The First Hit is Free</AssholeColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Corazon gives you the first hit as a gift, but the rest will cost you.</Immersion> Whenever he successfully lands a strike on an enemy Character or Life Points, the opponent is forced to add 1 temporary Energy to their Resource Row until the end of the Round.
+
+<AbilityTag><AssholeColor>The Collection</AssholeColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Corazon lets the withdrawals hit hard, forcing them to pay up with everything they have.</Immersion> While he is face-up on the Board, the maximum Physical Health (PH) of all enemy Characters is permanently reduced by an amount equal to the total number of Unused cards in the opponent's Resource Row (plus any of their temporary Energy).",,Asshole
+"Decoy
+<Subcolor>1st Crown - Supreme Inca</Subcolor>",,DecoyOverlordoftheOminousOrders1stCrown,DecoyOverlordoftheOminousOrders1stCrownlvlup,Character,Ascendants,Overthinkers,Latin Kings,5,1,4,4,3,"Decoy stands over his fallen brothers and steps up to end the war.When Decoy has Sacrificed 3 Latin Kings, he levels up.","<AbilityTag><OverthinkerColor>La Familia</OverthinkerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Decoy's punishment for hesitation is far more agonizing than anything the enemy could inflict.</Immersion> All allied Latin Kings gain +2 Physical Attack (PA).
+
+<AbilityTag><OverthinkerColor>Sangre Por Sangre</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Blood pays for blood, and Decoy uses his pawns as living weapons.</Immersion> Pay 1 Energy and Sacrifice an allied Latin King
+<Spacer>.</Spacer>
+<Immersion>Deal permanent Physical Health (PH) damage equal to the Sacrificed Character's current PA to a target enemy Character.</Immersion>","<AbilityTag><OverthinkerColor>La Familia</OverthinkerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Decoy's punishment for hesitation is far more agonizing than anything the enemy could inflict.</Immersion> All allied Latin Kings gain +2 Physical Attack (PA).
+
+<AbilityTag><OverthinkerColor>Sangre Por Sangre</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Blood pays for blood, and Decoy uses his pawns as living weapons.</Immersion> Pay 1 Energy and Sacrifice an allied Latin King
+<Spacer>.</Spacer>
+<Immersion>Deal permanent Physical Health (PH) damage equal to the Sacrificed Character's current PA to a target enemy Character.</Immersion>
+
+<AbilityTag><OverthinkerColor>5 Point Strike</OverthinkerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Decoy channels the collective fury of his entire empire into one devastating blow.</Immersion> During a Combat Wave where Decoy is an attacker, his Physical Attack (PA) is increased by the total combined PA of all other allied Latin Kings on the Board.
+
+<AbilityTag><OverthinkerColor>Improved Sangre Por Sangre</OverthinkerColor></AbilityTag>
+<Spacer>.</Spacer>
+<Immersion>(Fast Ability): He executes his own pawns with such calculated, visceral brutality that the enemy line completely freezes in shock.</Immersion> Pay 1 Energy and Sacrifice an allied Latin King
+<Spacer>.</Spacer>
+<Immersion>Deal permanent Physical Health (PH) damage equal to the Sacrificed Character's current PA to a target enemy Character.</Immersion> If this damage Murders the target, completely Counter the opponent's Combat Wave (if active), or prevent them from declaring a Combat Wave this Round.",,Overthinker
+"Dilo
+<Subcolor>The Silk-Tie Silencer</Subcolor>",,DiloTheSilk-TieSilencer,DiloTheSilk-TieSilencerLVLUP,Character,Ascendants,Assholes,Pimp Juice,5,4,4,2,3,"He is done being just the muscle; he demands his voting seat at the table.When the opponent discards their 4th card of the game, Dilo levels up.","<AbilityTag><AssholeColor>Gag Order</AssholeColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Dilo guarantees that secrets stay off the record.</Immersion> Pay 1 Energy to inflict Silenced on an enemy Character until the end of the Round.
+
+<AbilityTag><AssholeColor>You Break It, You Buy It</AssholeColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Damaging assets triggers an immediate, non-negotiable tax.</Immersion> If your opponent Murders an allied Character or destroys an allied Tactic/Attachment, they must discard a card from their Hand.","<AbilityTag><AssholeColor>Gag Order</AssholeColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Dilo guarantees that secrets stay off the record.</Immersion> Pay 1 Energy to inflict Silenced on an enemy Character until the end of the Round.
+
+<AbilityTag><AssholeColor>You Break It, You Buy It</AssholeColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Damaging assets triggers an immediate, non-negotiable tax.</Immersion> If your opponent Murders an allied Character or destroys an allied Tactic/Attachment, they must discard a card from their Hand.
+
+<AbilityTag><AssholeColor>The Takeover</AssholeColor></AbilityTag> <icon=""Extortionist""/>
+<Spacer>.</Spacer>
+<Immersion>Now an equal partner, his personal cut grows with every collection.</Immersion> When Dilo successfully lands an attack on Life Points, your opponent discards a card from their hand. Every time he successfully triggers this, he permanently gains +2 Physical Attack (PA) and +2 Physical Health (PH).",,Asshole
+"Dre
+<Subcolor>Mastermind of the 134</Subcolor>",,DreMastermindofthe134,DreMastermindofthe134lvlup,Character,Ascendants,Overthinkers,Mobb 134,5,3,4,3,5,"As more people obey the commandments, the true prophecy begins..During Phase 3, if 4 or more Commandments are activated simultaneously, Dre levels up.","<AbilityTag><OverthinkerColor>The Master Plan</OverthinkerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>He took the chaos of the streets and turned it into law.</Immersion> When summoned, search your Main Deck or Graveyard for the 134 Bible Attachment and immediately equip it to him. During Phase 3 (The End Step), trigger the effects of all Commandment cards currently on your side of the Board.","<AbilityTag><OverthinkerColor>The Master Plan</OverthinkerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>He took the chaos of the streets and turned it into law.</Immersion> When summoned, search your Main Deck or Graveyard for the 134 Bible Attachment and immediately equip it to him. During Phase 3 (The End Step), trigger the effects of all Commandment cards currently on your side of the Board.
+
+<AbilityTag><OverthinkerColor>The Final Verdict</OverthinkerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Street brawls are for the faithless and Dre demands biblical erasure of all nonbelievers.</Immersion> During Phase 3, activate all Commandments on your side of the Board. If 7 or more are activated, immediately destroy every Character, Tactic, and Attachment on the opponent's Board.",,Overthinker
+Fefe,,,,Character,Ascendants,Icons,,,,,,,,,,,Icon
+"Enzo
+<Subcolor>4th Crown - Purveyor of Plata</Subcolor>",,EnzoPurveyorofProfanePleasures4thCrown,EnzoPurveyorofProfanePleasures4thCrownlvlup,Character,Ascendants,Assholes,Latin Kings,3,2,4,2,2,"Enzo fills his pockets, but he still wants more.
+When Enzo has successfully collected Energy 3 times via his Hustler keyword, he levels up.","<AbilityTag><AssholeColor>Street Tax</AssholeColor></AbilityTag> <icon=""Hustler +1""/>
+<Spacer>.</Spacer>
+<Immersion>Enzo doesn't ask for a cut, he just beats it out of you.</Immersion> When Enzo lands a hit, he generates 1 temporary Energy. This is added to your available Energy immediately but expires at the end of your turn (Phase 3).","<AbilityTag><AssholeColor>Street Tax</AssholeColor></AbilityTag> <icon=""Hustler +1""/>
+<Spacer>.</Spacer>
+<Immersion>Enzo doesn't ask for a cut, he just beats it out of you.</Immersion> When Enzo lands a hit, he generates 1 temporary Energy. This is added to your available Energy immediately but expires at the end of your turn (Phase 3).
+
+<AbilityTag><AssholeColor>Improved Street Tax</AssholeColor></AbilityTag> <icon=""Hustler +2""/>
+<Spacer>.</Spacer>
+<Immersion>Enzo turns dirty money into a brutal beatdown.</Immersion> When Enzo lands a hit, he generates 2 temporary Energy. This is added to your available Energy immediately but expires at the end of Phase 3.
+
+<AbilityTag><AssholeColor>Blood Money</AssholeColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>When he attacks, he temporarily increases his Physical Attack (PA) by the amount of unspent Energy currently sitting in your Bank until the end of the Round.</Immersion>",,Asshole
+"Fernando
+<Subcolor>The DualShock Disciple</Subcolor>",,FernandoTheDualShockDisciple,FernandoTheDualShockDiscipleLVLUP,Character,Ascendants,Overthinkers,Pwners,4,1,3,3,4,"Fernando hacks reality once all his gear is equipped.
+When Fernando has exactly three specific Attachments equipped to him at the same time—The 8MB Memory Card, The Scratched Black Disc, and The 10th DualShock Controller—he levels up.","<AbilityTag><OverthinkerColor>Checkpoint</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Fernando just reloads his save file to dodge the damage.</Immersion>
+Pay 1 Energy to remove all permanent Physical Health (PH) and Mental Health (MH) damage from Fernando.","<AbilityTag><OverthinkerColor>Checkpoint</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Fernando just reloads his save file to dodge the damage.</Immersion>
+Pay 1 Energy to remove all permanent Physical Health (PH) and Mental Health (MH) damage from Fernando.
+
+<AbilityTag><OverthinkerColor>Platinum Trophy</OverthinkerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Fernando breaks the game to make himself immortal.</Immersion>
+The stat bonuses provided by The 8MB Memory Card, The Scratched Black Disc, and The 10th DualShock Controller are doubled. Additionally, if Fernando would be Murdered, you may destroy one of those three specific Attachments instead to keep him alive at 1 PH and 1 MH.",,Overthinker
+"Jean H
+<Subcolor>The Irish Exit</Subcolor>",,JeanHTheIrshExit,JeanHTheIrshExitLVLUP,Character,Ascendants,Overthinkers,Pimp Juice,4,3,3,3,3,"He isn't building an empire; he’s just chasing the ultimate high.
+When Jean H has at least 3 Blunt or 3 Beer Attachments equipped to him at the same time, he levels up.","<AbilityTag><OverthinkerColor>Ghosting</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>e draws all the squad's heat, then effortlessly vanishes out the back.</Immersion>
+Pay 1 Energy at any time to completely remove Jean H from the Board. He returns to your side of the Board at the start of the next Round's Phase 1 (The Refresh).","<AbilityTag><OverthinkerColor>Ghosting</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>e draws all the squad's heat, then effortlessly vanishes out the back.</Immersion>
+Pay 1 Energy at any time to completely remove Jean H from the Board. He returns to your side of the Board at the start of the next Round's Phase 1 (The Refresh).
+
+<AbilityTag><OverthinkerColor>Untouchable</OverthinkerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>When fully in the zone, fatal consequences just slip right past Jean.</Immersion>
+While Jean H has at least one Beer or Blunt Attachment equipped to him, his Physical Health (PH) and Mental Health (MH) cannot be reduced below 1.",,Overthinker
+Jocelyn,,,,Character,Ascendants,Icons,,,,,,,,,,,Icon
+"Juan
+<Subcolor>The Last Laugh</Subcolor>",,JuanTheLastLaugh,JuanTheLastLaughLVLUP,Character,Ascendants,Assholes,Shea's,4,2,3,4,3,"Juan's most violent laughter echoes at the edge of death. When your Life Points reach exactly 1, Juan levels up.","<AbilityTag><AssholeColor>Flipping the Script</AssholeColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Juan gets off on twisting your reality.</Immersion> Pay 2 Life Points to permanently swap the current Physical Health (PH) and Mental Health (MH) values of any targeted Character.","<AbilityTag><AssholeColor>Flipping the Script</AssholeColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Juan gets off on twisting your reality.</Immersion> Pay 2 Life Points to permanently swap the current Physical Health (PH) and Mental Health (MH) values of any targeted Character.
+
+<AbilityTag><AssholeColor>The Ultimate Troll</AssholeColor></AbilityTag> (Standard Ability)
+<Spacer>.</Spacer>
+<Immersion>Juan violently laughs in your face while he steals your world from you.</Immersion>
+Pay 1 Energy to completely swap your current Life Point total with your opponent's Life Point total. (Note
+<Spacer>.</Spacer>
+<Immersion>This ability can only successfully resolve once per Game.</Immersion> If the opponent Counters it, Juan can try again next Round).",,Asshole
+"Julio
+<Subcolor>The Tyrant of the Tainted Touch</Subcolor>",,JulioTheTyrantoftheTaintedTouch,JulioTheTyrantoftheTaintedTouchLVLUp,Character,Ascendants,Warmongers,Mobb 134,5,4,4,4,3,"Julio smells their fear and stops playing nice.
+When Julio has seen 3 or more enemy Characters have been afflicted by Stun or Fear, Julio levels up.","<AbilityTag><WarmongerColor>Paralyzing Presence</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Julio freezes his victims in pure panic just by walking into the room.</Immersion>
+When summoned to the Board, inflict Stun on one enemy Character with a lower Physical Attack (PA) than Julio until the end of the Round.
+
+<AbilityTag><WarmongerColor>The Ooze Gauntlet</WarmongerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Pay 1 Energy to inflict Fear on an enemy Character that has a lower PA than him until the end of the Round.</Immersion>","<AbilityTag><WarmongerColor>Paralyzing Presence</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Julio freezes his victims in pure panic just by walking into the room.</Immersion>
+When summoned to the Board, inflict Stun on one enemy Character with a lower Physical Attack (PA) than Julio until the end of the Round.
+
+<AbilityTag><WarmongerColor>The Ooze Gauntlet</WarmongerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Pay 1 Energy to inflict Fear on an enemy Character that has a lower PA than him until the end of the Round.</Immersion>
+
+<AbilityTag><WarmongerColor>The Meek Executioner</WarmongerColor></AbilityTag> <icon=""Executioner""/>
+<Spacer>.</Spacer>
+<Immersion>Julio just walks up and snaps their frozen necks.</Immersion>",,Warmonger
+"Julito
+<Subcolor>Harbinger of the Demon</Subcolor>",,JulitoHarbingeroftheDemon,JulitoHarbingeroftheDemonLVLUP,Character,Ascendants,Warmongers,Pwners,4,4,4,1,3,"Julito loses his mind the second his meter is full.
+When Julito successfully reaches 3 EX Meter tokens, he levels up.","<AbilityTag><WarmongerColor>Build Meter</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Julito lives for a bloody, unbroken combo.</Immersion>
+Every time Julito Murders an enemy Character or lands a successful attack on the opponent's Life Points, he gains 1 EX Meter token (Maximum 3).
+
+<AbilityTag><WarmongerColor>The EX Enhancements</WarmongerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Level 1: +2 PA and +2 PH.</Immersion> 
+
+   Level 2
+<Spacer>.</Spacer>
+<Immersion>Gains <icon=""Combo-Striker""/> keyword.</Immersion> (His combat resolves in two strikes
+<Spacer>.</Spacer>
+<Immersion>a free first strike without retaliation, then a simultaneous strike).</Immersion>","<AbilityTag><WarmongerColor>Build Meter</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Julito lives for a bloody, unbroken combo.</Immersion>
+Every time Julito Murders an enemy Character or lands a successful attack on the opponent's Life Points, he gains 1 EX Meter token (Maximum 3).
+
+<AbilityTag><WarmongerColor>The EX Enhancements</WarmongerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Level 1: +2 PA and +2 PH.</Immersion> 
+
+   Level 2
+<Spacer>.</Spacer>
+<Immersion>Gains <icon=""Combo-Striker""/> keyword.</Immersion> (His combat resolves in two strikes
+<Spacer>.</Spacer>
+<Immersion>a free first strike without retaliation, then a simultaneous strike).</Immersion>
+
+<AbilityTag><WarmongerColor>Demonic Ascension</WarmongerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Julio is drunk with the power of the dark Hadou.</Immersion> As long as Julito has 3 EX Meter tokens, he gains the <icon=""Berserker""/> keyword. (He gains +1 Physical Attack (PA) every time he takes permanent Physical Health (PH) damage).
+
+<AbilityTag><WarmongerColor>Shun Goku Satsu</WarmongerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Julito delivers a thousand fatal strikes in the blink of an eye.</Immersion> Pay 1 Energy, spend all 3 EX Meter tokens, and immediately Murder a target enemy Character. After this resolves, flip Julito back to his base form.",,Warmonger
+"Laura
+<Subcolor>The First Lady of The Game</Subcolor>",,LauraTheFirstladyofTheGame,LauraTheFirstladyofTheGameLVLUp,Character,Ascendants,Overthinkers,Pimp Juice,5,1,3,5,5,"Laura takes total control now that her empire is built.
+When Laura has watched other Characters tank a cumulative total of 10 or more damage in her stead, she levels up.","<AbilityTag><OverthinkerColor>Fatal Attraction</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Laura breaks their minds, making them take bullets for her.</Immersion>
+Pay 2 Energy to target an enemy Character. Until the end of the Round, any damage that would be dealt to Laura is redirected and dealt to that hypnotized enemy Character instead.
+
+<AbilityTag><OverthinkerColor>Sweet Talk</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Pay 1 Energy to grant any Character +4 Mental Health (MH) until the end of the Round.</Immersion>","<AbilityTag><OverthinkerColor>Fatal Attraction</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Laura breaks their minds, making them take bullets for her.</Immersion>
+Pay 2 Energy to target an enemy Character. Until the end of the Round, any damage that would be dealt to Laura is redirected and dealt to that hypnotized enemy Character instead.
+
+<AbilityTag><OverthinkerColor>Sweet Talk</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Pay 1 Energy to grant any Character +4 Mental Health (MH) until the end of the Round.</Immersion>
+
+<AbilityTag><OverthinkerColor>The Madame</OverthinkerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Laura ensures her slaves don't just protect her, they do it in terror.</Immersion>
+<AbilityTag><OverthinkerColor>Fatal Attraction</OverthinkerColor></AbilityTag> now costs 0 Energy. Any enemy Character that takes damage on her behalf is immediately inflicted with Fear.",,Overthinker
+"Linda B
+<Subcolor>The Ultimate Cock-Block</Subcolor>",,LindaBTheUltimateCock-Block,LindaBTheUltimateCock-Blocklvlup,Character,Ascendants,Assholes,Shea's,5,3,4,3,4,"Linda gets tired of the games and decides to end the party.
+When there are 6 or more Tactic cards in the opponent's Graveyard, Linda levels up.","<AbilityTag><AssholeColor>Not Tonight, Boyo</AssholeColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Linda blocks their nonsense with pure Irish spite.</Immersion>
+Pay 1 Energy during the Reaction Window to Counter an opponent's Standard or Combat Tactic.","<AbilityTag><AssholeColor>Not Tonight, Boyo</AssholeColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Linda blocks their nonsense with pure Irish spite.</Immersion>
+Pay 1 Energy during the Reaction Window to Counter an opponent's Standard or Combat Tactic.
+
+<AbilityTag><AssholeColor>Lockdown</AssholeColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Linda drops the shields right on their heads, crushing them.</Immersion>
+Once per Round, pay 1 Energy to drop inescapable hard-light barriers on up to two target enemy Characters, inflicting Stunned until the end of the Round.",,Asshole
+"Moammar
+<Subcolor>The One Punch Machine Gun</Subcolor>",,Moammarthe1punchmachinegun2ndversion,Moammarthe1punchmachinegun2ndversionlvlup,Character,Ascendants,Warmongers,Mobb 134,5,6,6,0,3,"Moammar gets ready to swing the moment the board is clear.
+The exact moment the opponent has zero cards on their Board (Characters, Tactics, or Attachments), Moammar levels up.","<AbilityTag><WarmongerColor>Heart of the Cards</WarmongerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Moammar is crazy, but he always has a plan.</Immersion>
+Pay 2 Energy to search your Main Deck for a Warmonger Tactic card, reveal it, place it in your Hand, and shuffle your deck.","<AbilityTag><WarmongerColor>Heart of the Cards</WarmongerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Moammar is crazy, but he always has a plan.</Immersion>
+Pay 2 Energy to search your Main Deck for a Warmonger Tactic card, reveal it, place it in your Hand, and shuffle your deck.
+
+<AbilityTag><WarmongerColor>The One-Punch</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Moammar throws one punch with all his power, not caring if he dies.</Immersion>
+He can only declare an attack once per Game. When he attacks, permanently increase his Physical Attack (PA) by the opponent's current Life Points. During Phase 3 (The End Step), the recoil Murders Moammar.",,Warmonger
+"Mustafa
+<Subcolor>Homo-Superior</Subcolor>",,MustafaHomo-Superior,MustafaHomo-SuperiorLVLUp,Character,Ascendants,Overthinkers,Shea's,4,1,2,4,6,"Mustafa knows he was right, standing over their broken minds.
+When 3 Characters (allied or enemy) have been Murdered as a direct result of Mustafa's MA damage, he levels up.","<AbilityTag><OverthinkerColor>You're Definitely Gay</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Mustafa tears their egos apart with just a few words.</Immersion>
+Pay 1 Energy to inflict 2 Mental Attack (MA) damage to a target Character.
+
+<AbilityTag><OverthinkerColor>Fierce Friend</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Pay 1 Energy to intercept any source of Mental damage intended for an ally; Mustafa takes the damage instead.</Immersion>","<AbilityTag><OverthinkerColor>You're Definitely Gay</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Mustafa tears their egos apart with just a few words.</Immersion>
+Pay 1 Energy to inflict 2 Mental Attack (MA) damage to a target Character.
+
+<AbilityTag><OverthinkerColor>Fierce Friend</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Pay 1 Energy to intercept any source of Mental damage intended for an ally; Mustafa takes the damage instead.</Immersion>
+
+<AbilityTag><OverthinkerColor>The Outing</OverthinkerColor></AbilityTag> (Standard Ability)
+<Spacer>.</Spacer>
+<Immersion>Mustafa forces everyone to see how weak they really are.</Immersion>
+Pay 2 Energy to inflict Mental Attack (MA) damage to every other Character on the Board equal to the exact difference between their current Mental Health (MH) and Mustafa's current Mental Health (MH).",,Overthinker
+"RoaR
+<Subcolor>3rd Crown - Warlord of Sangre</Subcolor>",,RoaRWarlordoftheWickedWrath3rdCrown,RoaRWarlordoftheWickedWrath3rdCrownLVL2,Character,Ascendants,Warmongers,Latin Kings,6,8,6,4,6,"RoaR finally finds a real fight when he faces down an army.
+When the total combined Physical Attack (PA) of your opponent's Board is 10 or greater, RoaR levels up.","<AbilityTag><WarmongerColor>Point Out The Strongest One</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>RoaR just wants to fight the biggest guy in the room.</Immersion>
+When summoned, bypass the Combat Wave limit and immediately attack the enemy Character with the highest Physical Attack (PA).
+
+<AbilityTag><WarmongerColor>What’s a Handicap?</WarmongerColor></AbilityTag> <icon=""Juggernaut""/>
+<Spacer>.</Spacer>
+<Immersion>RoaR crushes anyone stupid enough to stand in his way.</Immersion> If RoaR's attack is defended, any Physical Attack (PA) damage that exceeds the defender’s remaining Physical Health (PH) spills over directly to the opponent’s Life Points.","<AbilityTag><WarmongerColor>Point Out The Strongest One</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>RoaR just wants to fight the biggest guy in the room.</Immersion>
+When summoned, bypass the Combat Wave limit and immediately attack the enemy Character with the highest Physical Attack (PA).
+
+<AbilityTag><WarmongerColor>What’s a Handicap?</WarmongerColor></AbilityTag> <icon=""Juggernaut""/>
+<Spacer>.</Spacer>
+<Immersion>RoaR crushes anyone stupid enough to stand in his way.</Immersion> If RoaR's attack is defended, any Physical Attack (PA) damage that exceeds the defender’s remaining Physical Health (PH) spills over directly to the opponent’s Life Points.
+
+<AbilityTag><WarmongerColor>Did you know you can wield weapons with BOTH HANDS?</WarmongerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>RoaR stops holding back and grabs his weapon with both hands.</Immersion>
+His Physical Attack (PA) is permanently locked at 10, plus an additional amount equal to half of your opponent's remaining Life Points (rounded down).",,Warmonger
+Myra,,,,Character,Ascendants,Icons,,,,,,,,,,,Icon
+"Lenny
+<Subcolor>the Kawaii Connoisseur</Subcolor>",,LennytheKawaiiConnoisseur,LennytheKawaiiConnoisseurLVLUP,Character,Ascendants,Overthinkers,Pwners,3,2,3,3,5,"Lenny ascends, overwhelmed by his ultimate cute creation.
+If Maji Kawaii Megami is on the Board, Lenny levels up.","<AbilityTag><OverthinkerColor>Kawaii Glow-Up</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Lenny hands out a magical makeover that heals wounds.</Immersion>
+Pay 1 Energy to instantly restore 2 Physical Health (PH) or Mental Health (MH) to a target allied Character.
+
+<AbilityTag><OverthinkerColor>Kawaii Summon</OverthinkerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>When summoned, search your deck for a Kawaii Guardian and summon it.</Immersion>","<AbilityTag><OverthinkerColor>Kawaii Glow-Up</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Lenny hands out a magical makeover that heals wounds.</Immersion>
+Pay 1 Energy to instantly restore 2 Physical Health (PH) or Mental Health (MH) to a target allied Character.
+
+<AbilityTag><OverthinkerColor>Kawaii Summon</OverthinkerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>When summoned, search your deck for a Kawaii Guardian and summon it.</Immersion>
+
+<AbilityTag><OverthinkerColor>Kawaii Immunity</OverthinkerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Lenny changes the rules so that nothing ugly is allowed.</Immersion>
+All allied Characters are completely immune to negative status effects.
+
+<AbilityTag><OverthinkerColor>Optimal Pathing</OverthinkerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Allied Pwner Characters have the Energy cost of their abilities reduced by 1.</Immersion>",,Overthinker
+"Ruvi
+<Subcolor>Player One</Subcolor>",,RuviPlayerONE,RuviPlayerONELVLUP,Character,Ascendants,Overthinkers,Pwners,5,1,3,5,4,"Ruvi hits the jackpot and realizes the world is a game.
+When Ruvi successfully rolls a 6 on [The Item Box], he levels up.","<AbilityTag><OverthinkerColor>The Item Box</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Ruvi is bored and wants to see if pure RNG can carry him.</Immersion> Pay 1 Energy and roll a standard 6-sided die (d6). Apply the following effect immediately
+<Spacer>.</Spacer>
+<Immersion>1-2 (Banana Peel): Bad luck.</Immersion> Ruvi takes 1 permanent Mental Health (MH) damage.
+
+3-4 (Green Shell)
+<Spacer>.</Spacer>
+<Immersion>Ruvi deals 2 Physical Attack (PA) damage to a target enemy Character.</Immersion>
+
+5 (Mushroom)
+<Spacer>.</Spacer>
+<Immersion>Ruvi permanently gains +2 Physical Health (PH) and +2 Mental Health (MH).</Immersion>
+
+6 (The Blue Shell)
+<Spacer>.</Spacer>
+<Immersion>Ruvi instantly deals 4 Mental Attack (MA) damage to a target enemy Character.</Immersion>","<AbilityTag><OverthinkerColor>The Item Box</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Ruvi is bored and wants to see if pure RNG can carry him.</Immersion> Pay 1 Energy and roll a standard 6-sided die (d6). Apply the following effect immediately
+<Spacer>.</Spacer>
+<Immersion>1-2 (Banana Peel): Bad luck.</Immersion> Ruvi takes 1 permanent Mental Health (MH) damage.
+
+3-4 (Green Shell)
+<Spacer>.</Spacer>
+<Immersion>Ruvi deals 2 Physical Attack (PA) damage to a target enemy Character.</Immersion>
+
+5 (Mushroom)
+<Spacer>.</Spacer>
+<Immersion>Ruvi permanently gains +2 Physical Health (PH) and +2 Mental Health (MH).</Immersion>
+
+6 (The Blue Shell)
+<Spacer>.</Spacer>
+<Immersion>Ruvi instantly deals 4 Mental Attack (MA) damage to a target enemy Character.</Immersion>
+
+<AbilityTag><OverthinkerColor>You Know This Is Just A Game, Right?</OverthinkerColor></AbilityTag> 
+<Spacer>.</Spacer>
+<Immersion>Ruvi has realized that he is just a card and uses a GameShark to hack the system.</Immersion> As long as Ruvi is face-up on the Board, all other Characters (allied and enemy) are Silenced.
+
+<AbilityTag><OverthinkerColor>The Glitch</OverthinkerColor></AbilityTag>
+<Spacer>.</Spacer>
+<Immersion>When Ruvi declares a Combat Wave, you may look the opponent in the eye and say, ""It's just a game.</Immersion>"" If you do, Ruvi deals his Physical Attack (PA) damage directly to your opponent's Life Points immediately upon declaration, completely bypassing the Reaction Window and simultaneous combat math.",,Overthinker
+"Rosula
+<Subcolor></Subcolor>",,,,Character,Ascendants,Icons,,,,,,,,,,,Icon
+"Silly
+<Subcolor>2nd Crown - The Cruel Cacique</Subcolor>",,SillyVanguardofViciousVictories2ndCrown,SillyVanguardofViciousVictories2ndCrownlvlup,Character,Ascendants,Warmongers,Latin Kings,3,4,5,2,2,"Silly sees red once he is covered in blood.
+When Silly declares his 4th attack of the game, he levels up.","<AbilityTag><WarmongerColor>First Blood</WarmongerColor></AbilityTag> <icon=""Combo-Striker""/>
+<Spacer>.</Spacer>
+<Immersion>Silly throws his dagger before they even see him coming.</Immersion> Silly's combat resolves in two strikes. He deals his first strike without receiving simultaneous retaliation. If the target survives, they resolve a second strike normally as simultaneous combat.
+
+<AbilityTag><WarmongerColor>Street Sweep</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>When he Murders a Character, he may immediately declare an additional attack against a new target for 0 Energy, bypassing the once-per-Round Combat Wave limit.</Immersion>","<AbilityTag><WarmongerColor>First Blood</WarmongerColor></AbilityTag> <icon=""Combo-Striker""/>
+<Spacer>.</Spacer>
+<Immersion>Silly throws his dagger before they even see him coming.</Immersion> Silly's combat resolves in two strikes. He deals his first strike without receiving simultaneous retaliation. If the target survives, they resolve a second strike normally as simultaneous combat.
+
+<AbilityTag><WarmongerColor>Street Sweep</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>When he Murders a Character, he may immediately declare an additional attack against a new target for 0 Energy, bypassing the once-per-Round Combat Wave limit.</Immersion>
+
+<AbilityTag><WarmongerColor>#1 Hitman</WarmongerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Silly walks right through the bullets and never stops.</Immersion>
+While attacking, Silly's Physical Health (PH) cannot be reduced below 1.",,Warmonger
+"Tasha
+<Subcolor>The Life of the Party</Subcolor>",,TashaTheLifeOfTheparty,TashaTheLifeOfThepartyLVLUP,Character,Ascendants,Warmongers,Shea's,3,2,3,1,1,"Tasha peaks when surrounded by trashed fighters.
+When Tasha sees 4 or more ""intoxicated"" Characters on the Board, she levels up.","<AbilityTag><WarmongerColor>Pre-Game Buzz</WarmongerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Tasha feeds on the heavy energy of a wild room.</Immersion>Tasha gains +1 Physical Attack (PA) for every Character on the Board equipped with a Beer or Blunt Attachment, or possessing permanent MH damage from a ""Drink"" ability.
+
+<AbilityTag><WarmongerColor>Shots! Shots! Shots!</WarmongerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Pay 1 Energy to equip a Beer Attachment from your Hand to Tasha or an ally.</Immersion>","<AbilityTag><WarmongerColor>Pre-Game Buzz</WarmongerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Tasha feeds on the heavy energy of a wild room.</Immersion>Tasha gains +1 Physical Attack (PA) for every Character on the Board equipped with a Beer or Blunt Attachment, or possessing permanent MH damage from a ""Drink"" ability.
+
+<AbilityTag><WarmongerColor>Shots! Shots! Shots!</WarmongerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Pay 1 Energy to equip a Beer Attachment from your Hand to Tasha or an ally.</Immersion>
+
+<AbilityTag><WarmongerColor>Liquid Courage</WarmongerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion>Tasha becomes a total wrecking ball, drunk and happy.</Immersion> Tasha gains the Combo-Striker keyword. (Her combat resolves in two strikes
+<Spacer>.</Spacer>
+<Immersion>a free first strike without retaliation, then a simultaneous strike).</Immersion> Additionally, her Physical Health (PH) cannot drop below 1 as long as she is intoxicated.",,Warmonger
+"Vince
+<Subcolor>The Convincer</Subcolor>",,VinceTheConvincerupdated,VinceTheConvincerupdatedLVLUP,Character,Ascendants,Overthinkers,Pimp Juice,5,1,5,5,5,"Vince takes the wheel, tired of just whispering.
+When Vince successfully redirects 3 attacks, he levels up.","<AbilityTag><OverthinkerColor>The Suggestion</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Vince tricks them into shooting their own friends.</Immersion>
+During the Reaction Window, pay 2 Energy to redirect an attacker's declared attack to any other viable target. Realizing they've been played inflicts 1 Mental Attack (MA) damage to the attacker.","<AbilityTag><OverthinkerColor>The Suggestion</OverthinkerColor></AbilityTag> (Fast Ability)
+<Spacer>.</Spacer>
+<Immersion>Vince tricks them into shooting their own friends.</Immersion>
+During the Reaction Window, pay 2 Energy to redirect an attacker's declared attack to any other viable target. Realizing they've been played inflicts 1 Mental Attack (MA) damage to the attacker.
+
+<AbilityTag><OverthinkerColor>The Hijack</OverthinkerColor></AbilityTag> (Standard Ability)
+<Spacer>.</Spacer>
+<Immersion>Vince completely hijacks their mind and makes them fight for him.</Immersion>
+Once per Round, target an enemy Character with a Mental Health (MH) lower than Vince's Mental Attack (MA). Move them to your side of the Board to fight for you until Phase 3.",,Overthinker
+"Angel G
+<Subcolor>The Comedian</Subcolor>",,,,Character,Ascendants,Warmongers,Fury Park,,,,,,"Angel feeds on the crowd when they start to hate him.
+When Angel attacks an enemy afflicted with Fear, he levels up.","<AbilityTag><WarmongerColor>The Heel Turn</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Angel grabs a steel chair and a live mic to mock the crowd.</Immersion>
+When summoned, inflict Fear on a target enemy Character.","<AbilityTag><WarmongerColor>The Heel Turn</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Angel grabs a steel chair and a live mic to mock the crowd.</Immersion>
+When summoned, inflict Fear on a target enemy Character.
+
+<AbilityTag><WarmongerColor>The Main Event</WarmongerColor></AbilityTag> (Passive Ability)
+<Spacer>.</Spacer>
+<Immersion><icon=""Juggernaut""/> Angel soaks up the boos and becomes unstoppable.</Immersion> Angel permanently gains +3 Physical Attack (PA) and the Juggernaut keyword. (If his attack is defended, any PA damage that exceeds the defender’s remaining PH spills over directly to the opponent’s Life Points).",,Warmonger
+"Whiteboy
+<Subcolor>5th Crown - Disciple of Dolor</Subcolor>",,whiteboy5thCrown,whiteboy5thCrownlvlup,Character,Ascendants,Warmongers,Latin Kings,4,3,8,2,4,"Whiteboy refuses to stay down, even when battered and bleeding.
+When Whiteboy survives a total of 8 or more cumulative damage across the game, he levels up.","<AbilityTag><WarmongerColor>Masochist</WarmongerColor></AbilityTag> <icon=""Protector""/>
+<Spacer>.</Spacer>
+<Immersion>Whiteboy takes the hit and lets the pain make him stronger.</Immersion> As a Reaction, Whiteboy can intercept one attack per Combat Wave intended for Life Points or another Character, forcefully changing the attacker's target to himself.
+
+<AbilityTag><WarmongerColor>Built Different</WarmongerColor></AbilityTag> <icon=""Berserker""/>
+<Spacer>.</Spacer>
+<Immersion>Whiteboy always wants the smoke.</Immersion> Every time Whiteboy takes permanent Physical Health (PH) damage, he gains +2 Physical Attack (PA).","<AbilityTag><WarmongerColor>Masochist</WarmongerColor></AbilityTag> <icon=""Protector""/>
+<Spacer>.</Spacer>
+<Immersion>Whiteboy takes the hit and lets the pain make him stronger.</Immersion> As a Reaction, Whiteboy can intercept one attack per Combat Wave intended for Life Points or another Character, forcefully changing the attacker's target to himself.
+
+<AbilityTag><WarmongerColor>Built Different</WarmongerColor></AbilityTag> <icon=""Berserker""/>
+<Spacer>.</Spacer>
+<Immersion>Whiteboy always wants the smoke.</Immersion> Every time Whiteboy takes permanent Physical Health (PH) damage, he gains +2 Physical Attack (PA).
+
+<AbilityTag><WarmongerColor>Guardian Angel</WarmongerColor></AbilityTag> (Trigger Ability)
+<Spacer>.</Spacer>
+<Immersion>Whiteboy watches as his wounds heal like he has some guardian angel.</Immersion> During Phase 3 (The End Step), Whiteboy heals 3 Physical Health (PH).",,Warmonger
