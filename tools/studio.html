@@ -221,6 +221,8 @@ label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppe
 .credit input[type=number]{-moz-appearance:textfield}
 .credit .pts{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .credit.on{border-color:var(--accent)}
+.tests{display:grid;gap:4px;margin-top:7px;border-top:1px solid var(--rule);padding-top:6px}
+.tests select{background:var(--surface-1);border:1px solid var(--rule);border-radius:5px;padding:3px 5px;font-size:11px;width:100%}
 .windows{display:grid;gap:5px;margin-top:4px}
 .win{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;cursor:pointer;padding:5px 7px;border-radius:7px;border:1px solid transparent}
 .win:hover{background:var(--raised)}
@@ -498,25 +500,44 @@ function planOf(){
   return draft.meta.plan;
 }
 
-/* Mirrors scoring.py Plan/Score. Ceiling = (budget + credits) x (1 + step x windows). */
+/* Mirrors scoring.py. Credits earn the Allowance; Reach CAPS it.
+   Each cost is discounted by the three tests (bite / timing / enabler). */
+function costFactor(key){
+  const scales=DB.plan.cost_tests||{}, chosen=(planOf().tests||{})[key]||{};
+  let f=1;
+  for(const [test,opts] of Object.entries(scales)){
+    const ans=chosen[test];
+    if(ans!==undefined && opts[ans]!==undefined) f*=Number(opts[ans]);
+  }
+  return f;
+}
 function scorePlan(s){
   const cfg=DB.plan, plan=planOf();
   const table=Object.fromEntries(cfg.credits.map(c=>[c.key,c]));
   let credits=0;
   for(const [k,q] of Object.entries(plan.pays)){
     const e=table[k]; if(!e||!q) continue;
-    let pts=e.points*q;
-    if(k==="narrowness") pts=Math.min(pts,cfg.narrowness_cap);
-    credits+=pts;
+    let raw=e.points*q;
+    if(k==="narrowness") raw=Math.min(raw,cfg.narrowness_cap);
+    credits+=Math.trunc(raw*costFactor(k));
   }
   const valid=new Set(cfg.windows.map(w=>w.key));
-  const windows=Math.min(plan.windows.filter(w=>valid.has(w)).length, cfg.max_windows);
-  const earned=s.budget+credits;
-  const mult=1+cfg.window_step*windows;
-  const ceiling=Math.trunc(earned*mult);
+  const windows=plan.windows.filter(w=>valid.has(w)).length;
+  const declared = credits>0 || windows>0 || plan.reach!=null;
+  const reach = plan.reach!=null ? Math.max(0,Math.min(4,plan.reach))
+              : (windows>0 ? Math.min(4,windows) : null);
+  const allowance=s.budget+credits;
+  const caps=cfg.reach_caps||{};
+  let cap;
+  if(reach===null) cap=s.budget;                       // no plan: the original rule
+  else {
+    const mult = caps[reach]!==undefined ? caps[reach] : caps[String(reach)];
+    cap = (mult===null||mult===undefined) ? null : Math.trunc(s.budget*Number(mult));
+  }
+  const ceiling = cap===null ? 0 : Math.min(allowance,cap);
   const total=s.baseSpent+s.ascendedSpent;
-  return {credits,windows,earned,mult,ceiling,total,headroom:ceiling-total,
-          hasPlan:credits>0||windows>0};
+  return {credits,windows,reach,allowance,earned:allowance,cap,ceiling,total,
+          headroom:ceiling-total, hasPlan:declared};
 }
 
 function scorePanel(s){
@@ -528,8 +549,12 @@ function scorePanel(s){
     el("span",{class:"arrow",text:"+"}),
     el("span",{class:"step"},"credits ",el("b",{text:String(p.credits)})),
     el("span",{class:"arrow",text:"="}),
-    el("span",{class:"step"},"earned ",el("b",{text:String(p.earned)})),
-    el("span",{class:"arrow",text:`× ${p.mult.toFixed(2)} (${p.windows} window${p.windows===1?"":"s"})`}),
+    el("span",{class:"step"},"allowance ",el("b",{text:String(p.allowance)})),
+    el("span",{class:"arrow",
+      text: p.cap===null ? "· Reach 0 — NOT PRINTABLE"
+          : p.reach===null ? (p.credits>0 ? "· set Reach to collect these credits"
+                                           : "· no plan declared — held to base budget")
+          : `· capped by Reach ${p.reach} at ${p.cap}`}),
     el("span",{class:"step final"},"CEILING ",el("b",{text:String(p.ceiling)})),
     el("span",{class:"arrow",text:"·"}),
     el("span",{class:"step"},"spends ",el("b",{text:String(p.total)}),
@@ -549,8 +574,29 @@ function scorePanel(s){
           el("input",{type:"number",min:"0",value:String(q),"aria-label":c.label,
             oninput:e=>set(Math.max(0,Number(e.target.value)||0))}),
           el("button",{class:"sbtn",text:"+","aria-label":`more ${c.key}`,onclick:()=>set(q+1)})),
-        el("span",{class:"pts",text:`${c.points>=0?"+":""}${c.points} ea`}))));
+        el("span",{class:"pts",text:`${c.points>=0?"+":""}${c.points} ea`})),
+      q?el("div",{class:"tests"}, ...Object.entries(cfg.cost_tests||{}).map(([test,opts])=>
+        el("select",{"aria-label":`${c.key} ${test}`,onchange:e=>{
+          plan.tests=plan.tests||{}; plan.tests[c.key]=plan.tests[c.key]||{};
+          if(e.target.value) plan.tests[c.key][test]=e.target.value;
+          else delete plan.tests[c.key][test];
+          touch();
+        }},
+        el("option",{value:"",selected:!((plan.tests||{})[c.key]||{})[test]},test+"…"),
+        ...Object.keys(opts).map(o=>el("option",{value:o,
+          selected:((plan.tests||{})[c.key]||{})[test]===o},`${test}: ${o}`))))):null));
   }
+
+  const reachRow=el("div",{class:"row",style:"gap:8px;flex-wrap:wrap;margin:2px 0 8px"},
+    el("span",{class:"sec",style:"font-size:12.5px"},"Factions that can answer this card:"));
+  for(const n of [0,1,2,3,4]){
+    const on=p.reach===n;
+    reachRow.append(el("button",{class:"chip","aria-pressed":on,
+      title:n===0?"nobody can answer it — not printable":`cap = base x ${(cfg.reach_caps||{})[n]}`,
+      onclick:()=>{ plan.reach=n; touch(); }}, String(n)));
+  }
+  reachRow.append(el("span",{class:"muted",style:"font-size:11.5px"},
+    "not how many windows — how many factions can do something, using tools their toolkit allows"));
 
   const wins=el("div",{class:"windows"});
   for(const w of cfg.windows){
@@ -577,7 +623,8 @@ function scorePanel(s){
         text:p.hasPlan?"plan declared":"no plan — capped at base budget"})),
     bar,
     el("label",{class:"fl",text:"What it pays (beyond Energy)"}), grid,
-    el("label",{class:"fl",text:"Where the opponent can stop it — each must name a real card or rule"}), wins,
+    el("label",{class:"fl",text:"Reach"}), reachRow,
+    el("label",{class:"fl",text:"Which windows exist — each must name a real card or rule"}), wins,
     el("div",{class:"muted",style:"font-size:11.5px;margin-top:10px"},
       "Every window you give back raises the ceiling by 25%. Nothing paid and no windows = today's budget, unchanged."),
     proh);

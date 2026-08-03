@@ -11,7 +11,23 @@
 # of the system agree. THESE ARE v0.1 HYPOTHESES. Expect to move them in whole points, and
 # expect only two or three usable steps per knob (see the tuning warning in the philosophy doc).
 
-window_step: 0.25          # each real interaction window adds 25% to the earned budget
+# Reach = how many of the four factions can answer this card at all, using tools their
+# toolkit allows. Reach CAPS the allowance; it does not multiply it. Credits earn power;
+# Reach decides whether you are allowed to collect it.
+reach_caps:
+  4: 3.0      # every faction can answer it -> keep everything you earned
+  3: 2.0
+  2: 1.5
+  1: 1.0      # only one faction can answer it -> your setup earns you nothing
+  0: null     # nobody can answer it -> not printable
+
+# Each declared cost is multiplied by the weakest of the three tests it passes.
+# See docs/design/balance-philosophy.md Part Two.
+cost_tests:
+  bite:     {competes: 1.0, neutral: 0.5, on_plan: 0.0}   # does paying it make you worse at your job?
+  timing:   {before: 1.0, at_payoff: 0.5, after: 0.0}     # when do you pay, relative to the payoff?
+  enabler:  {none: 1.0, faction: 0.5, crew: 0.0}          # does another card hand it to you free?
+
 max_windows: 5
 narrowness_cap: 4          # hard cap; narrowness may never be a boolean (rule F3)
 ceiling_quota: 0.10        # at most 1 card in 10 may exceed 2x its base budget

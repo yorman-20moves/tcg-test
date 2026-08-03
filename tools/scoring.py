@@ -92,32 +92,74 @@ def ceiling_severity(delta: int) -> str:
 
 @dataclass
 class Plan:
-    """What the card pays beyond Energy, and what it gives the opponent.
+    """What the card pays beyond Energy, and who can answer it.
 
-    Earned  = base budget + credits
-    Ceiling = Earned x (1 + window_step x windows)
+    Allowance = base budget + credits
+    Ceiling   = min(Allowance, base budget x reach cap)
 
-    A card that pays nothing and claims no windows earns nothing, so its ceiling is exactly
-    its base budget -- the old system, unchanged. Everything above that is bought.
+    Credits earn power. Reach decides whether you are allowed to collect it. A card that
+    pays nothing has Allowance == base budget, i.e. the original rule, unchanged.
+
+    Each cost carries up to three discounts (see balance-philosophy.md Part Two):
+      bite    -- does paying it make you worse at what the card wants to do?
+      timing  -- before the payoff (full), at it (half), after it (nothing)
+      enabler -- does another card, especially in the same crew, hand it to you free?
     """
     credits_paid: dict = field(default_factory=dict)
     windows: list = field(default_factory=list)
+    reach: int | None = None
+    tests: dict = field(default_factory=dict)   # {cost_key: {"bite": "...", ...}}
+
+    def _discount(self, cost_key: str) -> tuple[float, list[str]]:
+        """Multiplier from the three tests. Absent tests default to full credit."""
+        scales = plan_config().get("cost_tests", {})
+        chosen = (self.tests or {}).get(cost_key, {})
+        factor, notes = 1.0, []
+        for test_name, options in scales.items():
+            answer = chosen.get(test_name)
+            if answer is None:
+                continue
+            value = options.get(answer)
+            if value is None:
+                continue
+            factor *= float(value)
+            if value != 1.0:
+                notes.append(f"{test_name}={answer}")
+        return factor, notes
 
     def credit_points(self) -> tuple[int, list[str]]:
         config = plan_config()
         table = {c["key"]: c for c in config.get("credits", [])}
-        cap = config.get("narrowness_cap", 4)
+        narrowness_cap = config.get("narrowness_cap", 4)
         total, breakdown = 0, []
         for key, quantity in (self.credits_paid or {}).items():
             entry = table.get(key)
             if not entry or not quantity:
                 continue
-            points = int(entry["points"]) * int(quantity)
+            raw = int(entry["points"]) * int(quantity)
             if key == "narrowness":
-                points = min(points, cap)
+                raw = min(raw, narrowness_cap)
+            factor, notes = self._discount(key)
+            points = int(raw * factor)
             total += points
-            breakdown.append(f"{entry['label']} x{quantity} = {points}")
+            label = f"{entry['label']} x{quantity} = {raw}"
+            if factor != 1.0:
+                label += f"  ->  {points}  ({', '.join(notes) or 'discounted'})"
+            breakdown.append(label)
         return total, breakdown
+
+    @property
+    def declared(self) -> bool:
+        """True once the designer has actually described a plan. An undeclared card is not
+        'Reach 0 / unprintable' -- it is simply an ordinary card held to the base budget."""
+        return bool(self.credits_paid or self.windows or self.reach is not None)
+
+    def reach_value(self) -> int | None:
+        if self.reach is not None:
+            return max(0, min(4, int(self.reach)))
+        if self.windows:
+            return min(4, self.window_count())
+        return None   # credits claimed but Reach not yet declared -> held to base budget
 
     def window_count(self) -> int:
         valid = {w["key"] for w in plan_config().get("windows", [])}
@@ -143,19 +185,33 @@ class Score:
         return self.plan.credit_points()[0]
 
     @property
-    def earned(self) -> int:
+    def allowance(self) -> int:
         """Base budget plus everything the card pays in non-Energy currencies."""
         return self.budget + self.credits
 
+    # kept as an alias so older callers keep working
     @property
-    def multiplier(self) -> float:
-        config = plan_config()
-        windows = min(self.plan.window_count(), config.get("max_windows", 5))
-        return 1 + config.get("window_step", 0.25) * windows
+    def earned(self) -> int:
+        return self.allowance
+
+    @property
+    def reach(self) -> int | None:
+        return self.plan.reach_value()
+
+    @property
+    def reach_cap(self) -> int | None:
+        """None means Reach 0: nobody can answer it, so the card is not printable.
+        An undeclared plan is capped at the base budget -- the original rule."""
+        if self.reach is None:
+            return self.budget
+        caps = plan_config().get("reach_caps", {}) or {}
+        multiple = caps.get(self.reach, caps.get(str(self.reach)))
+        return None if multiple is None else int(self.budget * float(multiple))
 
     @property
     def ceiling(self) -> int:
-        return int(self.earned * self.multiplier)
+        cap = self.reach_cap
+        return 0 if cap is None else min(self.allowance, cap)
 
     @property
     def headroom(self) -> int:
@@ -200,8 +256,10 @@ class Score:
             "credits": self.credits,
             "creditBreakdown": self.plan.credit_points()[1],
             "windowCount": self.plan.window_count(),
-            "earned": self.earned,
-            "multiplier": round(self.multiplier, 2),
+            "reach": self.reach,
+            "reachCap": self.reach_cap,
+            "allowance": self.allowance,
+            "earned": self.allowance,
             "ceiling": self.ceiling,
             "totalSpent": self.base_spent + self.ascended_spent,
             "headroom": self.headroom,
@@ -236,7 +294,9 @@ def score(card: Card) -> Score:
         scorable=True,
         budget=budget,
         plan=Plan(credits_paid=plan_block.get("pays") or {},
-                  windows=plan_block.get("windows") or []),
+                  windows=plan_block.get("windows") or [],
+                  reach=plan_block.get("reach"),
+                  tests=plan_block.get("tests") or {}),
         stats_total=sum(int(card.stats[k]) for k in STAT_KEYS),
         base_keyword_points=total(base["keywords"], kw_table),
         base_effect_points=total(base["effects"], ef_table),
@@ -257,13 +317,19 @@ def _gate_g1(card: Card, result: Score, tolerance: int) -> list[str]:
     if not result.scorable:
         return []
     failures = []
-    has_plan = result.credits > 0 or result.plan.window_count() > 0
+    has_plan = result.plan.declared
 
     if has_plan:
         # The Ceiling covers BOTH sides of the card -- that is what the plan bought.
-        if result.headroom < 0:
-            failures.append(f"G1: spends {result.base_spent + result.ascended_spent} against a "
-                            f"Ceiling of {result.ceiling} — over by {abs(result.headroom)}")
+        if result.reach_cap is None:
+            failures.append("G1: Reach 0 — no faction can answer this card. Not printable.")
+        elif result.headroom < 0:
+            over = abs(result.headroom)
+            capped = result.allowance > result.ceiling
+            note = (f"; capped by Reach {result.reach} at {result.ceiling} "
+                    f"(earned {result.allowance})") if capped else ""
+            failures.append(f"G1: Impact {result.base_spent + result.ascended_spent} exceeds "
+                            f"Ceiling {result.ceiling} — over by {over}{note}")
         return failures
 
     # No plan declared: the old two-sided budget check, unchanged.

@@ -17,6 +17,56 @@ marked `DECIDED`.
 
 ---
 
+## D-005 · Three levels of balance; Reach caps instead of multiplying — 2026-08-03
+
+**Decides:** revises D-003. Adds Levels 2 and 3.
+
+**Decision:** balance is checked at three levels — card, crew, faction. At the card level,
+Credits earn an **Allowance** and **Reach** (how many factions can answer the card) **caps** it,
+rather than multiplying it. Every declared cost is discounted by three tests: does paying it make
+you worse at your job (bite), when do you pay relative to the payoff (timing), and does another
+card hand it to you free (enabler).
+
+**Because:** three faults surfaced from one question — why did Moammar have 50 points of headroom
+when he plays as a strong card?
+
+1. **Costs were priced nominally, not by whether they bite.** Moammar's board-state condition is
+   what a Warmonger deck already does; his self-destruction is paid *after* a punch that wins the
+   game; once-per-Game doesn't restrict a card that only needs once. All three were charged in
+   full and all three are worth nothing.
+2. **The Enabler Test was missing entirely, and it is the important one.** Dre's ascended text
+   destroys every Character, Tactic and Attachment on the opponent's board. Moammar's level-up
+   fires when the opponent has zero cards on their board. Dre's payoff *is* Moammar's condition,
+   word for word, and they are both Mobb 134. A cost your own crewmate removes was never a cost.
+3. **Multiplying by window count double-counted interactivity** — the setup was already in the
+   Credits — and it pushed every card toward having all five windows, which homogenises. Capping
+   by Reach instead rewards being answerable by *different factions* rather than by more moments,
+   which is what crew and faction identity actually need.
+
+Under the revision Moammar reads as over rather than under, Corazon lands within a point of his
+Ceiling, and Dre keeps modest headroom — matching the designer's own read of all three.
+
+**Levels 2 and 3 added:** every crew needs one written plan sentence plus a diversity rule (each
+card advances the plan by a different mechanism), and every faction gets a toolkit and a window
+profile derived from its printed lore. Measurement that motivated this: 13 of 28 effect types are
+currently used by more than one faction; Overthinkers use 16 effect types including Mass Removal
+and Hard Removal; the Assholes have Counterspell on two cards while their lore says they don't
+block; Moammar is a Warmonger with a tutor. Nobody owns anything, so nobody feels like anything.
+
+**Also documented:** the window map shows W3 (the moment it lands) and W5 (race it) are each
+covered by only one faction. That is why cards answerable only in the Reaction Window keep coming
+out Blue-mandatory.
+
+**Affects:** `docs/design/balance-philosophy.md` rewritten around the three levels;
+`data/plan-credits.yaml` gains `reach_caps` and `cost_tests`; `tools/scoring.py` and the
+workbench panel rebuilt. Backwards compatible: a card with no declared plan is held to its base
+budget exactly as before, and all 31 existing cards score identically.
+
+**Revisit if:** the reach caps (3.0 / 2.0 / 1.5 / 1.0) prove too generous at the top end. That
+multiple is now the most sensitive number in the system.
+
+---
+
 ## D-004 · Balance philosophy rewritten as a teaching document — 2026-08-03
 
 **Decides:** presentation of D-003 (the system itself is unchanged)
