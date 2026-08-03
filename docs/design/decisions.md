@@ -17,6 +17,48 @@ marked `DECIDED`.
 
 ---
 
+## D-006 · The Studio, and the features writing the README exposed — 2026-08-03
+
+**Decides:** implements docs/design/studio-plan.md, all five phases
+
+**Decision:** factions and crews become data (`data/factions.yaml`, `data/crews.yaml`,
+`data/game-states.yaml`); three documents are generated from them; a 19-rule consistency engine
+(`tools/rules.py`, `tools/check.py`) validates all three levels in one command; the workbench
+grows to six screens; Reach is computed from the faction window map rather than guessed.
+
+**Because:** faction identity, toolkits and crew plans lived in prose, which cannot be validated,
+cross-referenced, or used in a calculation — that is the whole reason things drifted. Lifting
+them into data and generating the prose back out is what makes a change propagate instead of
+being retyped.
+
+**What the engine found on its own:** F2 caught 7 toolkit violations including Moammar's tutor
+and both Asshole Counterspells. W2 found Dre→Moammar *and* an unspotted second chain,
+Decoy→RoaR in the Latin Kings. F9 caught that cards say crew "Pwners" while crews.yaml said
+"PWNED".
+
+**Features added while writing the README**, each because documenting a scenario revealed there
+was no way to do it:
+
+- **Create a card.** There was no way to make a new one — only edit existing ones.
+- **Clone a card.** Copies mechanics; deliberately does NOT copy the Lore Packet, which is about
+  a specific real person and must never be inherited.
+- **Retire a card.** `status: retired` keeps the file and its Design Notes but drops it from
+  validation and the counts. Better than deleting.
+- **`tools/rename.py`.** Renaming a keyword or effect by hand breaks every reference silently —
+  the card keeps the old name, the engine scores it as zero, and nothing says so.
+- **Search by content.** The card list searched names only; it now searches effects, keywords and
+  rules text, so "counterspell" finds every card using it.
+- **`check.py --gaps`.** The engine reported what was *wrong* but never what was *missing*, which
+  is the actual question when deciding what to design next.
+- **Playtests on the card page.** Games mentioning a card surface on it, so a card that keeps
+  appearing in "felt bad" is visible where you'd act on it.
+- **Status lifecycle control** in the card header.
+
+**Revisit if:** the rule set grows past what one person can hold. At that point the codes need
+grouping by level rather than by severity.
+
+---
+
 ## D-005 · Three levels of balance; Reach caps instead of multiplying — 2026-08-03
 
 **Decides:** revises D-003. Adds Levels 2 and 3.

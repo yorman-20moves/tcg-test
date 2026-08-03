@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import rules  # noqa: E402
 
-SEVERITY_MARK = {"error": "✗", "warning": "!"}
+SEVERITY_MARK = {"error": "✗", "warning": "!", "gap": "+"}
 
 
 def main() -> int:
@@ -32,17 +32,20 @@ def main() -> int:
     parser.add_argument("--code", help="filter to one rule code, e.g. F2")
     parser.add_argument("--next", type=int, metavar="N", help="just the next N things to fix")
     parser.add_argument("--json", action="store_true", help="machine-readable output")
+    parser.add_argument("--gaps", action="store_true", help="what's MISSING, not what's wrong")
     parser.add_argument("--quiet", action="store_true", help="summary only")
     args = parser.parse_args()
 
-    findings = rules.worklist(rules.run_all())
+    findings = rules.worklist(rules.run_all() + rules.gaps())
     blocking = [f for f in findings if f.blocking]
 
     shown = findings
     if args.errors:
         shown = [f for f in shown if f.blocking]
     if args.warnings:
-        shown = [f for f in shown if not f.blocking]
+        shown = [f for f in shown if f.severity == "warning"]
+    if args.gaps:
+        shown = [f for f in shown if f.severity == "gap"]
     if args.code:
         shown = [f for f in shown if f.code == args.code.upper()]
     if args.next:

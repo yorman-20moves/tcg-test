@@ -69,6 +69,16 @@ automatically — that is how Dre feeding Moammar was caught.
 8. **Lore gate L2 (the dignity line) is not negotiable and not a joke gate.** These are real
    people. When in doubt, the answer is "ask them," not "it's probably fine."
 
+## Creating, cloning, retiring
+
+Never hand-write a card file from a template — go through `card_io.new_card()` or the Studio's
+**+ New card**, so the frontmatter schema and section order are guaranteed. Clone copies
+mechanics but never lore. Retire with `status: retired` rather than deleting; the Design Notes
+are the record of why the card was what it was.
+
+Never rename a keyword, effect, crew or faction by hand — use `python tools/rename.py`. A hand
+rename leaves cards pointing at the old name, the engine scores them as zero, and nothing warns.
+
 ## File layout
 
 ```

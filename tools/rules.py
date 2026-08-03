@@ -72,13 +72,16 @@ def _table(filename: str, key: str) -> list:
     return (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get(key, []) or []
 
 
+RETIRED = "retired"
+
+
 @lru_cache(maxsize=1)
 def load_world() -> World:
     return World(
         factions=_table("factions.yaml", "factions"),
         crews=_table("crews.yaml", "crews"),
         states=_table("game-states.yaml", "states"),
-        cards=card_io.load_all(),
+        cards=[c for c in card_io.load_all() if c.meta.get("status") != RETIRED],
         keywords=_table("keywords.yaml", "keywords"),
         effects=_table("effects.yaml", "effects"),
     )
@@ -521,9 +524,68 @@ def run_all(world: World | None = None) -> list[Finding]:
     return findings
 
 
+DECK_TARGET = {"Descendant": 24, "Tactic": 8, "Attachment": 3, "Ascendant": 5}
+
+
+def gaps(world: World | None = None) -> list[Finding]:
+    """What's MISSING, as opposed to what's wrong. The answer to 'what do I build next'."""
+    world = world or load_world()
+    out = []
+
+    counts: dict[str, int] = {}
+    for card in world.cards:
+        counts[card.meta.get("subtype") or "?"] = counts.get(card.meta.get("subtype") or "?", 0) + 1
+    for subtype, want in DECK_TARGET.items():
+        have = counts.get(subtype, 0)
+        if have < want:
+            out.append(Finding("GAP", "gap", subtype,
+                               f"{have} of the ~{want} a legal 40-card deck wants — short {want - have}.",
+                               fix=f"Design {want - have} more {subtype}s."))
+
+    for faction in world.factions:
+        mine = [c for c in world.cards if c.faction == faction["name"]]
+        playable = [c for c in mine if c.meta.get("cost") is not None]
+        if not playable:
+            out.append(Finding("GAP", "gap", faction["name"],
+                               f"has {len(mine)} cards and none of them are playable "
+                               f"(no cost, no stats).",
+                               fix="This faction cannot be built with. Start with one card."))
+
+    for crew in world.crews:
+        mine = [c for c in world.cards if c.meta.get("crew") == crew["name"]]
+        if len(mine) < 5:
+            out.append(Finding("GAP", "gap", crew["name"],
+                               f"has {len(mine)} cards. A crew needs about five to express a plan "
+                               f"through different roads.",
+                               fix=f"Design {5 - len(mine)} more."))
+
+    covered = set()
+    for card in world.cards:
+        covered |= set((card.meta.get("plan") or {}).get("produces") or [])
+        covered |= set((card.meta.get("plan") or {}).get("requires") or [])
+    unused = [s["key"] for s in world.states if s["key"] not in covered]
+    if unused:
+        out.append(Finding("GAP", "gap", "game states",
+                           f"{len(unused)} board conditions are defined but no card touches them: "
+                           f"{', '.join(unused[:6])}{'…' if len(unused) > 6 else ''}",
+                           where="data/game-states.yaml",
+                           fix="Either design cards that use them, or trim the vocabulary."))
+
+    influence = [c for c in world.cards
+                 if "influence" in f"{c.rules_text}\n{c.ascended_text}".lower()]
+    if len(influence) < 3:
+        out.append(Finding("GAP", "gap", "the Influence victory",
+                           f"only {len(influence)} cards mention Influence, and it is one of the "
+                           f"three printed win conditions.",
+                           fix="Build it or cut it from the rulebook (OQ-02)."))
+    return out
+
+
 def worklist(findings: list[Finding]) -> list[Finding]:
     """Ranked: errors first, then by how many things share the cause."""
     counts: dict[str, int] = {}
     for f in findings:
         counts[f.code] = counts.get(f.code, 0) + 1
-    return sorted(findings, key=lambda f: (f.severity != "error", -counts[f.code], f.code, f.subject))
+    order = {"error": 0, "warning": 1, "gap": 2}
+    return sorted(findings, key=lambda f: (order.get(f.severity, 3), -counts[f.code],
+                                           f.code, f.subject))

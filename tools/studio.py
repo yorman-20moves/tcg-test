@@ -206,6 +206,37 @@ def save_crew(payload: dict) -> dict:
     return {"ok": True, "crews": rows, "findings": findings_payload()}
 
 
+def create_card(payload: dict) -> dict:
+    card = card_io.new_card(
+        name=(payload.get("name") or "").strip(),
+        faction=payload.get("faction"),
+        crew=payload.get("crew") or None,
+        subtype=payload.get("subtype") or "Descendant",
+        cost=payload.get("cost"),
+    )
+    return {"ok": True, "card": card_payload(card_io.load(card.path)),
+            "findings": findings_payload()}
+
+
+def clone_card(payload: dict) -> dict:
+    """Copy an existing card's mechanics under a new name. Lore is deliberately NOT copied --
+    the Lore Packet is about a specific real person and must never be inherited."""
+    source = card_io.load((card_io.REPO_ROOT / payload["relPath"]).resolve())
+    clone = card_io.new_card(
+        name=(payload.get("name") or f"{source.name} copy").strip(),
+        faction=source.faction, crew=source.meta.get("crew"),
+        subtype=source.meta.get("subtype") or "Descendant", cost=source.meta.get("cost"))
+    for key in ("stats", "base", "ascended", "plan"):
+        if source.meta.get(key) is not None:
+            clone.meta[key] = json.loads(json.dumps(source.meta[key]))
+    clone.rules_text = source.rules_text
+    clone.levelup_condition = source.levelup_condition
+    clone.ascended_text = source.ascended_text
+    card_io.save(clone)
+    return {"ok": True, "card": card_payload(card_io.load(clone.path)),
+            "findings": findings_payload()}
+
+
 def log_playtest(payload: dict) -> dict:
     games = playtests()
     entry = {k: payload.get(k) for k in ("when", "players", "winner", "cards", "felt_bad", "notes")}
@@ -310,6 +341,8 @@ class StudioHandler(BaseHTTPRequestHandler):
             "/api/crew": save_crew,
             "/api/playtest": log_playtest,
             "/api/snapshot": take_snapshot,
+            "/api/newcard": create_card,
+            "/api/clonecard": clone_card,
             "/api/generate": lambda _: {"generated": generate.main.__doc__ and run_generate()},
         }
         handler = routes.get(self.path)

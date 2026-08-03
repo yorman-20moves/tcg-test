@@ -68,7 +68,8 @@ crews:
     expressions: []
 
   - key: pwned
-    name: PWNED
+    name: Pwners        # the cards say "Pwners"; the art folder says PWNED. Pick one and
+                        # rename with tools/rename.py -- it updates every reference at once.
     reviewed: false
     plan: >-
       UNDECIDED -- are these the uncoordinated crew? Their cards suggest chaos: dice rolls, item

@@ -183,6 +183,44 @@ def save(card: Card) -> None:
     card.path.write_text(render(card), encoding="utf-8")
 
 
+def slugify(text: str) -> str:
+    return re.sub(r"[-\s]+", "-", re.sub(r"[^\w\s-]", "", text.lower())).strip("-")
+
+
+SUBTYPE_DIR = {"Ascendant": "ascendants", "Descendant": "descendants",
+               "Tactic": "tactics", "Attachment": "attachments", "Arena": "arenas"}
+
+
+def new_card(name: str, faction: str, crew: str | None, subtype: str = "Descendant",
+             cost: int | None = None) -> Card:
+    """A blank card in the right folder, with every required field present.
+
+    Always go through here rather than copying a file -- it guarantees the frontmatter
+    schema and the section order the tools expect.
+    """
+    slug = slugify(name)
+    folder = CARDS_DIR / SUBTYPE_DIR.get(subtype, "descendants") / (slugify(crew) if crew else "unassigned")
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / f"{slug}.md"
+    if path.exists():
+        raise FileExistsError(f"{path.relative_to(REPO_ROOT)} already exists")
+    card = Card(
+        path=path,
+        meta={"name": name, "slug": slug, "card_type": "Character" if subtype in
+              ("Ascendant", "Descendant") else subtype,
+              "subtype": subtype, "faction": faction, "crew": crew, "cost": cost,
+              "stats": {k: None for k in STAT_KEYS},
+              "base": {"keywords": [], "effects": []},
+              "ascended": {"keywords": [], "effects": []},
+              "plan": {"pays": {}, "windows": [], "requires": [], "produces": []},
+              "art": {"base": None, "ascended": None},
+              "status": "draft"},
+        lore={f: "" for f in LORE_PACKET_FIELDS},
+    )
+    save(card)
+    return card
+
+
 def load_all(root: Path | None = None) -> list[Card]:
     cards = []
     for path in sorted((root or CARDS_DIR).rglob("*.md")):
