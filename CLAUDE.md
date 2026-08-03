@@ -108,16 +108,40 @@ unknown names rather than silently scoring zero. That's deliberate.
 Body sections, in order: `# Name` · `## Base Side` · `## Level-Up` · `## Lore` (the Packet) ·
 `## Design Notes`.
 
-## The budget engine
+## The balance system — The Score
+
+**Read [`docs/design/balance-philosophy.md`](docs/design/balance-philosophy.md) before pricing
+anything.** It is the reasoning; this is the summary.
 
 ```
-budget = (cost × 3) + 1 + (3 if Ascendant)
-spent  = PA + PH + MA + MH + base keyword points + base effect points
+Base Budget = (cost × 3) + 1 + (3 if Ascendant)        [the original spreadsheet formula]
+Earned      = Base Budget + credits paid in non-Energy currencies
+Ceiling     = Earned × (1 + 0.25 × interaction windows)
 ```
 
-Ported verbatim from the original spreadsheet and verified to reproduce its verdict on all 25
-costed cards. **Known hole:** the ascended side is charged nothing. See `open-questions.md`
-OQ-04 and the `--charge-ascended` flag.
+**Power is not capped, it is earned.** A card pays in setup, telegraph, sacrifice, cards, life,
+and matchup narrowness (`data/plan-credits.yaml`), and it earns a multiplier for every real
+window where the opponent can stop it. Counterplay is the *engine* of power here, not a
+restriction on it — the more chances you give the opponent, the bigger you are allowed to be.
+
+A card that declares no plan has Ceiling = Base Budget, i.e. exactly the old rule. Every existing
+card is unaffected.
+
+**Four prohibitions no Ceiling buys past:** P1 no self-restarting payoff · P2 no passive lock ·
+P3 no unbounded repetition · P4 no cheap + wide + uninterruptible.
+
+**Ceiling discipline:** at most one card in ten, and one per crew, above 2× base budget.
+
+Declare a plan in frontmatter:
+
+```yaml
+plan:
+  pays: {characters_required: 3, telegraph_rounds: 2, characters_consumed: 3}
+  windows: [pre_assembly, during_assembly, on_resolution, orthogonal]
+```
+
+Each claimed window must name **a specific existing card or rule** that exercises it. "Someone
+could theoretically remove it" is not a window.
 
 ## Known state, so you don't rediscover it
 
@@ -125,8 +149,11 @@ OQ-04 and the `--charge-ascended` flag.
   are no Descendants, Tactics, Attachments or Arenas. (OQ-01)
 - The **Icons** faction is five nameless stubs. (OQ-06)
 - The **Influence** win condition has no printed support. (OQ-02)
-- Read `docs/design/open-questions.md` before proposing new work. Thirteen structural issues are
-  already catalogued; adding a fourteenth is more useful than re-finding the first.
+- Read `docs/design/open-questions.md` before proposing new work. Fifteen structural issues are
+  already catalogued; adding a sixteenth is more useful than re-finding the first.
+- **Phase 2's alternating actions are the game's best structural asset** — a five-step plan
+  automatically hands the opponent four interaction windows. Protect that. Trigger and Passive
+  abilities bypass it, which is why P3 exists.
 
 ## Working style
 

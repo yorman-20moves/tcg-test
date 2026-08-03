@@ -25,24 +25,30 @@ is decoration.
 Nine gates. Any failure blocks print. Run `python tools/validate.py <card>` for G1, G3, G4 and
 G8 — the rest need a human.
 
-### G1 — Budget compliance
+### G1 — The card stays under its Ceiling
 
-The card's spent points must equal its budget, within tolerance.
+Power is not capped at a flat budget. It is **earned**. The full system is
+[`../design/balance-philosophy.md`](../design/balance-philosophy.md); the rule is:
 
 ```
-budget = (cost × 3) + 1 + (3 if Ascendant)
-spent  = PA + PH + MA + MH + keyword points + effect points
+Base Budget = (cost × 3) + 1 + (3 if Ascendant)
+Earned      = Base Budget + credits paid in non-Energy currencies
+Ceiling     = Earned × (1 + 0.25 × interaction windows)      [×1.00 to ×2.25]
 ```
 
-**Tolerance: ±1.** Not zero — zero forces you to pad stats to hit a number, which is how you get
-a Character with 1 MA for no reason. Not ±3 — that's 20% of a 3-cost card's entire budget.
+**A card that pays nothing beyond Energy and gives the opponent no windows has
+Ceiling = Base Budget** — exactly the old rule. Small instant effects stay small. Everything
+above that is bought, in setup, telegraph, sacrifice, matchup narrowness, and — above all — in
+windows where the opponent can stop you.
 
-**Ascendants must additionally pass the ascended-side check:** run with `--charge-ascended`.
-The ascended side may exceed the base budget by at most **+50%**, because levelling up costs
-the player real setup work. Exceeding that means the level-up isn't a reward, it's a different
-card stapled on.
+**Tolerance when no plan is declared: ±1.** Not zero, which forces you to pad stats to hit a
+number; not ±3, which is 20% of a 3-cost card's whole budget. When a plan *is* declared, the
+Ceiling covers both sides of the card and the only question is whether you exceeded it.
 
-> Automated: `python tools/balance.py --failing` and `--charge-ascended`.
+**Ceiling discipline:** at most one card in ten, and one per crew, may exceed 2× base budget.
+If every card is a heist, nothing is.
+
+> Automated: `python tools/balance.py --failing`, or the live meter in `tools/studio.py`.
 
 ### G2 — Every term is defined
 
@@ -90,6 +96,10 @@ Two players reading the card reach the same board state. The text must answer, e
 Any card applying a status without stating a duration fails this gate automatically.
 
 ### G7 — Answerability
+
+> **Note:** under The Score, counterplay is no longer only a gate — it is the *engine* of power.
+> Every real interaction window you give the opponent raises this card's Ceiling by 25%. G7
+> remains the floor (*at least one*); the windows ledger is where you get paid for more.
 
 At least one **existing** card or rule can interact with this card meaningfully — not merely
 "you could also win faster." Removal counts. A Counter counts. Racing does not.
@@ -259,6 +269,22 @@ Zero tolerance. `python tools/validate.py` must exit clean. Every conflict betwe
 and a data file is a rules argument waiting to happen at the table.
 
 ---
+
+## 4.5 The Four Prohibitions
+
+No amount of Ceiling buys past these. Each is a documented disaster in a shipped game; the
+reasoning and citations are in [`../design/balance-philosophy.md`](../design/balance-philosophy.md) §5.
+
+| | | Test |
+|---|---|---|
+| **P1** | No self-restarting payoff | After it resolves, is the player measurably closer to doing it again than before they started? |
+| **P2** | No passive lock | Does it prevent an opponent action without being an activation, and without an off-switch? |
+| **P3** | No unbounded repetition | Written out longhand, is the only stopping point "the player chooses to stop"? |
+| **P4** | No cheap + wide + uninterruptible | If the opponent knows exactly what is coming, can they do *anything*? |
+
+P4's test is Sirlin's, and it is the sharpest counterplay check available: *"A dominant move
+probably has no real counter, so even if the opponent knows you will do it, there's not a lot
+they can do."*
 
 ## 5. Using this with AI
 

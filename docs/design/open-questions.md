@@ -84,9 +84,15 @@ make level-ups *interesting* rather than just *bigger*, which is exactly what lo
 and dimension **D6** are trying to prevent. The economics and the storytelling are failing
 together.
 
-**Proposal:** charge the ascended side at a discount reflecting the setup work. The gameplay
-rubric currently proposes **base budget + 50%** as the ascended ceiling. That's a starting
-hypothesis, not a finding — pick a rule, then re-tune all 25 cards against it in one pass.
+**Proposal, superseded and improved.** The original proposal was a flat "base budget + 50%"
+ceiling on the ascended side. The Score replaces it with something better: the ascended side is
+charged against the **earned Ceiling**, which the card can raise by paying for its level-up in
+setup, telegraph, and interaction windows.
+
+This is the right shape, because the level-up condition *is* the setup, and the two-Round wait
+*is* the telegraph. Under the old rule an Ascendant's second side was free and therefore
+unpriced; under The Score it is paid for by exactly the thing that makes it interesting.
+See [balance-philosophy.md](balance-philosophy.md) §4.
 
 ---
 
@@ -162,7 +168,7 @@ Same class of problem: the Elements sheet has a sixth unnamed status with the no
 
 ---
 
-## OQ-09 · Pacifier may be un-gateable — `OPEN` — **severity: high**
+## OQ-09 · Pacifier may be un-gateable — `DECIDED` — **severity: high**
 
 **Pacifier** (Icons, 5 points): *"An aura that completely prevents the declaration of a Combat
 Wave as long as they are on the Board."*
@@ -181,6 +187,13 @@ priced below destroying a board once.
 **Fixes worth considering:** make it cost Energy each Round to maintain; let attackers pay a tax
 to attack anyway; limit it to one Combat Wave per Round rather than all of them; or make the
 Pacifier itself attackable as an exception to its own aura — which is also the better story.
+
+**Resolved by prohibition P2** (see [balance-philosophy.md](balance-philosophy.md) §5): an effect
+that prevents an opponent action must be an activation, or carry an off-switch. Pacifier as
+printed is prohibited. Any of the four repairs above satisfies P2 — pick one. The precedent is
+Kashtira 2023, where passive floodgates gave a format with fifteen answers per deck an
+*effective* answer density of zero, because hand traps answer activations and floodgates never
+activate.
 
 ---
 
@@ -233,6 +246,39 @@ card's art adds another full copy to history permanently.
 
 At the current rate this becomes painful to clone within a year. `git lfs migrate` gets harder
 the longer you wait. Not urgent this month; don't let it reach next year.
+
+---
+
+## OQ-14 · The Command System has no rubber band — `OPEN` — **severity: high**
+
+Section 4 states it outright: *"a wiped board means you cannot cast Tactics to save yourself!"*
+
+That is textbook **slippery slope** — falling behind causes you to fall further behind — with no
+perpetual-comeback mechanism anywhere. The player who most needs a Tactic is structurally
+forbidden from casting one.
+
+**The fix is proven and cheap.** Print a cycle of Tactics carrying a rubber-band clause, lifted
+near-verbatim from Yu-Gi-Oh's Infinite Impermanence and Evenly Matched:
+
+> *"If you control no Characters, you may play this card without declaring a caster."*
+
+Dead when you're winning, live when you're losing. Costs the format nothing and converts an
+unwinnable position into a hard one. Highest-value single rules addition available.
+
+See [balance-philosophy.md](balance-philosophy.md) §7.1.
+
+---
+
+## OQ-15 · No universal interaction layer — `OPEN` — **severity: medium**
+
+Phase 2's alternating actions give the opponent a window between every card — that's the game's
+best structural asset. But **Trigger Abilities cost no action** and Passive Abilities are always
+on, so a chain of triggers resolves inside a single action with no window at all. That is
+exactly where a first-turn kill would eventually live (cf. Firewall Dragon).
+
+Two additions, both in [balance-philosophy.md](balance-philosophy.md) §7.2: a small cycle of
+Combat Tactics playable from hand with no board requirement (your hand traps), and a Nibiru
+clause that taxes the *length* of a plan rather than banning it.
 
 ---
 

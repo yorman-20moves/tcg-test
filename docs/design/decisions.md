@@ -17,6 +17,46 @@ marked `DECIDED`.
 
 ---
 
+## D-003 · The Score replaces the flat point budget — 2026-08-03
+
+**Decides:** new; supersedes the ascended-ceiling proposal in OQ-04; resolves OQ-09
+
+**Decision:** power is earned, not capped. `Ceiling = (Base Budget + credits) × (1 + 0.25 ×
+windows)`, where credits are paid in non-Energy currencies (setup, telegraph, sacrifice, cards,
+life, narrowness) and windows are the five places an opponent can intervene. Four absolute
+prohibitions sit above the arithmetic. Full reasoning and sources in
+[balance-philosophy.md](balance-philosophy.md).
+
+**Because:** the old formula was purely additive, so a combo — "cards that interact in a way
+significantly stronger than the sum of their parts" — was not discouraged but *unrepresentable*.
+It also had no time axis, so setup, telegraph and matchup narrowness were literally not
+variables: a card requiring four Characters held for two Rounds scored identically to the same
+effect with no conditions. And the ceiling was arithmetically low — on a 5-cost the single
+biggest legal effect leaves 3 points for four stats, and across the whole pool 73% of every
+point spent went to vanilla stats, because vanilla stats were the only thing the system could
+price with confidence.
+
+The inversion matters more than the arithmetic: counterplay used to be a pass/fail gate bolted
+on the side, so it was pure cost. Now it is the multiplier, so a designer maximising a card's
+power is pushed by the gradient itself toward interactive design.
+
+Rejected: raising the flat budget (doesn't fix additivity); a separate "combo budget" (two
+systems drift); pricing conditions as flat discounts à la Magic's delve (cost-reduction
+mechanics are the documented dangerous family — Storm Scale 8 — precisely because the discount
+is unbounded).
+
+**Affects:** `data/plan-credits.yaml` (new), `tools/scoring.py` (Plan/Score, G1 rewritten),
+`tools/studio.py` + `studio.html` (The Score panel), the gameplay rubric's G1 and G7, AGENTS.md.
+No card content changed. Verified: every existing card scores identically, because a card with no
+declared plan has Ceiling = Base Budget; browser and server agree exactly on a worked example
+(budget 22 → credits 31 → earned 53 → ×2.0 → Ceiling 106).
+
+**Revisit if:** playtesting shows the window multiplier is the wrong shape. Expect it to be the
+most sensitive number in the system, and expect every credit value to have only two or three
+usable steps — Gwent's Jackpot took −1 provision with no effect and −2 to disappear entirely.
+
+---
+
 ## D-002 · Card Studio replaces the spreadsheet's conditional formatting — 2026-08-03
 
 **Decides:** new (follows D-001)

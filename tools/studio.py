@@ -104,6 +104,7 @@ def bootstrap() -> dict:
         "abilityTypes": list(scoring.ABILITY_TYPES),
         "durationPhrases": list(scoring.DURATION_PHRASES),
         "humanGates": scoring.HUMAN_ONLY_GATES,
+        "plan": scoring.plan_config(),
         "constants": {
             "costMultiplier": scoring.COST_TO_BUDGET_MULTIPLIER,
             "baseAllowance": scoring.BUDGET_BASE_ALLOWANCE,

@@ -1,0 +1,89 @@
+# The Score — credit values and window multiplier.
+# Full reasoning: docs/design/balance-philosophy.md
+#
+#   Earned  = base budget + sum(credits)
+#   Ceiling = Earned x (1 + window_step x windows)
+#
+# A card that pays nothing and gives no windows earns nothing and is capped at its base
+# budget -- i.e. exactly the old system. Everything above that has to be bought.
+#
+# Every credit is anchored to a value the effects table already prints, so the two halves
+# of the system agree. THESE ARE v0.1 HYPOTHESES. Expect to move them in whole points, and
+# expect only two or three usable steps per knob (see the tuning warning in the philosophy doc).
+
+window_step: 0.25          # each real interaction window adds 25% to the earned budget
+max_windows: 5
+narrowness_cap: 4          # hard cap; narrowness may never be a boolean (rule F3)
+ceiling_quota: 0.10        # at most 1 card in 10 may exceed 2x its base budget
+
+credits:
+  - key: cards_spent
+    label: Cards permanently spent (beyond this one)
+    points: 3
+    anchor: Card Draw 1 = 3, so a card is worth 3
+  - key: extra_energy
+    label: Energy paid above the printed cost
+    points: 3
+    anchor: Energy Gen 1 = 3
+  - key: characters_consumed
+    label: Your own Characters sacrificed or destroyed
+    points: 5
+    anchor: Hard Removal = 5 -- you are doing removal to yourself
+  - key: attachments_consumed
+    label: Your own Attachments consumed
+    points: 2
+    anchor: soft-removal band
+  - key: characters_required
+    label: Characters that must be on board (not consumed)
+    points: 2
+    anchor: half the cost of consuming one
+  - key: telegraph_rounds
+    label: Full Rounds between commitment and payoff
+    points: 5
+    anchor: a draw (3) plus a Round of tempo
+  - key: actions_surrendered
+    label: Opponent actions the card itself gives away
+    points: 2
+    anchor: half a card of tempo
+  - key: life_paid
+    label: Life Points paid (per 2 LP)
+    points: 1
+    anchor: Direct Damage 1 = 1, scaled to a 30-LP pool
+  - key: narrowness
+    label: Live only in some matchups or board states (0, 2 or 4)
+    points: 1
+    anchor: multiplied by the declared narrowness level; capped at 4
+
+# The five interaction windows. Each claimed window must name a specific existing card or
+# rule that exercises it -- "someone could theoretically remove it" is not a window.
+windows:
+  - key: pre_assembly
+    label: W1 Pre-assembly
+    question: Can the opponent stop you gathering the pieces?
+  - key: during_assembly
+    label: W2 During assembly
+    question: Can they disrupt it after you commit but before it pays?
+  - key: on_resolution
+    label: W3 On resolution
+    question: Can they respond in the Reaction Window?
+  - key: post_resolution
+    label: W4 Post-resolution
+    question: Can they recover, undo, or moot it after it lands?
+  - key: orthogonal
+    label: W5 Orthogonal
+    question: Is the clock long enough that they can simply win first?
+
+# Absolute prohibitions. No amount of credits buys past these.
+prohibitions:
+  - key: P1
+    label: No self-restarting payoff
+    test: After it resolves, is the player measurably closer to doing it again than before?
+  - key: P2
+    label: No passive lock
+    test: Does it prevent an opponent action without being an activation or having an off-switch?
+  - key: P3
+    label: No unbounded repetition
+    test: Written out longhand, is the only stopping point "the player chooses to stop"?
+  - key: P4
+    label: No cheap + wide + uninterruptible
+    test: If the opponent knows exactly what is coming, can they do anything at all?

@@ -56,6 +56,18 @@ def effect_points() -> dict[str, int]:
 
 
 @lru_cache(maxsize=1)
+def plan_config() -> dict:
+    """The Score's credit table and window multiplier. See docs/design/balance-philosophy.md."""
+    import yaml
+    from card_io import REPO_ROOT
+    path = REPO_ROOT / "data" / "plan-credits.yaml"
+    if not path.exists():
+        return {"window_step": 0.25, "max_windows": 5, "narrowness_cap": 4,
+                "credits": [], "windows": [], "prohibitions": []}
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
 def status_names() -> tuple[str, ...]:
     return tuple(s["name"] for s in load_table("status-effects.yaml", "status_effects") if s["name"])
 
@@ -79,6 +91,40 @@ def ceiling_severity(delta: int) -> str:
 
 
 @dataclass
+class Plan:
+    """What the card pays beyond Energy, and what it gives the opponent.
+
+    Earned  = base budget + credits
+    Ceiling = Earned x (1 + window_step x windows)
+
+    A card that pays nothing and claims no windows earns nothing, so its ceiling is exactly
+    its base budget -- the old system, unchanged. Everything above that is bought.
+    """
+    credits_paid: dict = field(default_factory=dict)
+    windows: list = field(default_factory=list)
+
+    def credit_points(self) -> tuple[int, list[str]]:
+        config = plan_config()
+        table = {c["key"]: c for c in config.get("credits", [])}
+        cap = config.get("narrowness_cap", 4)
+        total, breakdown = 0, []
+        for key, quantity in (self.credits_paid or {}).items():
+            entry = table.get(key)
+            if not entry or not quantity:
+                continue
+            points = int(entry["points"]) * int(quantity)
+            if key == "narrowness":
+                points = min(points, cap)
+            total += points
+            breakdown.append(f"{entry['label']} x{quantity} = {points}")
+        return total, breakdown
+
+    def window_count(self) -> int:
+        valid = {w["key"] for w in plan_config().get("windows", [])}
+        return len([w for w in (self.windows or []) if w in valid])
+
+
+@dataclass
 class Score:
     scorable: bool
     reason: str = ""
@@ -89,6 +135,32 @@ class Score:
     ascended_keyword_points: int = 0
     ascended_effect_points: int = 0
     unknown_names: list[str] = field(default_factory=list)
+    plan: Plan = field(default_factory=Plan)
+
+    # ---- The Score -------------------------------------------------------------------
+    @property
+    def credits(self) -> int:
+        return self.plan.credit_points()[0]
+
+    @property
+    def earned(self) -> int:
+        """Base budget plus everything the card pays in non-Energy currencies."""
+        return self.budget + self.credits
+
+    @property
+    def multiplier(self) -> float:
+        config = plan_config()
+        windows = min(self.plan.window_count(), config.get("max_windows", 5))
+        return 1 + config.get("window_step", 0.25) * windows
+
+    @property
+    def ceiling(self) -> int:
+        return int(self.earned * self.multiplier)
+
+    @property
+    def headroom(self) -> int:
+        """Points of power still available. Negative means the card is over its Ceiling."""
+        return self.ceiling - (self.base_spent + self.ascended_spent)
 
     @property
     def base_spent(self) -> int:
@@ -125,6 +197,15 @@ class Score:
             "ascendedDelta": self.ascended_delta,
             "ascendedSeverity": ceiling_severity(self.ascended_delta),
             "unknownNames": self.unknown_names,
+            "credits": self.credits,
+            "creditBreakdown": self.plan.credit_points()[1],
+            "windowCount": self.plan.window_count(),
+            "earned": self.earned,
+            "multiplier": round(self.multiplier, 2),
+            "ceiling": self.ceiling,
+            "totalSpent": self.base_spent + self.ascended_spent,
+            "headroom": self.headroom,
+            "headroomSeverity": ceiling_severity(self.headroom),
         }
 
 
@@ -150,9 +231,12 @@ def score(card: Card) -> Score:
     budget = (int(card.meta["cost"]) * COST_TO_BUDGET_MULTIPLIER + BUDGET_BASE_ALLOWANCE
               + (ASCENDANT_BUDGET_BONUS if card.is_ascendant else 0))
 
+    plan_block = card.meta.get("plan") or {}
     return Score(
         scorable=True,
         budget=budget,
+        plan=Plan(credits_paid=plan_block.get("pays") or {},
+                  windows=plan_block.get("windows") or []),
         stats_total=sum(int(card.stats[k]) for k in STAT_KEYS),
         base_keyword_points=total(base["keywords"], kw_table),
         base_effect_points=total(base["effects"], ef_table),
@@ -165,9 +249,24 @@ def score(card: Card) -> Score:
 # --------------------------------------------------------------------------- gates
 
 def _gate_g1(card: Card, result: Score, tolerance: int) -> list[str]:
+    """G1 under The Score: total spend must not exceed the earned Ceiling.
+
+    A card that pays nothing and claims no windows has ceiling == base budget, so this
+    reduces exactly to the old rule for every card that has not opted into a plan.
+    """
     if not result.scorable:
         return []
     failures = []
+    has_plan = result.credits > 0 or result.plan.window_count() > 0
+
+    if has_plan:
+        # The Ceiling covers BOTH sides of the card -- that is what the plan bought.
+        if result.headroom < 0:
+            failures.append(f"G1: spends {result.base_spent + result.ascended_spent} against a "
+                            f"Ceiling of {result.ceiling} — over by {abs(result.headroom)}")
+        return failures
+
+    # No plan declared: the old two-sided budget check, unchanged.
     if abs(result.base_delta) > tolerance:
         direction = "over" if result.base_delta < 0 else "under"
         failures.append(f"G1: base side {direction} budget by {abs(result.base_delta)}")

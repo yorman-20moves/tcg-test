@@ -206,6 +206,28 @@ label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppe
 .ghost:hover{color:var(--ink-1);border-color:var(--accent)}
 .fchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2)}
 .stub{border-left:3px solid var(--warning);padding:10px 12px;background:var(--raised);border-radius:0 8px 8px 0;margin-bottom:14px;font-size:13px}
+.scorebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 4px;font-size:13px}
+.scorebar .step{display:flex;align-items:baseline;gap:5px}
+.scorebar .step b{font-size:17px;font-variant-numeric:tabular-nums}
+.scorebar .arrow{color:var(--ink-3)}
+.scorebar .final{padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.creditgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:9px;margin-top:6px}
+.credit{background:var(--raised);border:1px solid var(--rule);border-radius:8px;padding:8px 9px}
+.credit .lb{font-size:11px;color:var(--ink-2);line-height:1.3;min-height:29px}
+.credit .rw{display:flex;align-items:center;justify-content:space-between;margin-top:5px}
+.credit .val{display:flex;align-items:center;gap:5px}
+.credit input{width:34px;text-align:center;background:none;border:0;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;padding:0}
+.credit input::-webkit-outer-spin-button,.credit input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.credit input[type=number]{-moz-appearance:textfield}
+.credit .pts{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.credit.on{border-color:var(--accent)}
+.windows{display:grid;gap:5px;margin-top:4px}
+.win{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;cursor:pointer;padding:5px 7px;border-radius:7px;border:1px solid transparent}
+.win:hover{background:var(--raised)}
+.win.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.win input{accent-color:var(--accent);margin-top:2px;flex:none}
+.win .q{color:var(--ink-3);font-size:11.5px}
+.proh{display:grid;gap:4px;margin-top:10px;border-top:1px solid var(--rule);padding-top:10px}
 .gatepills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--rule);background:var(--raised);font-size:12.5px;font-weight:600}
 .pill.bad{border-color:var(--critical)}
@@ -321,10 +343,15 @@ function ceilingSeverity(delta){
 function gatesOf(d){
   const m=d.meta, out={G1:[],G3:[],G4:[],G6:[],G8:[]}, s=scoreDraft(d);
   if(s.scorable){
-    if(Math.abs(s.baseDelta)>DB.constants.tolerance)
-      out.G1.push(`base side ${s.baseDelta<0?"over":"under"} budget by ${Math.abs(s.baseDelta)}`);
-    if((m.subtype||"").toLowerCase()==="ascendant" && s.ascendedDelta<0)
-      out.G1.push(`ascended side exceeds base budget ×${DB.constants.ascendedMultiplier} by ${Math.abs(s.ascendedDelta)} (OQ-04)`);
+    const p=scorePlan(s);
+    if(p.hasPlan){
+      if(p.headroom<0) out.G1.push(`spends ${p.total} against a Ceiling of ${p.ceiling} — over by ${-p.headroom}`);
+    } else {
+      if(Math.abs(s.baseDelta)>DB.constants.tolerance)
+        out.G1.push(`base side ${s.baseDelta<0?"over":"under"} budget by ${Math.abs(s.baseDelta)}`);
+      if((m.subtype||"").toLowerCase()==="ascendant" && s.ascendedDelta<0)
+        out.G1.push(`ascended side exceeds base budget ×${DB.constants.ascendedMultiplier} by ${Math.abs(s.ascendedDelta)} (OQ-04)`);
+    }
   }
   const known=new Set([...DB.abilityTypes,...Object.keys(DB.kwPts)]);
   for(const text of [d.rulesText,d.ascendedText]){
@@ -464,6 +491,98 @@ function textarea(label, value, key, rows=4){
 }
 
 
+function planOf(){
+  draft.meta.plan = draft.meta.plan || {};
+  draft.meta.plan.pays = draft.meta.plan.pays || {};
+  draft.meta.plan.windows = draft.meta.plan.windows || [];
+  return draft.meta.plan;
+}
+
+/* Mirrors scoring.py Plan/Score. Ceiling = (budget + credits) x (1 + step x windows). */
+function scorePlan(s){
+  const cfg=DB.plan, plan=planOf();
+  const table=Object.fromEntries(cfg.credits.map(c=>[c.key,c]));
+  let credits=0;
+  for(const [k,q] of Object.entries(plan.pays)){
+    const e=table[k]; if(!e||!q) continue;
+    let pts=e.points*q;
+    if(k==="narrowness") pts=Math.min(pts,cfg.narrowness_cap);
+    credits+=pts;
+  }
+  const valid=new Set(cfg.windows.map(w=>w.key));
+  const windows=Math.min(plan.windows.filter(w=>valid.has(w)).length, cfg.max_windows);
+  const earned=s.budget+credits;
+  const mult=1+cfg.window_step*windows;
+  const ceiling=Math.trunc(earned*mult);
+  const total=s.baseSpent+s.ascendedSpent;
+  return {credits,windows,earned,mult,ceiling,total,headroom:ceiling-total,
+          hasPlan:credits>0||windows>0};
+}
+
+function scorePanel(s){
+  const cfg=DB.plan, plan=planOf(), p=scorePlan(s);
+  const sev = p.headroom<0 ? severity(p.headroom) : "good";
+
+  const bar=el("div",{class:"scorebar"},
+    el("span",{class:"step"},"budget ",el("b",{text:String(s.budget)})),
+    el("span",{class:"arrow",text:"+"}),
+    el("span",{class:"step"},"credits ",el("b",{text:String(p.credits)})),
+    el("span",{class:"arrow",text:"="}),
+    el("span",{class:"step"},"earned ",el("b",{text:String(p.earned)})),
+    el("span",{class:"arrow",text:`× ${p.mult.toFixed(2)} (${p.windows} window${p.windows===1?"":"s"})`}),
+    el("span",{class:"step final"},"CEILING ",el("b",{text:String(p.ceiling)})),
+    el("span",{class:"arrow",text:"·"}),
+    el("span",{class:"step"},"spends ",el("b",{text:String(p.total)}),
+      el("span",{class:`${sev}-c`,style:"font-weight:600;margin-left:8px"},
+        el("span",{class:`swatch ${sev}-bg`}),
+        p.headroom>=0?`${p.headroom} headroom`:`${-p.headroom} OVER`)));
+
+  const grid=el("div",{class:"creditgrid"});
+  for(const c of cfg.credits){
+    const q=plan.pays[c.key]||0;
+    const set=v=>{ if(v<=0) delete plan.pays[c.key]; else plan.pays[c.key]=v; touch(); };
+    grid.append(el("div",{class:`credit ${q?"on":""}`},
+      el("div",{class:"lb",text:c.label,title:c.anchor||""}),
+      el("div",{class:"rw"},
+        el("div",{class:"val"},
+          el("button",{class:"sbtn",text:"−","aria-label":`less ${c.key}`,onclick:()=>set(q-1)}),
+          el("input",{type:"number",min:"0",value:String(q),"aria-label":c.label,
+            oninput:e=>set(Math.max(0,Number(e.target.value)||0))}),
+          el("button",{class:"sbtn",text:"+","aria-label":`more ${c.key}`,onclick:()=>set(q+1)})),
+        el("span",{class:"pts",text:`${c.points>=0?"+":""}${c.points} ea`}))));
+  }
+
+  const wins=el("div",{class:"windows"});
+  for(const w of cfg.windows){
+    const on=plan.windows.includes(w.key);
+    wins.append(el("label",{class:`win ${on?"on":""}`},
+      el("input",{type:"checkbox",checked:on,onchange:ev=>{
+        if(ev.target.checked){ if(!plan.windows.includes(w.key)) plan.windows.push(w.key); }
+        else plan.windows.splice(plan.windows.indexOf(w.key),1);
+        touch();
+      }}),
+      el("span",{}, el("b",{text:w.label}), " ", el("span",{class:"q",text:w.question}))));
+  }
+
+  const proh=el("div",{class:"proh"});
+  for(const x of cfg.prohibitions)
+    proh.append(el("div",{class:"gate"},
+      el("span",{class:"gid",text:x.key}),
+      el("span",{class:"msg"}, el("b",{text:x.label}), " — ", x.test)));
+
+  return el("div",{class:"panel"},
+    el("div",{class:"row spread"},
+      el("h3",{style:"font-size:13px",text:"The Score — what this card earns"}),
+      el("span",{class:"muted",style:"font-size:11.5px",
+        text:p.hasPlan?"plan declared":"no plan — capped at base budget"})),
+    bar,
+    el("label",{class:"fl",text:"What it pays (beyond Energy)"}), grid,
+    el("label",{class:"fl",text:"Where the opponent can stop it — each must name a real card or rule"}), wins,
+    el("div",{class:"muted",style:"font-size:11.5px;margin-top:10px"},
+      "Every window you give back raises the ceiling by 25%. Nothing paid and no windows = today's budget, unchanged."),
+    proh);
+}
+
 function gateStrip(){
   const g=gatesOf(draft);
   const wrap=el("div",{class:"panel"},
@@ -585,6 +704,7 @@ function renderMain(){
   const statBox=el("div",{class:"grid stats"},
     stepper("Cost", m.cost, v=>{m.cost=v; touch();}, 0),
     ...DB.statKeys.map(k=>stepper(k, m.stats?.[k], v=>{m.stats=m.stats||{}; m.stats[k]=v; touch();})));
+  if(s.scorable) main.append(scorePanel(s));
   main.append(gateStrip());
   main.append(el("div",{class:"panel"},
     el("h3",{style:"font-size:13px;margin-bottom:10px",text:"Cost & stats"}), statBox));
@@ -684,8 +804,9 @@ function touch(rerender=true){
   if(rerender){ renderMain(); }
   renderRail(); renderList();
 }
-function select(c){
-  if(dirty && !confirm("Discard unsaved changes to this card?")) return;
+function select(c,{force=false}={}){
+  /* force skips the guard: Revert IS the discard action, so prompting is redundant. */
+  if(!force && dirty && !confirm("Discard unsaved changes to this card?")) return;
   current=c; draft=structuredClone(c);
   draft.meta.base=draft.meta.base||{keywords:[],effects:[]};
   draft.meta.ascended=draft.meta.ascended||{keywords:[],effects:[]};
@@ -743,7 +864,7 @@ async function save(){
   });
   $("#lightbox").addEventListener("click",()=>{ $("#lightbox").hidden=true; });
   $("#save").addEventListener("click",save);
-  $("#revert").addEventListener("click",()=>{ if(current) select(current); });
+  $("#revert").addEventListener("click",()=>{ if(current) select(current,{force:true}); });
   addEventListener("keydown",e=>{
     if((e.metaKey||e.ctrlKey)&&e.key==="s"){ e.preventDefault(); if(dirty) save(); }
     if(e.key==="Escape") $("#lightbox").hidden=true;
