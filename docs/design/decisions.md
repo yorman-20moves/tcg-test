@@ -17,6 +17,36 @@ marked `DECIDED`.
 
 ---
 
+## D-004 · Balance philosophy rewritten as a teaching document — 2026-08-03
+
+**Decides:** presentation of D-003 (the system itself is unchanged)
+
+**Decision:** `balance-philosophy.md` is now written as plain-language instruction, not as an
+argument. It states how the game works, explains every part of the machinery without assuming
+any technical background, and teaches the whole system through three worked examples —
+Moammar (one moment), Corazon (slow burn), Dre (deep build). The comparative research and the
+case for replacing the old formula are no longer in it.
+
+**Because:** the document's job is to make someone able to price a card, not to defend a
+decision that is already made. Justification is dead weight in a reference people return to.
+
+**Affects:** `docs/design/balance-philosophy.md` rewritten. `data/plan-credits.yaml` gained four
+credit types that working the three examples exposed as missing: resources handed to the
+opponent (Corazon's whole design is built on this and there was nowhere to record it),
+Attachments required in play (Dre's seven Commandments), a board state you must engineer
+(Moammar's empty-board condition), and once-per-Game (Moammar's single attack). Every figure in
+the document is verified against `tools/scoring.py`.
+
+**Also surfaced by the exercise:** two of Dre's five interaction windows are shut — his payoff
+fires in Phase 3, which is not a Reaction Window, so it cannot be responded to at all. Announcing
+in Phase 2 and resolving in Phase 3 opens W3, costs one more action, and raises his Ceiling from
+82 to 98. The card gets stronger by becoming more fair, which is the clearest demonstration of
+the system available.
+
+**Revisit if:** a fourth card archetype appears that none of the three examples covers.
+
+---
+
 ## D-003 · The Score replaces the flat point budget — 2026-08-03
 
 **Decides:** new; supersedes the ascended-ceiling proposal in OQ-04; resolves OQ-09

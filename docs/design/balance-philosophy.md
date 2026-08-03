@@ -1,515 +1,548 @@
-# Balance Philosophy — The Score
+# How We Balance Cards
 
-> **The design goal, in your words:** crazy techniques and huge plays should be *possible*;
-> everything should have an appropriate cost — setup, time, matchup — rather than just an energy
-> cost; a big plan that works should pay off big; and there must always be counterplay.
->
-> **The verdict:** the current point system cannot do this. Not "discourages it" — cannot
-> represent it. This document proves that arithmetically, then replaces the system.
+This is how the game works. You don't need to know any math to read it, and you don't need
+to do any math to use it — the workbench does the arithmetic. What you need is the idea.
 
 ---
 
-## Part 1 — Why the current system can't do what you want
+# Part One — The Idea
 
-Today's rule is one line:
+## Power isn't capped. Power is earned.
 
-```
-spent = stats + keyword points + effect points     must equal     budget = (cost × 3) + 1 + 3
-```
+Most card games decide how strong a card is allowed to be, draw a line, and stop you there.
+We don't do that.
 
-Three structural facts follow, and all three are fatal to your stated goal.
+Here, a card starts with a small allowance based on what it costs to play. Then it can **earn
+more** — by asking more of you, and by giving your opponent more chances to stop it.
 
-### 1.1 It is additive, so combo is not merely discouraged — it is unrepresentable
+A card that does something instantly, needs nothing, and can't be interrupted gets the small
+allowance and nothing else. That's fine. Not every card should be a moment.
 
-There is no term in that formula that references another card, a prior round, a board state, or
-a condition. The value of a card is the sum of its own parts, evaluated in isolation, forever.
+A card that makes you build toward it over several Rounds, out in the open, where your opponent
+can see it coming and take four separate shots at ruining it — that card can be **enormous**.
+Not a little bigger. Several times bigger.
 
-Melissa DeTora's definition of a combo is *"cards that interact in a way that's significantly
-stronger than the sum of their parts."* Your formula's only operation **is** the sum of the
-parts. A system whose sole operation is addition cannot express superlinearity. Every card you
-design will be worth exactly what it looks like, alone, on an empty board.
+That's the whole philosophy: **the price of doing something crazy is doing it slowly, visibly,
+and at risk.**
 
-That is the whole of it. The rest is detail.
+## Why counterplay is the engine, not the brake
 
-### 1.2 It has no time axis, so "setup cost" is invisible
+Here's the part that matters most.
 
-Setup, telegraph, matchup narrowness, and risk are not variables in the equation. There is
-nowhere to put them. A card that says *"deal 5 damage"* and a card that says *"if you have
-controlled four Characters for two consecutive Rounds and sacrifice them all, deal 5 damage"*
-score **identically**. The second card is strictly worse and the system says they're the same.
+In most systems, "can the opponent stop this?" is a hurdle. You design the card you want, then
+you check whether it's fair, and if it isn't, you make it weaker.
 
-So the system doesn't just fail to reward setup — it actively taxes it. Every condition you add
-is free power you gave away.
+We flip that. **Every real chance you give your opponent to stop a card makes that card allowed
+to be stronger.** Chances to interrupt aren't a tax on your idea. They're what you spend to buy
+a bigger idea.
 
-### 1.3 The ceiling is arithmetically low. Here is the actual number.
+So when you're designing and you think *"this is too strong"* — the fix usually isn't to make
+it smaller. The fix is to make it **slower, louder, and more interruptible**. Do that, and the
+system will let you keep the size.
 
-Run the numbers on your own tables:
+## The two ways a card can be great
 
-| Cost | Budget | Biggest single effect you can afford | Points left for all four stats |
-|---:|---:|---|---:|
-| 3 | 13 | Card Draw 4 (12) | **1** |
-| 4 | 16 | Hand Destruction 4 (16) | **0** |
-| 5 | 19 | Hand Destruction 4 (16) | **3** |
-| 6 | 22 | Hand Destruction 5 (20) | **2** |
-| 8 | 28 | Hand Destruction 5 (20) | **8** |
+Both are good. They're just different.
 
-A 5-cost Ascendant that takes your single biggest legal effect is a **0/1/1/1 body**. Mass
-Removal — destroy every Character on the board — costs 8, which on a 5-cost leaves 11 points,
-about a 3/3/3/2. **That is your ceiling on "crazy": a board wipe on a slightly-below-average
-body.** Two of your printed effects (Hand Destruction 4 and 5) cannot be put on a card at all
-below cost 6 without a 1/1/1/1 statline.
+**A card that is reliably solid.** It does a clear thing, right away, for a fair price. Most
+of your deck is this. These cards keep the game moving and give you something to do every Round.
 
-And the pool shows the consequence. Across all 25 costed cards:
+**A card that is a plan.** It doesn't do much on its own. It asks you to build something. If
+your opponent lets you finish, you get paid enormously. If they don't, you wasted your time.
 
-**73% of every point ever spent went to vanilla stats. 23% to effects. 4% to keywords.**
-
-The system spends three-quarters of its budget on plain numbers, because plain numbers are the
-only thing it can price with confidence. That ratio is the system telling you what it is.
-
-### 1.4 It measures the card, not the play
-
-Two cards with identical point totals can have completely different interaction profiles — one
-answerable at four separate moments, one uninterruptible — and the formula cannot tell them
-apart. Counterplay is currently a pass/fail gate bolted on the side (G7), not part of the
-valuation. So the system is indifferent to the exact quality you say the game must have.
+The second kind is what makes a game memorable — the stories people tell afterward. But it only
+works if the first kind exists too, because a plan needs something to do while it's cooking.
 
 ---
 
-## Part 2 — The one thing you already got right, and it's big
+# Part Two — The Machinery
 
-**Phase 2 is alternating single actions.** You play one thing, then your opponent acts, then
-you play the next thing.
+Three questions. That's all this is.
 
-That is *per-action initiative*, and it is the same structural valve Legends of Runeterra was
-built around. Riot's design director Andrew Yip called the goal *"deep interactive
-conversational gameplay where you see your opponent's plan unfold over a series of actions."*
-Mastering Runeterra states the trade plainly: *"Developing a unit gives your opponent the next
-action. This creates a trade-off — you gain board presence but surrender initiative."*
+> **1. What does this card ask of you?** → earns **Credits**
+> **2. Where can your opponent stop it?** → earns a **Multiplier**
+> **3. So how big is it allowed to be?** → that's the **Ceiling**
 
-The arithmetic consequence is enormous and you should understand it precisely:
+## Question 1 — What does it ask of you?
 
-> **A five-step plan in your game automatically hands your opponent four interaction windows.**
+Every card starts with a **base allowance** set by its Energy cost. Then it earns Credits for
+everything else it demands. There are six kinds of demand.
 
-The same five-step plan in Yu-Gi-Oh hands them *zero* — which is why Yu-Gi-Oh had to invent
-hand traps, an entire universal card class costing a third of every deck, just to buy back what
-your Phase 2 gives away for free.
+### The six kinds of payment
 
-**This is the single most valuable structural asset in your design, and your point system does
-not know it exists.** You are already paying the tax that licenses huge plays. You are just not
-collecting the benefit.
+**① You give something up.**
+Cards discarded, Energy paid on top of the cost, Life Points spent. Anything that leaves your
+side and doesn't come back.
 
-The rest of this document is about collecting it.
+**② You destroy something of your own.**
+You sacrifice one of your Characters. You blow up your own Attachment. The card kills itself
+when it's done. This is expensive, and it should be.
 
-### 2.1 Which means your real currency isn't Energy
+**③ Something has to already be true.**
+You need three crew members standing. You need a particular Attachment in play. You need the
+opponent's board to be completely empty. The harder the condition is to arrange, the more it's
+worth.
 
-Energy is what a card costs to *play*. But in a game of alternating actions, the thing that
-actually constrains a plan is **how many actions it takes**, because every action you spend is
-an action your opponent gets to respond with.
+**④ Everyone sees it coming.**
+Rounds pass between the moment you commit and the moment you get paid. Your opponent watches
+the whole thing build. This is one of the most valuable things you can pay with, because it's
+pure warning — you're handing them time to react.
 
-Digimon made this its entire economy: memory is a shared slider, and the cost of a play is
-literally *how much turn you hand your opponent*. You can do anything on turn one — you just
-pay for it in their tempo. Your game has the same shape and doesn't price it.
+**⑤ Your opponent gets something out of it.**
+You hand them Energy. You give them a card. You put a body on their side of the board. Paying
+your opponent is the strongest possible way to buy power, because it's the one cost they can
+immediately use against you.
 
-**Actions surrendered is your native unit of account. Energy is secondary.**
+**⑥ You only get to do it so often.**
+Once per Round is normal. Once per Game is a real, serious limit and it earns real Credits.
 
----
+### What each one is worth
 
-## Part 3 — What the good games actually do
+You never need to memorize this — the workbench shows it while you build. It's here so you can
+see that the numbers aren't arbitrary. **Every one of them is matched to a price your own effect
+table already prints.**
 
-Five games, five different valves. Each solves the same problem: *when is a huge play
-acceptable?* The condensed answer across all of them:
-
-> **A huge play is acceptable when the opponent can pay to stop it, in a currency the plan-maker
-> cannot pre-empt, at a moment the plan-maker cannot skip.**
-
-| Game | The valve | Currency of counterplay | Timing |
-|---|---|---|---|
-| Yu-Gi-Oh | Hand traps | Cards in hand | Mid-chain, on the opponent's turn |
-| Legends of Runeterra | Per-action initiative | Banked spell mana | Between every single action |
-| Netrunner | The tax (runtime pricing) | Credits + clicks | The moment of rez |
-| Marvel Snap | The exit option | Cubes (stake, not wins) | Any turn, before reveal |
-| Slay the Spire | Rate-limited assembly | Run economy | Deck construction |
-
-**You already own the LoR valve.** So the techniques worth stealing are the ones that stack on
-top of it.
-
-### 3.1 Techniques worth taking
-
-**Tax the scaling variable, not the strategy.** Nibiru counts summons — the sixth costs your
-whole board. Time Eater counts cards played — the thirteenth ends your turn. Beat of Death
-charges HP per card. None of these says *"you may not combo."* All of them say *"combo length
-has a price."* The result is that the combo **changes** rather than dying: competitive Yu-Gi-Oh
-lines are now built to stop at four summons. **That is the answer working, not failing.**
-
-**Time and visibility are a currency you can spend on power.** Magic's suspend is explicit: a
-creature with suspend 1 is *"almost the same as having a creature come into play tapped,"* and
-longer suspend buys a bigger effect at lower mana. Planeswalker loyalty exists so the huge
-effect can't happen immediately — Rosewater: without it, *"they could do their big effect the
-first chance they had. Kind of anti-climactic."* Every LoR alt-win condition is a public,
-accumulating counter on a destroyable object with a long clock.
-
-**Convert absolutes into rates.** Hexproof became ward (pay a tax instead of "can't be
-targeted"). Affinity-for-artifacts (Storm Scale 8, format-destroying) versus affinity-for-basic-
-lands (Storm Scale 6, safe) — the *only* difference is that land drops are rate-limited and
-artifacts aren't. **A cost reduction whose input is rate-limited is safe; one whose input is
-unbounded is not.** This is the most transferable single rule in the whole research.
-
-**Give losing players rubber-band clauses.** Yu-Gi-Oh writes catch-up conditions directly into
-card text: Lightning Storm is *"if you control no face-up cards"*; Evenly Matched and Infinite
-Impermanence are *"if you control no cards, you can activate this from your hand."* These cards
-are **dead when you're winning and live when you're losing**. That's a handicap system hidden
-inside card text, and it costs the format nothing.
-
-**The answer must be immune to the thing it answers.** Dark Ruler No More and Super
-Polymerization both say *"neither player can activate cards in response."* An answer to a board
-of negates is worth zero if it can be negated.
-
-**Staged payoffs beat binary ones.** Hearthstone's three generations are the clearest documented
-lesson in this exact area: Un'Goro (hard requirement → one huge terminal card) → Uldum (easy
-requirement → small permanent upgrade) → Stormwind Questlines (staged, payout at every step).
-Liv Breeden on why: *"you get payout along the way, but you still have the moment where you go,
-'Alright, now we're entering the second phase.'"*
-
-### 3.2 The failure modes, so you can avoid them by name
-
-Four ways a valve breaks. Every documented disaster is one of these:
-
-| Failure | Signature | Case |
-|---|---|---|
-| **Answer on the wrong axis** | High nominal answer density, zero effective density | Kashtira 2023 — hand traps answer *activations*; floodgates are passive, so they answer nothing |
-| **Answer too strong** | The answer becomes the format | Maxx "C" — "draw 20 or don't play" isn't counterplay. Forbidden since 2018 |
-| **Answer can be answered for free** | Valve closes silently | Called by the Grave / Crossout Designator held at 1 copy on purpose |
-| **No response window at all** | FTKs | Firewall Dragon with no once-per-turn → one-card kills; the opponent never gets a turn |
-
-And two payoff-shape failures worth memorizing:
-
-- **The payoff regenerates its own setup.** Quest Mage's Time Warp gave an extra turn, which
-  generated more spells, which re-completed the quest. Blizzard nerfed the *requirement* twice
-  over seven years before reaching for the right knob — capping the *payoff* at once per game.
-- **The payoff scales with earliness.** Quest Rogue's Crystal Core made your whole deck 5/5s, so
-  completing it sooner made it *bigger*. When payoff and requirement are positively correlated,
-  raising the requirement is an inverted knob and cannot work.
-
----
-
-## Part 4 — The Score
-
-The replacement system. One sentence:
-
-> **Power is not capped. Power is earned — by paying in currencies other than Energy, and by
-> handing your opponent windows to stop you.**
-
-The critical inversion: counterplay stops being a restriction and becomes **the engine of
-power**. The more real chances you give your opponent, the bigger you are allowed to be. A
-designer trying to maximise a card's power under this system is forced, by the gradient itself,
-toward interactive design.
-
-### 4.1 The three ledgers
-
-```
-  A. THE PRICE      what the card costs beyond Energy      → earns Credits
-  B. THE WINDOWS    where the opponent can intervene       → earns a Multiplier
-  C. THE SCORE      what the card is allowed to do         = (Budget + Credits) × Multiplier
-```
-
-Formally:
-
-```
-  Base Budget = (cost × 3) + 1 + (3 if Ascendant)          [unchanged]
-  Earned      = Base Budget + Σ Credits
-  Ceiling     = Earned × (1 + 0.25 × Windows)              [Windows 0–5, so ×1.00 to ×2.25]
-```
-
-A card with no setup, no telegraph and no interaction windows earns nothing and is capped at
-exactly today's budget. **Small, instant, uninterruptible effects stay exactly as small as they
-are now.** Everything above that has to be bought.
-
-### 4.2 The Price — the credit table
-
-Every credit below is anchored to a value **your own effects table already prints**, so the two
-halves of the system agree with each other.
-
-| You pay | Credit | Anchored to |
+| What you pay | Credits | Why that number |
 |---|---:|---|
-| Each **card** permanently spent (discarded, exiled, banked) beyond this one | **+3** | Card Draw 1 = 3, so a card is worth 3 |
-| Each **Energy** paid above the printed cost | **+3** | Energy Gen 1 = 3 |
-| Each of your own **Characters** consumed / sacrificed | **+5** | Hard Removal = 5 — you're doing removal to yourself |
-| Each of your own **Attachments** consumed | **+2** | Soft removal band |
-| Each **Character required on board** as a condition (not consumed) | **+2** | Half of consuming it |
-| Each full **Round of telegraph** between commitment and payoff | **+5** | A draw (3) plus a round of tempo |
-| Each **opponent action** the card itself surrenders | **+2** | Half a card of tempo |
-| Each **2 Life Points** paid | **+1** | Direct Damage 1 = 1, scaled to a 30-LP pool |
-| **Narrowness** — live in only some matchups or board states | **+2 / +4** | Capped. See §6 |
+| Each card permanently spent | **+3** | Your table prices "draw 1 card" at 3, so a card is worth 3 |
+| Each Energy paid above the cost | **+3** | Your table prices "gain 1 Energy" at 3 |
+| Each 2 Life Points paid | **+1** | Your table prices 1 damage at 1 |
+| Each of your Characters sacrificed | **+5** | Your table prices "destroy a Character" at 5 — you're doing that to yourself |
+| Each of your Attachments consumed | **+2** | |
+| Each Character required on board | **+2** | Half of what it costs to actually lose one |
+| Each Attachment required in play | **+2** | |
+| A specific board state you must engineer | **+4** | About a full extra card's worth of work |
+| Each full Round of warning | **+5** | A draw is worth 3, plus a Round of tempo |
+| Each opponent action you hand over | **+2** | About half a card of tempo |
+| Each Energy or card handed to the opponent | **+3** | Same as gaining one — because they gain it |
+| Once per Game instead of once per Round | **+5** | You're removing the option from yourself |
+| Only works in some matchups | **+2 or +4** | Capped at 4, and never a yes/no switch |
 
-**Anti-double-count rule.** Actions that happen *inside* a Round already paid for as telegraph
-are not counted again. Count telegraph Rounds, or count actions, never both for the same
-interval.
+**One rule about counting:** don't charge twice for the same thing. If you already counted three
+Rounds of warning, don't also count every action that happened during those Rounds. Pick the one
+that describes the cost best.
 
-**Narrowness is hard-capped at +4** and may never be a boolean. See §6.
+## Question 2 — Where can your opponent stop it?
 
-### 4.3 The Windows — the multiplier
+There are five places. Count only the ones that are **actually real**.
 
-Five places a plan can be stopped. Count only the ones that are **real**.
-
-| # | Window | The question |
+| | The window | The question to ask yourself |
 |---|---|---|
-| **W1** | **Pre-assembly** | Can the opponent stop you gathering the pieces? (kill the required Characters, strip the hand, deny the Energy) |
-| **W2** | **During assembly** | Can they disrupt it after you've committed but before it pays? (remove a piece mid-telegraph, Silence the caster) |
-| **W3** | **On resolution** | Can they respond in the Reaction Window? (Combat Tactic, Fast Ability, Counter) |
-| **W4** | **Post-resolution** | Can they recover, undo, or moot it after it lands? (heal through it, rebuild, bounce) |
-| **W5** | **Orthogonal** | Can they simply win first? Is the clock long enough to race? |
+| **W1** | **Before you start** | Can they stop you from getting the pieces together? |
+| **W2** | **While you're building** | Once you've committed but before it pays off — can they break it? |
+| **W3** | **The moment it happens** | Can they respond right then, in the Reaction Window? |
+| **W4** | **After it lands** | Can they survive it, undo it, heal through it, rebuild? |
+| **W5** | **Just win first** | Is it slow enough that they can race you and win before it goes off? |
 
-**The Window Proof requirement.** Each claimed window must name **a specific existing card or
-rule** that exercises it. "Someone could theoretically remove it" is not a window. This is
-Melissa DeTora's rule — healthy combos *"can be disrupted using cards that people commonly
-play"* — and it is the thing that stops the multiplier from being free money.
+**Each real window makes the card 25% bigger.** Five windows and a card is allowed to be more
+than twice its base size.
 
-**The faction check.** For each window, ask: *can the faction with the fewest tools use it?*
-Your Warmongers have no printed Counter and no non-combat removal. A card whose only window is
-W3 is a Blue-mandatory card, and W3 does not count for it.
+### What makes a window "real"
 
-### 4.4 Worked example — the kind of card you actually want
+You have to be able to **name the card or rule that does it**. Not "they could probably deal
+with it somehow" — actually name the thing.
 
-**"The Takeover"** — hypothetical 5-cost Latin Kings Ascendant.
+- ✅ *"They can kill him. He's a 2/4/4/5 and Hard Removal exists."*
+- ❌ *"Someone might have an answer."*
 
-*Base side:* while he's on the Board, at the start of each Round put a Crown counter on him.
-*Level-up:* at 2 Crowns, sacrifice three other Latin Kings Characters → the huge payoff.
+And one more check, because it catches the sneakiest mistakes: **can the faction with the fewest
+tools use that window?**
 
-| Ledger | | |
-|---|---:|---|
-| Base Budget (5-cost Ascendant) | **19** | |
-| 3 Latin Kings required on board | +6 | 3 × 2 |
-| 2 Rounds of telegraph (public Crown counters) | +10 | 2 × 5 |
-| 3 Characters consumed on resolution | +15 | 3 × 5 |
-| The summon action itself | +2 | |
-| **Earned** | **52** | |
-| W1 kill the Latin Kings before he assembles | ✓ | Hard Removal, any faction |
-| W2 kill *him* during the two-Round charge | ✓ | he's a Character with printed PH |
-| W3 Counter the activation in the Reaction Window | ✓ | Combat Tactic |
-| W5 race him — two Rounds is a real clock | ✓ | any aggro board |
-| **Multiplier** (4 windows) | **×2.0** | |
-| **CEILING** | **104** | |
+Your Warmongers have no printed Counter and no removal that isn't just punching someone. If the
+only way to stop your card is a Counter in the Reaction Window, then Warmongers can't stop it at
+all — and that window doesn't count for this card. You've made something only Blue can answer.
 
-**104 points.** Mass Removal costs 8. This card is allowed to do something roughly thirteen
-times more powerful than destroying the entire board — which means it should just *win the
-game*, and under this system that is **correct and priced**, not a designer indulgence.
+## Question 3 — So how big is it allowed to be?
 
-Compare: the same effect with no setup, no telegraph, no sacrifice and no windows is capped at
-19. The system is not stopping you from being crazy. It is charging you for it, in the currency
-you said you wanted to pay in.
+```
+        base allowance          from the Energy cost
+      + credits                 everything the card asks of you
+      = earned
+      × multiplier              1 + 0.25 for each real window
+      = CEILING                 what the card is allowed to be worth
+```
 
-### 4.5 Ceiling discipline
-
-The Ceiling is a **ceiling, not a target**. Most cards should sit far below it — that's how the
+The Ceiling is a **ceiling, not a target**. Most cards should sit well below it. That's how the
 big ones feel big.
 
-Ben Brode on Galactus, the most powerful card in Marvel Snap:
-
-> *"If the best part of the game is Galactus, then it's not the best part of the game."*
-
-**The quota:** at most **one card per ten** in the pool may exceed **2× its base budget**, and
-at most **one per crew**. If every card is a heist, nothing is.
+**The quota:** no more than one card in ten, and no more than one per crew, should go past twice
+its base allowance. If every card is a heist, nothing is.
 
 ---
 
-## Part 5 — The Four Prohibitions
+# Part Three — The Four Things You Can Never Do
 
-No amount of Credits buys past these. Each is a documented disaster, not a preference.
+No amount of Credits buys past these. They're the four ways a card stops being a card and starts
+being a problem.
 
-### P1 — No self-restarting payoff
+## ① The payoff can't restart itself
 
-The payoff may not regenerate its own setup condition. *(Time Warp: extra turn → more spells →
-re-complete the quest. Seven years to fix, and the fix was capping the payoff, not the
-requirement.)*
+After your big thing happens, you must not be closer to doing it again than you were before you
+started.
 
-**Test:** after the card resolves, is the player measurably closer to doing it again than they
-were before they started? If yes, it is prohibited regardless of budget.
+**The test:** if pulling it off makes the next one easier, it's not a plan, it's an engine that
+never stops. Your opponent gave you a window, you used it, and now you don't need windows
+anymore.
 
-### P2 — No passive lock
+## ② You can't just switch the opponent off
 
-An effect that prevents an opponent's action must either be an **activation** (so it can be
-responded to) or carry an **off-switch** (a cost to maintain, a duration, or an exception that
-lets it be attacked).
+If a card stops your opponent from doing something, it has to be either **an activation** — so
+they can respond to it in the moment — or it needs **an off-switch**: a cost to keep it running,
+a time limit, or a way to attack the thing that's doing it.
 
-*(Kashtira 2023: hand traps answer activations; floodgates are passive continuous effects, so a
-format with 15 answers per deck had an effective answer density of zero.)*
+A card that quietly sits there making a whole part of the game illegal, and can't be responded
+to and can't be removed, isn't strong. It's just not playing.
 
-**This resolves OQ-09.** Pacifier — *"an aura that completely prevents the declaration of a
-Combat Wave"* — is a passive lock on the game's only damage mechanism, and Warmongers have no
-non-combat removal. It is currently prohibited. Three legal repairs: make it cost Energy each
-Round to maintain; let attackers pay a tax to attack anyway; or make the Pacifier itself
-attackable as an exception to its own aura — which is also the better story.
+*This is why **Pacifier** as currently written isn't legal.* It shuts off Combat Waves entirely,
+you can't respond to it because it isn't an activation, and to remove it you'd have to attack it
+— which it's stopping you from doing. Warmongers have no other way to kill anything. Any of
+these fixes it: make it cost Energy every Round to maintain, let attackers pay a tax to attack
+anyway, limit it to one Combat Wave per Round instead of all of them, or make the Pacifier
+themself attackable as an exception to their own aura. That last one is also the best story.
 
-### P3 — No unbounded repetition
+## ③ Nothing repeats forever
 
-Every repeatable ability carries a hard **once per Round** unless a resource is consumed on each
-use. *(Firewall Dragon had no once-per-turn and produced one-card kills — the terminal failure
-state, where the opponent never gets a turn at all and per-action initiative never engages.)*
+Anything that can be used more than once needs a hard **once per Round**, unless it eats a
+resource every time.
 
-**Test:** write the loop out longhand. If the only stopping point is "the player chooses to
-stop," it is prohibited.
+**The test:** write the loop out longhand on paper. If the only reason it ever stops is "the
+player decides to stop," it's not allowed.
 
-### P4 — No cheap + wide + uninterruptible
+## ④ Nothing is cheap and broad and unstoppable all at once
 
-Celia Wagar's grid: a counter is **hard or soft** (guaranteed vs. wiggle room) and **wide or
-narrow** (many options vs. one). An effect may be at most **two** of {cheap, wide,
-uninterruptible}. Hard-and-wide is the most expensive class of effect in any game and must be
-priced like it.
+Pick two. A card can be cheap and broad, or cheap and unstoppable, or broad and unstoppable. Not
+all three.
 
-**Corollary — the Sirlin test**, the sharpest counterplay check available:
+**The test, and it's the best one in this whole document:** *if your opponent knows exactly
+what's coming, is there anything at all they can do about it?*
 
-> *"A dominant move probably has no real counter, so even if the opponent knows you will do it,
-> there's not a lot they can do."*
-
-Ask it of every card: **if the opponent knows exactly what's coming, can they do anything?** If
-no, the card fails P4 no matter what the ledger says.
+If the honest answer is no, the card doesn't get printed. It doesn't matter what the ledger says.
 
 ---
 
-## Part 6 — Faction asymmetry, done properly
+# Part Four — Three Cards, Worked All The Way Through
 
-You asked for cards that are *"stronger vs specific factions."* This is a real design space and
-it has real rules, from Rosewater's treatment of colour hosers. Adapted:
+These are your cards. All three are already at exactly their old budget, so all three were
+already legal. What follows is what each one has actually been **earning** this whole time
+without getting paid for it.
 
-**F1 — Target your faction's designed enemy, not an arbitrary one.** The matchup asymmetry
-should follow the fiction, not the spreadsheet.
+They're in order from simplest plan to deepest.
 
-**F2 — Keep faction flavour.** Don't give the Warmongers a counterspell to fix a bad matchup.
-Rosewater's own example of failure is red destroying enchantments — it violates the colour's
-designed weakness, so it fixes a matchup by deleting an identity.
+---
 
-**F3 — Scale with the degree of the condition, never a boolean.** *"For each enemy Overthinker
-Character, +1 PA"* is legitimate. *"If your opponent is Blue, you win"* is not. A gradient turns
-a matchup coinflip into a difficulty curve. **This is the single most important rule here.**
+## Moammar, The One Punch Machine Gun
 
-**F4 — Exploit the *printed weakness*.** And here is the gift you already gave yourself: each of
-your four factions ends its rulebook entry with a rhetorical question naming its own weakness.
-Those four questions are the four legitimate hoser axes, pre-authorised and pre-flavoured.
+*Warmongers · Mobb 134 · Cost 5 · 6 PA / 6 PH / 0 MA / 3 MH*
 
-| Faction | The printed weakness | The legitimate asymmetry axis |
+> **Base:** Pay 2 Energy to search your deck for a Warmonger Tactic.
+>
+> **Levels up when:** the opponent has zero cards on their Board — no Characters, no Tactics, no
+> Attachments.
+>
+> **Then:** he can attack once per Game, ever. When he does, his PA permanently increases by the
+> opponent's current Life Points. At the End Step, the recoil Murders him.
+
+### What kind of card is this?
+
+**One moment.** He does almost nothing until the exact right instant, and then he does
+everything, once, and dies. This is the purest version of "the big plan pays off big."
+
+### What does he ask of you?
+
+| | |
+|---|---:|
+| **Base allowance** (cost 5, Ascendant) | **19** |
+| **③ A board state you must engineer** — their board has to be *completely empty*. You have to do that yourself, with other cards, and hold it | +4 |
+| **② He destroys himself** — the recoil Murders him at the End Step. No take-backs, and Ascendants don't return to the VIP Area | +5 |
+| **⑥ Once per Game** — not once per Round. Once. Ever. | +5 |
+| **Earned** | **33** |
+
+### Where can the opponent stop him?
+
+**All five.** He is the most answerable card in the pool, and that's not an accident — it's what
+lets him hit so hard.
+
+| | | How |
 |---|---|---|
-| 🟥 Warmongers | *"when a problem cannot be solved with fists…"* | Cards that make combat unprofitable or irrelevant |
-| 🟦 Overthinkers | *"how long can a genius survive a street fight?"* | Cards that punish holding up answers; raw speed |
-| 🟩 Assholes | *"forced into a fair, head-on collision, do they have the spine?"* | Cards that force open confrontation and deny evasion |
-| 🟨 Icons | *"can a symbol actually bleed?"* | Cards that attack reputation, followers, and Influence |
+| **W1** | Before you start | **Keep one card on the board.** That's it. One Character, one Attachment, anything. The level-up condition is entirely under their control |
+| **W2** | While you're building | **Kill him.** His MH is **3** — the lowest of his stat line. Any mental attack goes straight through him. He's a wall who can't take a joke |
+| **W3** | The moment it happens | He has to declare a Combat Wave, which opens the Reaction Window. A **Protector** intercepts. A **Combat Tactic** counters. A **Fast Ability** fires |
+| **W4** | After it lands | If they live through it, he's gone forever. Surviving the punch permanently removes the threat |
+| **W5** | Just win first | He needs the board clear, which means you spent Rounds clearing it. That's Rounds they spent doing something else |
+| **Multiplier** | **5 windows** | **×2.25** |
 
-**F5 — Never auto-win.** A hoser must leave the target counterplay. Rosewater names *Perish* and
-*Dystopia* as the violations.
+### The verdict
 
-**The two failure modes to name and avoid** (DeTora's taxonomy):
-- **The Faerie problem** — narrow but *invalidating*. A card so good against one strategy that
-  the strategy stops existing.
-- **The Doom Blade problem** — universal and *mandatory*. A card too good not to run, warping
-  the format around itself.
+| | |
+|---|---:|
+| Earned | 33 |
+| Multiplier | ×2.25 |
+| **CEILING** | **74** |
+| What he currently spends | 24 |
+| **Headroom** | **+50** |
 
-They need opposite fixes: the first needs a gradient (F3), the second needs a cost.
+**He is allowed to be roughly three times what he currently is.**
 
----
+And look at what that means in practice. His ascended text is *"increase PA by the opponent's
+current Life Points"* — against a full 30 Life Points, that's **+30 PA**. Your effect table
+would price that as a Permanent Buff of 30, which is 30 points.
 
-## Part 7 — Three structural gaps you should close
+The card is currently logged as "Permanent Buff 5" — worth 5. It's undercounted by 25 points.
 
-These aren't card problems. They're rules problems, and they gate everything above.
+**Under the old system that was a hidden problem. Under this one it just fits.** 24 + 25 more
+puts him at 49, still comfortably under 74. He is exactly as big as he looks, and it's paid for.
 
-### 7.1 The Command System has a death spiral with no rubber band
+### What this card teaches
 
-Section 4 says it out loud: *"a wiped board means you cannot cast Tactics to save yourself!"*
+**The counterplay isn't a weakness — it's the reason he's allowed to be lethal.** A one-shot
+kill that your opponent can prevent by *leaving a single card on the table* is a fair trade for
+a one-shot kill.
 
-That is textbook **slippery slope** (Sirlin): *"falling behind causes you to fall even further
-behind."* The player who most needs a Tactic is the player structurally forbidden from casting
-one. The consequence — *"the real victor is decided early on and the rest of the game is futile
-to play out."*
-
-**The fix is proven and cheap: the rubber-band clause.** Print it on a cycle of Tactics, lifted
-almost verbatim from Infinite Impermanence and Evenly Matched:
-
-> *"If you control no Characters, you may play this card without declaring a caster."*
-
-These cards are dead when you're winning and live when you're losing. They cost the format
-nothing and they convert an unwinnable position into a hard one. This is the highest-value
-single rules addition available to you.
-
-### 7.2 You need a universal interaction layer
-
-Per-action initiative protects you during Phase 2 — but **Trigger Abilities cost no action**,
-and Passive Abilities are always on. A chain of triggers resolves inside a single action with no
-window. That is exactly where a first-turn kill would eventually live.
-
-Two additions:
-
-- **A small cycle of Combat Tactics playable from hand at zero board requirement** — your hand
-  traps. Universal, faction-agnostic, and the price of admission for letting Ascendants be
-  enormous. Yu-Gi-Oh spends a third of every deck on this; you'd need far less, because Phase 2
-  already does most of the work.
-- **A Nibiru clause.** Tax the scaling variable: something that triggers when a player takes
-  *N* actions in a Round, or plays *N* Characters. It doesn't ban the plan — it prices the
-  length of the plan, and combo lines will reshape themselves around it. That reshaping is the
-  mechanic succeeding.
-
-### 7.3 The Influence win condition is the natural home for all of this
-
-Influence is currently a printed win condition with zero printed support (OQ-02), owned by a
-faction with zero printed cards (OQ-06). That's not two problems and a gap — it's an empty lane
-with the perfect shape for exactly what you're asking for.
-
-Build it on the LoR alt-win pattern, which is the most successful telegraphed-payoff design in
-any modern card game. **Star Spring**: *"Round End: Heal damaged allies 1. Then, if I've seen you
-heal 22+ damage from allies, win the game."* Four separate answer surfaces in one card — it's a
-destroyable object, the counter resets if it's destroyed and replayed, 22 at 1 per round is a
-very long clock, and you can just kill them faster.
-
-The pattern to copy: **a public, accumulating counter, attached to a destroyable object, with a
-long clock, whose first tick is deliberately sub-lethal.** Mastering Runeterra on Frostguard
-Thrall: *"getting a single one out rarely has any effect on the game state"* — so the opponent
-gets multiple full Rounds between the first visible threat and the lethal one.
-
-And stage it. Un'Goro → Uldum → Stormwind is the documented three-iteration lesson: binary
-payoff → small permanent payoff → **staged payoff with payout at every step**. Your Ascendants
-already have two stages. The biggest plans should have three.
+Notice too that the best window here costs the opponent nothing but attention. They don't need
+the right card in hand. They just need to be paying attention. That's the best kind of
+counterplay there is.
 
 ---
 
-## Part 8 — Migration
+## Corazon, the Contraband Cassanova
 
-**This is not a retune. It's a new ceiling.** Every existing card remains legal — they all sit
-at or below their base budget, which under the new system is the floor for a card that pays
-nothing and gives nothing.
+*Assholes · Pimp Juice · Cost 3 · 2 PA / 4 PH / 4 MA / 5 MH*
 
-Order of work:
+> **Base:** Whenever he lands a strike, the opponent is *forced to add 1 temporary Energy* to
+> their Resource Row until the end of the Round.
+>
+> **Levels up when:** he has given the opponent a cumulative total of 3 temporary Energy.
+>
+> **Then:** while he's face-up, the maximum PH of every enemy Character is permanently reduced by
+> the number of Unused cards in the opponent's Resource Row, plus their temporary Energy.
 
-1. **Close P2 first.** Pacifier is currently prohibited. Repair it before anything else.
-2. **Print the rubber-band cycle (§7.1).** Cheap, high-impact, unblocks everything downstream.
-3. **Build one Score card** — one card at 2× base — and play it twenty times before building a
-   second. The credit values below are hypotheses, not findings.
-4. **Then** the Icons and Influence (§7.3), which is where the design space actually is.
+### What kind of card is this?
 
-### Tuning warning, from the evidence
+**A slow burn.** He doesn't build toward one explosion. He gets a little worse for your opponent
+every single Round, and the trap is that *they helped*.
 
-Every scalar knob in every game researched turned out to have **two or three usable steps, not
-ten**:
+He's also the cleverest card in your pool, and it's worth saying why out loud: **his cost is
+that he helps the opponent.** He hands them free Energy. That's a genuine gift — they can spend
+it on anything. And it's exactly what turns on the thing that ruins them.
 
-- Gwent's *Jackpot*: −1 provision *"impacted it but still left it dominant"*; −2 made it
-  disappear entirely.
-- Quest Rogue: 4 → 5 minions moved completion by roughly one turn.
-- Quest Mage: 6 → 8 spells cost about one turn, and the card needed a functional rewrite seven
-  years later anyway.
+### What does he ask of you?
 
-CDPR's own conclusion is worth keeping on the wall: *"Users are very good at identifying how
-they feel, but often misidentify why, and give undesirable solutions."*
+| | |
+|---|---:|
+| **Base allowance** (cost 3, Ascendant) | **13** |
+| **⑤ You hand the opponent Energy** — 3 of it, to reach the level-up. Real Energy they really get to spend, possibly on removing him | +9 |
+| **④ Everyone sees it coming** — roughly 2 Rounds of landing hits. Their Resource Row is face-up on the table getting taller. There is no hiding this | +10 |
+| **Earned** | **32** |
 
-So: expect the credit values in §4.2 to move in **whole points, coarsely**, and expect the
-Windows multiplier (currently 0.25) to be the most sensitive number in the system. Change one
-thing at a time and log it in [`decisions.md`](decisions.md).
+### Where can the opponent stop him?
+
+| | | How |
+|---|---|---|
+| **W1** | Before you start | **Don't let him connect.** He needs to *land strikes*. Block him with a **Protector**. **Fear** him — Feared Characters can't declare attacks. **Stun** him. His PA is 2; he is not winning fights on his own |
+| **W2** | While you're building | **Kill him.** He's a 3-cost body with 4 PH. Any real removal ends the plan, and everything he built resets |
+| **W4** | After it lands | **This is the good one.** The penalty scales with their **Unused** Energy. So the counterplay to his ascended form is *spend your Energy*. He punishes hoarding. A player who empties their Resource Row every Round takes almost nothing |
+| **W5** | Just win first | Three or more Rounds is a long time. Aggression beats him |
+| **Multiplier** | **4 windows** | **×2.0** |
+
+**W3 is missing, and honestly.** His ascended ability is a Passive — always on, no activation.
+There's no moment to respond *to*. That's not a flaw, and it doesn't break rule ②, because he
+isn't preventing anyone from doing anything — he's just making them smaller. But it's one fewer
+window, and the ledger reflects that.
+
+### The verdict
+
+| | |
+|---|---:|
+| Earned | 32 |
+| Multiplier | ×2.0 |
+| **CEILING** | **64** |
+| What he currently spends | 17 |
+| **Headroom** | **+47** |
+
+**A 3-cost card with a Ceiling of 64.** That is not a typo, and it's not generosity — he's a
+3-cost that gives the opponent free Energy and takes three Rounds to come online.
+
+### What this card teaches
+
+**Two things, and both are big.**
+
+**First: paying your opponent is the most powerful thing you can pay with.** Corazon's base
+ability is written in your effect table as a *negative* — "Opponent energy generation," worth
+−2. It's a drawback. And that drawback is what funds his entire Ceiling. If you want to design
+something outrageous, the fastest legitimate route is to give your opponent something real.
+
+**Second: his counterplay is a decision, not a card.** W4 here isn't "have removal." It's *change
+how you play.* Stop hoarding Energy. That's the most elegant kind of counterplay in any card
+game — the answer isn't in your deck, it's in your behavior, and the card *taught you something*
+about how to play.
+
+That's worth aiming for deliberately on future cards. **When you can, make the answer a habit
+rather than a card.**
 
 ---
 
-## Sources
+## Dre, Mastermind of the 134
 
-The research behind this document, condensed. Primary sources only.
+*Overthinkers · Mobb 134 · Cost 5 · 3 PA / 4 PH / 3 MA / 5 MH*
 
-**Cost systems** — [Gwent's Design 01: Provision](https://www.playgwent.com/en/news/41252/gwents-design-01-provision) and [02: Balancing](https://www.playgwent.com/en/news/43034/gwents-design-02-balancing) (CDPR) · [Digimon Comprehensive Rules](https://world.digimoncard.com/rule/pdf/general_rule.pdf) (Bandai) · [Revealing Cycles](https://fabtcg.com/articles/revealing-cycles/) and [Pitch Perfect](https://fabtcg.com/articles/pitch-perfect/) (Legend Story Studios) · [One Piece Play Guide](https://en.onepiece-cardgame.com/play-guide/) (Bandai)
+> **Base:** When summoned, search your deck or Graveyard for the **134 Bible** Attachment and
+> equip it to him. During Phase 3, trigger the effects of all Commandment cards on your side.
+>
+> **Levels up when:** during Phase 3, **4 or more** Commandments activate simultaneously.
+>
+> **Then:** during Phase 3, activate all Commandments. If **7 or more** activate, immediately
+> destroy every Character, Tactic, and Attachment on the opponent's Board.
 
-**Combo and build-around design** — [Philosophy of Combo](https://magic.wizards.com/en/news/feature/philosophy-combo-2017-08-04) (Melissa DeTora) · [Play Design Lessons Learned](https://magic.wizards.com/en/news/feature/play-design-lessons-learned-2019-11-18) (Bryan Hawley) · [Threats and Answers](https://magic.wizards.com/en/news/feature/threats-and-answers-2014-09-08) · [Storm Scale: Khans](https://magic.wizards.com/en/news/making-magic/storm-scale-khans-tarkir-block-2016-02-29) and [Mirrodin](https://magic.wizards.com/en/news/making-magic/storm-scale-mirrodin-and-scars-mirrodin-blocks-2018-06-11) (Mark Rosewater) · [Needing a Little Time](https://magic.wizards.com/en/news/making-magic/needing-little-time-2006-09-11) (suspend) · [The Saga of Sagas](https://magic.wizards.com/en/news/making-magic/saga-sagas-2018-05-07) · [Planeswalk on the Wild Side II](https://magic.wizards.com/en/news/making-magic/planeswalk-wild-side-part-ii-2007-11-12) (loyalty) · [Introducing Ward](https://magic.wizards.com/en/news/card-preview/introducing-ward-2021-03-25) · [Enemy Mine](https://magic.wizards.com/en/news/making-magic/enemy-mine-2002-02-18) (hosers)
+### What kind of card is this?
 
-**Counterplay theory** — [Counterplay and Teamplay in Multiplayer Game Design](https://gdcvault.com/play/1018273/Counterplay-and-Teamplay-in-Multiplayer) (Tom Cadwell, Riot, GDC 2013) · [Building Counterplay for PvP Games](https://critpoints.net/2025/05/06/building-counterplay-for-pvp-games/) (Celia Wagar — the hard/soft × wide/narrow grid) · [Balancing Multiplayer Games Part 2: Viable Options](https://www.sirlin.net/articles/balancing-multiplayer-games-part-2-viable-options) and [Slippery Slope and Perpetual Comeback](https://www.sirlin.net/articles/slippery-slope-and-perpetual-comeback) (David Sirlin) · [Ten Things Every Game Needs](https://magic.wizards.com/en/news/making-magic/ten-things-every-game-needs-part-1-2011-10-24) (Rosewater)
+**A deep build.** This is the biggest, slowest, most visible plan in your entire game. It isn't
+one card doing something — it's a *machine* you assemble across many Rounds, in the open, and
+the payoff is total annihilation.
 
-**Structural valves** — [Hearthside Chat: Un'Goro Quests](https://us.battle.net/hearthstone/en/blog/20567342/hearthside-chat-ungoro-quests-with-peter-whalen-3-22-2017) (Peter Whalen) · [Mike Donais on the Quest Rogue change](https://gamesbeat.com/hearthstones-top-game-designer-breaks-down-quest-rogue-change/) · [Designing MARVEL SNAP](https://gdcvault.com/play/1029024/Designing-MARVEL-SNAP) (Ben Brode, GDC 2023) · [Andrew Yip on LoR's design](https://www.ungeek.ph/2020/05/design-director-andrew-yip-shares-how-legends-of-runeterra-challenges-the-norm-of-digital-card-games/) · [Mastering LoR Priority](https://masteringruneterra.com/mastering-lor-priority/) · Yu-Gi-Oh card text via [Yugipedia](https://yugipedia.com/wiki/Hand_trap)
+### What does he ask of you?
+
+| | |
+|---|---:|
+| **Base allowance** (cost 5, Ascendant) | **19** |
+| **③ Seven Commandments in play** — seven separate Attachment cards, face-up in your Tactic Zone. And remember: **an Attachment dies the instant the Character it's equipped to leaves the Board.** Your whole machine is bolted to bodies that can be killed | +14 |
+| **④ Seven actions to deploy them** — in Phase 2 you alternate. Every Commandment you play hands your opponent an action. Seven Commandments is seven free turns for them | +14 |
+| **Earned** | **47** |
+
+*(No separate charge for Rounds of warning here — the seven actions already describe the wait.
+Don't charge twice for the same thing.)*
+
+### Where can the opponent stop him?
+
+| | | How |
+|---|---|---|
+| **W1** | Before you start | **Kill Dre**, or **destroy the 134 Bible.** He tutors it on summon, so it's a known, visible, single point of failure |
+| **W2** | While you're building | **This is the big one.** Attachments die when their Character leaves the Board. Kill the Mobb 134 Characters and the Commandments go with them — you don't have to remove seven cards, you have to remove the people carrying them |
+| **W5** | Just win first | Seven Commandments is many Rounds. That is an enormous amount of time to be doing something else |
+| **Multiplier** | **3 windows** | **×1.75** |
+
+### Two honest gaps
+
+**W3 is missing.** The payoff fires as a **Trigger Ability during Phase 3**. Phase 3 isn't a
+Reaction Window — Combat Tactics and Fast Abilities can't be played there. So at the moment the
+board explodes, your opponent cannot respond. They had many Rounds of warning, but zero seconds
+of reaction.
+
+**W4 is missing too.** After every Character, Tactic and Attachment they own is destroyed, the
+Command System means they can't cast a Tactic to rebuild — casting needs a live Character of the
+matching color, and they have none. There's nothing to recover with.
+
+### The verdict
+
+| | |
+|---|---:|
+| Earned | 47 |
+| Multiplier | ×1.75 |
+| **CEILING** | **82** |
+| What he currently spends | 27 |
+| **Headroom** | **+55** |
+
+### What this card teaches
+
+**The ledger doesn't just price a card. It tells you what to change.**
+
+Dre has 55 points of headroom, which sounds like "make him bigger." That's the wrong read. The
+right read is that **two of his five windows are missing, and getting them back is worth more
+than 55 points of anything.**
+
+One change fixes both:
+
+> **Announce the Verdict in Phase 2, resolve it in Phase 3.**
+>
+> Dre spends an action in Phase 2 to declare that the Verdict is coming. The opponent gets their
+> alternating action — to kill him, break the Bible, or play a Combat Tactic. If he survives to
+> Phase 3, the board is erased.
+
+That single change:
+- **Opens W3.** There's now a moment to respond to.
+- **Costs one more action**, which is +2 more Credits.
+- **Takes his multiplier from ×1.75 to ×2.0**, pushing the Ceiling from 82 to 98.
+- And it's a **better scene.** He announces judgment, and everybody at the table gets one last
+  chance to stop it. That is a far better story than the board silently evaporating at the End
+  Step.
+
+**The card gets stronger by becoming more fair.** That's the whole philosophy in one example,
+and it's why Dre is the last one here.
+
+*(W4 is a separate, deeper issue — it's the same problem as a wiped board being unable to cast
+anything, which is logged as OQ-14 and needs a rules fix, not a card fix.)*
+
+---
+
+# Part Five — What The Three Of Them Show Together
+
+| | **Moammar** | **Corazon** | **Dre** |
+|---|---|---|---|
+| The shape | One moment | Slow burn | Deep build |
+| Base allowance | 19 | 13 | 19 |
+| What he pays with | Board state, self-destruction, once ever | Feeding the opponent, visible timer | Seven pieces, seven free turns |
+| Credits earned | +14 | +19 | +28 |
+| Windows | **5** | 4 | **3** |
+| Multiplier | ×2.25 | ×2.0 | ×1.75 |
+| **Ceiling** | **74** | **64** | **82** |
+| Currently spends | 24 | 17 | 27 |
+
+**Four things worth sitting with.**
+
+**Corazon is a 3-cost with a bigger Ceiling than a lot of 5-costs.** Cost barely matters here.
+What matters is what the card asks of you. A cheap card with a demanding, patient, generous plan
+beats an expensive card with no plan at all.
+
+**Moammar has the fewest Credits and the highest multiplier.** He barely asks anything of your
+resources — but he's answerable five different ways, and that alone nearly doubles him. **Windows
+are the cheapest power in the system.** If a card feels too weak, before you add Credits, ask
+whether you can hand back one more window.
+
+**Dre has the most Credits and the lowest multiplier.** He demands more than anyone and still has
+the smallest multiplier, because two of his windows are shut. He's carrying the highest Ceiling
+in the group *on cost alone*, and he'd carry more if he were more interruptible.
+
+**All three are currently spending less than half their Ceiling.** Nothing here is over-powered.
+Every one of them has room to become more dramatic, and the system will sign off on it.
+
+---
+
+# Part Six — Using This
+
+## When you're designing
+
+Build the card you actually want first. Don't pre-shrink it. Write the outrageous version.
+
+Then ask the three questions:
+1. **What does it ask of me?** If the answer is "not much," you have your problem.
+2. **Where can they stop it?** Name the actual card or rule for each one. Out loud.
+3. **Is it under the Ceiling?** The workbench tells you.
+
+If it's over, you have two moves, and the second one is almost always better:
+
+- **Make it smaller.** Sometimes right.
+- **Make it slower, louder, and more interruptible.** Usually better, and usually a better card.
+
+## When something feels too strong at the table
+
+Don't reach for the numbers first. Ask **rule ④**: *if I knew exactly what they were about to do,
+could I have done anything?*
+
+- If **yes** — it's probably fine. It beat you. That happens.
+- If **no** — that's the real problem, and shaving a stat won't fix it. Find it a window.
+
+## When something feels too weak
+
+Check the multiplier before the Credits. Four windows to five is a 25% raise for free. Adding one
+more way to be stopped is nearly always more interesting than adding one more point of PA.
+
+## Changing the numbers
+
+The Credit values will need adjusting. Expect that, and expect two things when you do it:
+
+**Move in whole points, and expect only two or three settings to matter.** These knobs are
+coarse. A change that feels tiny usually does nothing at all, and the next one over usually does
+too much. There's rarely a middle.
+
+**Change one thing at a time**, play with it, and write down what you changed and why in
+[`decisions.md`](decisions.md). Otherwise in three months you'll be looking at a number nobody
+remembers choosing.

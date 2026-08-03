@@ -49,6 +49,22 @@ credits:
     label: Life Points paid (per 2 LP)
     points: 1
     anchor: Direct Damage 1 = 1, scaled to a 30-LP pool
+  - key: opponent_resources_given
+    label: Energy, cards or board you hand to the OPPONENT
+    points: 3
+    anchor: Energy Gen 1 = 3 -- giving them one is worth what gaining one is worth
+  - key: attachments_required
+    label: Attachments or other non-Character pieces that must be in play
+    points: 2
+    anchor: same as a Character that must be on board
+  - key: board_state_required
+    label: A specific game state you have to engineer first
+    points: 4
+    anchor: roughly a full extra card of work to set up
+  - key: once_per_game
+    label: This can only happen once in the whole Game (set to 1)
+    points: 5
+    anchor: Hard Removal = 5 -- you are removing the option from yourself
   - key: narrowness
     label: Live only in some matchups or board states (0, 2 or 4)
     points: 1
