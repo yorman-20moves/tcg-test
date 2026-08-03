@@ -26,6 +26,9 @@ art:
   base: AngelTheSmilingSaboteur
   ascended: AngelTheSmilingSaboteurLVLUP
 status: ported
+plan:
+  produces:
+  - opponent_characters_gone
 ---
 
 # Angel, The Smiling Saboteur

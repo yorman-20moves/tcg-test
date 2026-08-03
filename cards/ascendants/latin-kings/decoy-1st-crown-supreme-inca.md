@@ -25,6 +25,9 @@ art:
   base: DecoyOverlordoftheOminousOrders1stCrown
   ascended: DecoyOverlordoftheOminousOrders1stCrownlvlup
 status: ported
+plan:
+  produces:
+  - own_crew_assembled
 ---
 
 # Decoy, 1st Crown - Supreme Inca

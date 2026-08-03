@@ -1,0 +1,94 @@
+# Crew definitions. A crew is a PLAN: faction is how you fight, crew is what you're trying to do.
+# docs/design/canon.md's crew table is generated from this file.
+#
+# plan:          one sentence -- how does this crew win a game?
+# coordination:  coordinated | chaotic. A chaotic crew is exempt from the single-plan rule,
+#                but must be mechanically chaotic, not just flavoured that way.
+# expressions:   the diversity rule with teeth. Every card must take a DIFFERENT road to the
+#                same destination. Two cards sharing a road is a warning (W3).
+#
+# SEEDED FROM CLAUDE'S DRAFTS, 2026-08-03. reviewed: false everywhere -- these are proposals
+# read off the existing cards, not decisions. The lore is Yorman's; the plan follows the lore.
+
+crews:
+  - key: latin-kings
+    name: Latin Kings
+    reviewed: false
+    plan: >-
+      Hierarchy -- the Crowns empower each other, so you win by getting the command structure
+      intact onto the board and keeping it there.
+    lore_basis: >-
+      Ranked Crowns, 1st through 5th. Decoy's "La Familia" buffs all allied Latin Kings and his
+      punishment for hesitation is worse than anything the enemy can do.
+    coordination: coordinated
+    signature: Ranked Crowns (1st-5th); allied-Latin-Kings buffs
+    expressions: []          # TODO: one road per card
+
+  - key: mobb-134
+    name: Mobb 134
+    reviewed: false
+    plan: >-
+      Law -- accumulate Commandments across many Rounds, then execute all of them at once.
+    lore_basis: >-
+      "He took the chaos of the streets and turned it into law." Dre tutors the 134 Bible and
+      triggers every Commandment at the End Step.
+    coordination: coordinated
+    signature: Commandments -- an Attachment sub-type no other crew has
+    expressions:
+      - card: dre-mastermind-of-the-134
+        road: Builds the engine and pulls the trigger
+      - card: moammar-the-one-punch-machine-gun
+        road: Cashes a cleared board into lethal damage
+        warning: >-
+          Dre produces the exact board state Moammar requires, and they are in the same crew.
+          This is the enabler chain that broke Moammar's pricing.
+
+  - key: sheas
+    name: Shea's
+    reviewed: false
+    plan: >-
+      Attrition -- everybody leaves the bar worse than they came in, including you.
+    lore_basis: >-
+      Alvino hands out drinks that buff attack and damage Mental Health. The Last Call, The Last
+      Laugh, The Life of the Party. It's a long night and nobody wins it clean.
+    coordination: coordinated
+    signature: Effects that damage both sides; the long night
+    expressions: []
+
+  - key: pimp-juice
+    name: Pimp Juice
+    reviewed: false
+    plan: >-
+      Economy -- control what the opponent has and what it costs them, then collect.
+    lore_basis: >-
+      Corazon gives the first hit free and charges for the rest. The Convincer, the Silk-Tie
+      Silencer, the First Lady of the Game.
+    coordination: coordinated
+    signature: Resource manipulation and persuasion
+    expressions: []
+
+  - key: pwned
+    name: PWNED
+    reviewed: false
+    plan: >-
+      UNDECIDED -- are these the uncoordinated crew? Their cards suggest chaos: dice rolls, item
+      boxes, glitches, and "You Know This Is Just A Game, Right?"
+    lore_basis: >-
+      Gamers. Caleb rolls a d6 to teabag. Ruvi has an Item Box and a Glitch. Julito is a
+      Harbinger of the Demon. Lenny is the Kawaii Connoisseur.
+    coordination: chaotic
+    signature: Randomness, glitches, breaking the fourth wall
+    expressions: []
+    note: >-
+      If chaotic is right, the chaos must be mechanically real -- including for their own player.
+      That is Yorman's call, not a derivation.
+
+  - key: fury-park
+    name: Fury Park
+    reviewed: false
+    plan: UNWRITTEN
+    lore_basis: ""
+    coordination: coordinated
+    signature: ""
+    expressions: []
+    note: One card exists (Angel G, The Comedian). Needs everything.

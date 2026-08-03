@@ -154,12 +154,42 @@ class Plan:
         'Reach 0 / unprintable' -- it is simply an ordinary card held to the base budget."""
         return bool(self.credits_paid or self.windows or self.reach is not None)
 
-    def reach_value(self) -> int | None:
+    def reach_value(self, faction: str | None = None) -> int | None:
+        """Explicit override wins; otherwise compute from the faction window map.
+
+        Computed Reach = how many factions are STRONG in at least one window this card
+        declares. That is the whole point of data/factions.yaml: the softest number in the
+        balance system stops being a guess.
+        """
         if self.reach is not None:
             return max(0, min(4, int(self.reach)))
-        if self.windows:
-            return min(4, self.window_count())
-        return None   # credits claimed but Reach not yet declared -> held to base budget
+        if not self.windows:
+            return None
+        computed = self.computed_reach()
+        return computed if computed is not None else min(4, self.window_count())
+
+    def computed_reach(self) -> int | None:
+        """None when factions.yaml has no window profiles to compute from."""
+        return None if self._answering() is None else len(self._answering())
+
+    def answering_factions(self) -> list[str]:
+        return self._answering() or []
+
+    def _answering(self) -> list[str] | None:
+        try:
+            import yaml
+            from card_io import REPO_ROOT
+            path = REPO_ROOT / "data" / "factions.yaml"
+            if not path.exists():
+                return None
+            factions = (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("factions") or []
+        except Exception:
+            return None
+        if not factions:
+            return None
+        declared = set(self.windows or [])
+        return [f["name"] for f in factions
+                if any((f.get("windows") or {}).get(w) == "strong" for w in declared)]
 
     def window_count(self) -> int:
         valid = {w["key"] for w in plan_config().get("windows", [])}
@@ -258,6 +288,9 @@ class Score:
             "windowCount": self.plan.window_count(),
             "reach": self.reach,
             "reachCap": self.reach_cap,
+            "reachComputed": self.plan.computed_reach(),
+            "reachOverridden": self.plan.reach is not None,
+            "answeringFactions": self.plan.answering_factions(),
             "allowance": self.allowance,
             "earned": self.allowance,
             "ceiling": self.ceiling,

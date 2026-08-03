@@ -24,6 +24,9 @@ art:
   base: RoaRWarlordoftheWickedWrath3rdCrown
   ascended: RoaRWarlordoftheWickedWrath3rdCrownLVL2
 status: ported
+plan:
+  requires:
+  - own_crew_assembled
 ---
 
 # RoaR, 3rd Crown - Warlord of Sangre

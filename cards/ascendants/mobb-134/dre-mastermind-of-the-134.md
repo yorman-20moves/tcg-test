@@ -23,6 +23,12 @@ art:
   base: DreMastermindofthe134
   ascended: DreMastermindofthe134lvlup
 status: ported
+plan:
+  produces:
+  - opponent_board_empty
+  - opponent_characters_gone
+  requires:
+  - attachments_in_play
 ---
 
 # Dre, Mastermind of the 134

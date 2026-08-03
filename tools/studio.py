@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import mimetypes
+import re
 import sys
 import threading
 import webbrowser
@@ -27,7 +28,14 @@ from urllib.parse import quote, unquote
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import card_io  # noqa: E402
+import generate  # noqa: E402
+import rules  # noqa: E402
 import scoring  # noqa: E402
+
+import yaml  # noqa: E402
+
+PLAYTEST_LOG = card_io.REPO_ROOT / "playtests.yaml"
+SNAPSHOT_DIR = card_io.REPO_ROOT / ".snapshots"
 
 STUDIO_HTML = Path(__file__).resolve().parent / "studio.html"
 MAX_BODY_BYTES = 1_000_000
@@ -92,9 +100,43 @@ def card_payload(card: card_io.Card) -> dict:
     }
 
 
+def write_table(filename: str, key: str, rows: list) -> None:
+    path = card_io.REPO_ROOT / "data" / filename
+    header = []
+    if path.exists():
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if line.startswith("#") or not line.strip():
+                header.append(line)
+            else:
+                break
+    body = yaml.safe_dump({key: rows}, sort_keys=False, allow_unicode=True, width=100)
+    path.write_text("\n".join(header) + "\n" + body, encoding="utf-8")
+    rules.load_world.cache_clear()
+    scoring.plan_config.cache_clear()
+
+
+def findings_payload() -> list[dict]:
+    rules.load_world.cache_clear()
+    return [f.as_dict() for f in rules.worklist(rules.run_all())]
+
+
+def playtests() -> list:
+    if not PLAYTEST_LOG.exists():
+        return []
+    return (yaml.safe_load(PLAYTEST_LOG.read_text(encoding="utf-8")) or {}).get("games", []) or []
+
+
 def bootstrap() -> dict:
+    world = rules.load_world()
     return {
         "cards": [card_payload(c) for c in card_io.load_all()],
+        "factionData": world.factions,
+        "crews": world.crews,
+        "states": world.states,
+        "windowKeys": list(rules.WINDOW_KEYS),
+        "windowLabels": rules.WINDOW_LABELS,
+        "findings": findings_payload(),
+        "playtests": playtests(),
         "keywords": card_io.load_table("keywords.yaml", "keywords"),
         "effects": card_io.load_table("effects.yaml", "effects"),
         "statuses": card_io.load_table("status-effects.yaml", "status_effects"),
@@ -134,6 +176,81 @@ def apply_edit(payload: dict) -> dict:
     return card_payload(card_io.load(target))
 
 
+def save_faction(payload: dict) -> dict:
+    world = rules.load_world()
+    rows = [dict(f) for f in world.factions]
+    incoming = payload.get("faction") or {}
+    for index, faction in enumerate(rows):
+        if faction.get("key") == incoming.get("key"):
+            rows[index] = incoming
+            break
+    else:
+        rows.append(incoming)
+    write_table("factions.yaml", "factions", rows)
+    run_generate()
+    return {"ok": True, "factions": rows, "findings": findings_payload()}
+
+
+def save_crew(payload: dict) -> dict:
+    world = rules.load_world()
+    rows = [dict(c) for c in world.crews]
+    incoming = payload.get("crew") or {}
+    for index, crew in enumerate(rows):
+        if crew.get("key") == incoming.get("key"):
+            rows[index] = incoming
+            break
+    else:
+        rows.append(incoming)
+    write_table("crews.yaml", "crews", rows)
+    run_generate()
+    return {"ok": True, "crews": rows, "findings": findings_payload()}
+
+
+def log_playtest(payload: dict) -> dict:
+    games = playtests()
+    entry = {k: payload.get(k) for k in ("when", "players", "winner", "cards", "felt_bad", "notes")}
+    entry["id"] = len(games) + 1
+    games.append(entry)
+    PLAYTEST_LOG.write_text(
+        "# Playtest log. Append-only. Written by tools/studio.py.\n"
+        "# felt_bad is the important field -- it is the only data the documents cannot produce.\n\n"
+        + yaml.safe_dump({"games": games}, sort_keys=False, allow_unicode=True, width=100),
+        encoding="utf-8")
+    return {"ok": True, "playtests": games}
+
+
+def take_snapshot(payload: dict) -> dict:
+    """A named point-in-time record of every card's numbers, for diffing across playtests."""
+    SNAPSHOT_DIR.mkdir(exist_ok=True)
+    label = re.sub(r"[^\w-]+", "-", (payload.get("label") or "snapshot")).strip("-")
+    state = {}
+    for card in card_io.load_all():
+        result = scoring.score(card)
+        state[card.meta.get("slug") or card.name] = {
+            "name": card.name, "cost": card.meta.get("cost"),
+            "stats": card.meta.get("stats"), "impact": result.base_spent + result.ascended_spent,
+            "ceiling": result.ceiling, "reach": result.reach,
+        }
+    path = SNAPSHOT_DIR / f"{label}.yaml"
+    path.write_text(yaml.safe_dump({"label": label, "cards": state},
+                                   sort_keys=False, allow_unicode=True), encoding="utf-8")
+    return {"ok": True, "label": label, "cards": len(state),
+            "snapshots": sorted(p.stem for p in SNAPSHOT_DIR.glob("*.yaml"))}
+
+
+def run_generate() -> list[str]:
+    world = rules.load_world()
+    written = []
+    for relative, builder in generate.TARGETS.items():
+        path = card_io.REPO_ROOT / relative
+        fresh = builder(world)
+        if not path.exists() or path.read_text(encoding="utf-8") != fresh:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(fresh, encoding="utf-8")
+            written.append(relative)
+    return written
+
+
 class StudioHandler(BaseHTTPRequestHandler):
     server_version = "CardStudio/1.0"
 
@@ -160,6 +277,8 @@ class StudioHandler(BaseHTTPRequestHandler):
             self._send(200, STUDIO_HTML.read_bytes(), "text/html; charset=utf-8")
         elif self.path.startswith("/art/"):
             self._send_art(unquote(self.path[len("/art/"):]))
+        elif self.path == "/api/check":
+            self._send_json(200, {"findings": findings_payload()})
         elif self.path == "/api/bootstrap":
             try:
                 self._send_json(200, bootstrap())
@@ -185,7 +304,16 @@ class StudioHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_POST(self) -> None:
-        if self.path != "/api/card":
+        routes = {
+            "/api/card": apply_edit,
+            "/api/faction": save_faction,
+            "/api/crew": save_crew,
+            "/api/playtest": log_playtest,
+            "/api/snapshot": take_snapshot,
+            "/api/generate": lambda _: {"generated": generate.main.__doc__ and run_generate()},
+        }
+        handler = routes.get(self.path)
+        if handler is None:
             self._send(404, b"not found", "text/plain")
             return
         length = int(self.headers.get("Content-Length") or 0)
@@ -194,7 +322,7 @@ class StudioHandler(BaseHTTPRequestHandler):
             return
         try:
             payload = json.loads(self.rfile.read(length) or b"{}")
-            self._send_json(200, apply_edit(payload))
+            self._send_json(200, handler(payload))
         except Exception as exc:
             self._send_json(400, {"error": f"{type(exc).__name__}: {exc}"})
 

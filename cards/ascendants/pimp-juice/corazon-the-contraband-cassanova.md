@@ -23,6 +23,11 @@ art:
   base: CorazontheContrabandCassanova
   ascended: CorazontheContrabandCassanovaLVLUp
 status: ported
+plan:
+  produces:
+  - opponent_energy_hoarded
+  requires:
+  - opponent_energy_hoarded
 ---
 
 # Corazon, the Contraband Cassanova

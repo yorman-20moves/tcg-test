@@ -230,6 +230,46 @@ label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppe
 .win input{accent-color:var(--accent);margin-top:2px;flex:none}
 .win .q{color:var(--ink-3);font-size:11.5px}
 .proh{display:grid;gap:4px;margin-top:10px;border-top:1px solid var(--rule);padding-top:10px}
+.modes{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap}
+.mode{padding:5px 10px;border-radius:7px;border:1px solid var(--rule);background:var(--raised);cursor:pointer;font-size:12.5px}
+.mode[aria-current="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,transparent);font-weight:600}
+.mode .n{font-variant-numeric:tabular-nums;color:var(--ink-3);margin-left:5px}
+.mode.bad .n{color:var(--critical);font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.matrix{width:100%;border-collapse:collapse;font-size:12.5px}
+.matrix th{padding:7px 6px;text-align:center;font-weight:500;color:var(--ink-2);border-bottom:1px solid var(--rule)}
+.matrix th.rowh{text-align:left}
+.matrix td{padding:0;border:1px solid var(--rule);vertical-align:top}
+.matrix td.rowh{padding:8px;font-weight:600;border:0;border-bottom:1px solid var(--rule)}
+.cell{min-height:46px;padding:5px;display:flex;flex-wrap:wrap;gap:3px;align-content:flex-start}
+.cell.empty{background:repeating-linear-gradient(45deg,transparent,transparent 5px,var(--rule) 5px,var(--rule) 6px)}
+.mini{font-size:10.5px;padding:2px 5px;border-radius:4px;background:var(--raised);border:1px solid var(--rule);cursor:pointer;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.mini:hover{border-color:var(--accent)}
+.mini.over{border-color:var(--critical)}
+.wingrid{width:100%;border-collapse:collapse;font-size:12.5px}
+.wingrid th,.wingrid td{padding:7px 8px;border-bottom:1px solid var(--rule);text-align:center}
+.wingrid th:first-child,.wingrid td:first-child{text-align:left}
+.lvl{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--rule)}
+.lvl.strong{background:color-mix(in srgb,var(--good) 22%,transparent);border-color:var(--good)}
+.lvl.weak{background:color-mix(in srgb,var(--warning) 18%,transparent);border-color:var(--warning)}
+.lvl.blind{background:var(--raised);color:var(--ink-3)}
+.tools{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.tool{font-size:11.5px;padding:3px 8px;border-radius:6px;border:1px solid var(--rule);background:var(--raised);cursor:pointer}
+.tool.uniq{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.tool.never{border-color:var(--critical);background:color-mix(in srgb,var(--critical) 12%,transparent);text-decoration:line-through}
+.tool.taken{opacity:.45;cursor:not-allowed}
+.finding{display:flex;gap:9px;padding:9px 10px;border-bottom:1px solid var(--rule);align-items:flex-start}
+.finding .code{font-weight:700;font-variant-numeric:tabular-nums;flex:none;width:32px}
+.finding.err .code{color:var(--critical)} .finding.warn .code{color:var(--warning)}
+.finding .body{flex:1;min-width:0}
+.finding .sub{font-weight:600}
+.finding .fx{color:var(--ink-3);font-size:11.5px;margin-top:3px}
+.bar{height:9px;border-radius:5px;background:var(--raised);overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.kpi{background:var(--raised);border:1px solid var(--rule);border-radius:9px;padding:11px 13px}
+.kpi .v{font-size:26px;font-weight:600;line-height:1.1}
+.kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin-top:3px}
 .gatepills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--rule);background:var(--raised);font-size:12.5px;font-weight:600}
 .pill.bad{border-color:var(--critical)}
@@ -251,7 +291,8 @@ label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppe
         <h1 style="font-size:15px">Card Studio</h1>
         <button class="ghost" id="theme" style="padding:4px 9px" title="Toggle light/dark">◐</button>
       </div>
-      <div class="filters">
+      <div class="modes" id="modes"></div>
+      <div class="filters" id="cardfilters">
         <input id="q" placeholder="Search…" aria-label="Search cards">
         <select id="ffac" aria-label="Filter by faction"><option value="">All factions</option></select>
         <select id="fbal" aria-label="Filter by balance">
@@ -386,6 +427,22 @@ function listSeverity(c){
   return s.scorable?severity(s.baseDelta):"none";
 }
 function renderList(){
+  if(MODE==="factions"||MODE==="crews"){
+    const rows=$("#rows"); rows.replaceChildren();
+    const items = MODE==="factions" ? (DB.factionData||[]) : (DB.crews||[]);
+    const sel   = MODE==="factions" ? selFaction : selCrew;
+    for(const it of items){
+      const n = MODE==="factions" ? cardsOf(it.name).length : cardsOf(null,it.name).length;
+      rows.append(el("button",{class:"cardrow","aria-current":sel&&sel.key===it.key,
+        onclick:()=>{ if(MODE==="factions") selFaction=it; else selCrew=it; renderList(); renderMain(); }},
+        el("span",{class:"fbar",style:`background:var(${FACTION_VAR[it.name]||"--baseline"})`}),
+        el("span",{class:"nm",text:it.name}),
+        it.reviewed?null:el("span",{class:"dot warning",style:"background:var(--warning)",title:"unreviewed draft"}),
+        el("span",{class:"cost",text:String(n)})));
+    }
+    return;
+  }
+  if(MODE!=="cards"){ $("#rows").replaceChildren(); return; }
   const q=$("#q").value.toLowerCase(), fac=$("#ffac").value, bal=$("#fbal").value;
   const rows=$("#rows"); rows.replaceChildren();
   const groups=new Map();
@@ -700,8 +757,434 @@ function siblingTable(){
       text:"Σ is total stat points. Δ is points over (+) or under (−) budget. A 4-cost is only a 4-cost relative to its neighbours."}));
 }
 
+
+/* ============================== MODES ====================================== */
+let MODE="cards";
+const MODE_LIST=[["cards","Cards"],["factions","Factions"],["crews","Crews"],
+                 ["matrix","Matrix"],["health","Health"],["problems","Problems"]];
+
+function renderModes(){
+  const host=$("#modes"); host.replaceChildren();
+  const errs=(DB.findings||[]).filter(f=>f.severity==="error").length;
+  for(const [key,label] of MODE_LIST){
+    const bad = key==="problems" && errs>0;
+    host.append(el("button",{class:`mode ${bad?"bad":""}`,"aria-current":MODE===key,
+      onclick:()=>setMode(key)}, label,
+      key==="problems"?el("span",{class:"n",text:String(errs||(DB.findings||[]).length)}):null));
+  }
+  $("#cardfilters").style.display = MODE==="cards" ? "" : "none";
+}
+function setMode(m){
+  MODE=m;
+  /* the rail is card context -- collapse it everywhere else so the wide views get the space */
+  $("#app").style.gridTemplateColumns = (m==="cards") ? "" : "270px 1fr 0";
+  $("#rail").style.display = (m==="cards") ? "" : "none";
+  renderModes(); renderList(); renderMain(); renderRail();
+}
+
+async function refreshFindings(){
+  try{ const r=await fetch("/api/check"); DB.findings=(await r.json()).findings||[]; }catch(e){}
+  renderModes();
+}
+
+/* ------------------------------ helpers ---------------------------------- */
+const factionByName = n => (DB.factionData||[]).find(f=>f.name===n);
+const crewByName    = n => (DB.crews||[]).find(c=>c.name===n);
+const cardsOf       = (fac,crew) => cards.filter(c =>
+  (!fac || c.meta.faction===fac) && (!crew || c.meta.crew===crew));
+function findingsFor(subject){
+  return (DB.findings||[]).filter(f=>f.subject===subject);
+}
+function allToolNames(){
+  return [...DB.keywords.map(k=>({kind:"keywords",name:k.name,faction:k.faction})),
+          ...DB.effects.map(e=>({kind:"effects",name:e.name,faction:null}))];
+}
+function uniqueOwner(kind,name,exceptKey){
+  for(const f of DB.factionData||[]){
+    if(f.key===exceptKey) continue;
+    if(((f.unique||{})[kind]||[]).includes(name)) return f.name;
+  }
+  return null;
+}
+
+/* ------------------------------ FACTIONS --------------------------------- */
+let selFaction=null;
+function renderFactions(main){
+  const f = selFaction || (DB.factionData||[])[0];
+  if(!f){ main.append(el("div",{class:"muted",text:"No factions defined."})); return; }
+  selFaction=f;
+  const save=async()=>{
+    const r=await fetch("/api/faction",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({faction:f})});
+    const j=await r.json();
+    if(j.error) return toast("Save failed: "+j.error,6000);
+    DB.factionData=j.factions; DB.findings=j.findings;
+    toast(`Saved ${f.name} — rulebook regenerated`); renderModes(); renderMain(); renderRail();
+  };
+
+  main.append(el("div",{class:"topbar"},
+    el("div",{class:"row spread"},
+      el("div",{},
+        el("h2",{style:"font-size:20px"}, `${f.emoji||""} ${f.name}`),
+        el("div",{class:"muted",style:"font-size:12px;margin-top:3px",
+          text:`${cardsOf(f.name).length} cards · ${f.reviewed?"reviewed":"DRAFT — unreviewed"}`})),
+      el("button",{class:"primary",onclick:save},"Save faction"))));
+
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px;margin-bottom:8px",text:"Identity"}),
+    el("textarea",{rows:"5",oninput:e=>{f.identity=e.target.value;}},f.identity||""),
+    el("label",{class:"fl",text:"The printed weakness"}),
+    el("textarea",{rows:"2",oninput:e=>{f.weakness=e.target.value;}},f.weakness||""),
+    el("label",{class:"win",style:"display:flex;gap:8px;margin-top:10px;cursor:pointer"},
+      el("input",{type:"checkbox",checked:!!f.reviewed,onchange:e=>{f.reviewed=e.target.checked;}}),
+      el("span",{},"I have reviewed this faction's toolkit and window profile"))));
+
+  /* window profile */
+  const wg=el("table",{class:"wingrid"},
+    el("thead",{},el("tr",{},el("th",{text:"Window"}),el("th",{text:"This faction"}),el("th",{text:"Covered by"}))));
+  const tb=el("tbody",{});
+  for(const w of DB.windowKeys){
+    const cur=(f.windows||{})[w]||"blind";
+    const covered=(DB.factionData||[]).filter(x=>(x.windows||{})[x==f?"":""]||((x.windows||{})[w]==="strong")).map(x=>x.name);
+    const cycle=()=>{ f.windows=f.windows||{};
+      f.windows[w]={strong:"weak",weak:"blind",blind:"strong"}[cur]; renderMain(); };
+    tb.append(el("tr",{},
+      el("td",{text:DB.windowLabels[w]}),
+      el("td",{}, el("span",{class:`lvl ${cur}`,onclick:cycle,title:"click to cycle"},cur)),
+      el("td",{}, covered.length<2
+        ? el("span",{class:"warning-c"}, el("span",{class:"swatch warning-bg"}), covered.join(", ")||"nobody")
+        : covered.join(", "))));
+  }
+  wg.append(tb);
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px;margin-bottom:8px",text:"Window profile — where they can answer a plan"}),
+    wg,
+    el("div",{class:"muted",style:"font-size:11.5px;margin-top:9px"},
+      "Click a level to cycle strong → weak → blind. This map is what computes Reach on every card.")));
+
+  /* toolkit */
+  for(const [kind,title] of [["keywords","Keywords"],["effects","Effects"]]){
+    const pool = kind==="keywords" ? DB.keywords.map(k=>k.name) : DB.effects.map(e=>e.name);
+    const uniq=new Set(((f.unique||{})[kind])||[]);
+    const never=new Set(((f.never||{})[kind])||[]);
+    const wrap=el("div",{class:"tools"});
+    for(const name of pool){
+      const owner=uniqueOwner(kind,name,f.key);
+      const cls = uniq.has(name)?"uniq" : never.has(name)?"never" : owner?"taken":"";
+      wrap.append(el("button",{class:`tool ${cls}`,
+        title: owner ? `already unique to the ${owner}` : "click: shared → unique → never → shared",
+        onclick:()=>{
+          if(uniq.has(name)){ uniq.delete(name); never.add(name); }
+          else if(never.has(name)){ never.delete(name); }
+          else {
+            if(owner){ toast(`"${name}" is already unique to the ${owner} — it can only be unique to one faction.`,5000); return; }
+            uniq.add(name);
+          }
+          f.unique=f.unique||{}; f.never=f.never||{};
+          f.unique[kind]=[...uniq]; f.never[kind]=[...never];
+          renderMain();
+        }}, name, owner?el("span",{class:"muted",text:` · ${owner}`}):null));
+    }
+    main.append(el("div",{class:"panel"},
+      el("h3",{style:"font-size:13px",text:`${title} — unique / never`}),
+      el("div",{class:"muted",style:"font-size:11.5px;margin:4px 0 2px"},
+        "blue = unique to this faction · red = never · faded = already unique to someone else"),
+      wrap));
+  }
+}
+
+/* -------------------------------- CREWS ---------------------------------- */
+let selCrew=null;
+function renderCrews(main){
+  const c = selCrew || (DB.crews||[])[0];
+  if(!c){ main.append(el("div",{class:"muted",text:"No crews defined."})); return; }
+  selCrew=c;
+  const members=cardsOf(null,c.name);
+  const save=async()=>{
+    const r=await fetch("/api/crew",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({crew:c})});
+    const j=await r.json();
+    if(j.error) return toast("Save failed: "+j.error,6000);
+    DB.crews=j.crews; DB.findings=j.findings;
+    toast(`Saved ${c.name}`); renderModes(); renderMain(); renderRail();
+  };
+  main.append(el("div",{class:"topbar"},
+    el("div",{class:"row spread"},
+      el("div",{},
+        el("h2",{style:"font-size:20px",text:c.name}),
+        el("div",{class:"muted",style:"font-size:12px;margin-top:3px",
+          text:`${members.length} cards across ${new Set(members.map(m=>m.meta.faction)).size} factions · ${c.reviewed?"reviewed":"DRAFT"}`})),
+      el("button",{class:"primary",onclick:save},"Save crew"))));
+
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px",text:"The plan — how does this crew win a game?"}),
+    el("textarea",{rows:"3",oninput:e=>{c.plan=e.target.value;}},c.plan||""),
+    el("label",{class:"fl",text:"Lore basis — why the plan follows from who they are"}),
+    el("textarea",{rows:"3",oninput:e=>{c.lore_basis=e.target.value;}},c.lore_basis||""),
+    el("label",{class:"fl",text:"Signature"}),
+    el("textarea",{rows:"1",oninput:e=>{c.signature=e.target.value;}},c.signature||""),
+    el("label",{class:"fl",text:"Coordination"}),
+    el("div",{class:"chips"},
+      ...["coordinated","chaotic"].map(k=>el("button",{class:"chip","aria-pressed":c.coordination===k,
+        title:k==="chaotic"?"exempt from the single-plan rule, but chaos must be mechanically real":"",
+        onclick:()=>{c.coordination=k; renderMain();}},k))),
+    el("label",{class:"win",style:"display:flex;gap:8px;margin-top:12px;cursor:pointer"},
+      el("input",{type:"checkbox",checked:!!c.reviewed,onchange:e=>{c.reviewed=e.target.checked;}}),
+      el("span",{},"I have reviewed this crew's plan"))));
+
+  /* roads */
+  const expr = c.expressions = c.expressions || [];
+  const rows=el("div",{class:"grid"});
+  const seen={};
+  for(const m of members.sort((a,b)=>a.meta.name.localeCompare(b.meta.name))){
+    const slug=m.meta.slug;
+    let entry=expr.find(e=>e.card===slug);
+    if(!entry){ entry={card:slug,road:""}; expr.push(entry); }
+    const road=(entry.road||"").trim().toLowerCase();
+    const dupe = road && seen[road];
+    if(road) seen[road]=true;
+    rows.append(el("div",{},
+      el("label",{class:"fl"},
+        el("span",{class:"dot",style:`display:inline-block;margin-right:6px;background:var(${FACTION_VAR[m.meta.faction]||"--baseline"})`}),
+        m.meta.name, dupe?el("span",{class:"warning-c",text:"  · duplicate road"}):null),
+      el("textarea",{rows:"2",placeholder:"the different road this card takes to the crew's plan",
+        oninput:e=>{entry.road=e.target.value; renderMain();}},entry.road||"")));
+  }
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px",text:"Roads — every card must reach the plan a different way"}),
+    el("div",{class:"muted",style:"font-size:11.5px;margin:4px 0 8px"},
+      "If you can't write a distinct road for a card, that card is a duplicate."),
+    rows));
+}
+
+/* ------------------------------- MATRIX ---------------------------------- */
+function renderMatrix(main){
+  const facs=(DB.factionData||[]).map(f=>f.name);
+  const crewNames=[...new Set(cards.map(c=>c.meta.crew||"Unassigned"))].sort();
+  main.append(el("div",{class:"topbar"},el("h2",{style:"font-size:20px",text:"Crew × Faction"}),
+    el("div",{class:"muted",style:"font-size:12px",text:"click a card to open it · hatched = empty"})));
+  const t=el("table",{class:"matrix"});
+  t.append(el("thead",{},el("tr",{}, el("th",{class:"rowh",text:"Crew"}),
+    ...facs.map(f=>el("th",{}, el("span",{class:"dot",style:`display:inline-block;margin-right:5px;background:var(${FACTION_VAR[f]||"--baseline"})`}), f)),
+    el("th",{text:"total"}))));
+  const tb=el("tbody",{});
+  for(const crew of crewNames){
+    const tr=el("tr",{});
+    tr.append(el("td",{class:"rowh",text:crew}));
+    let total=0;
+    for(const f of facs){
+      const list=cardsOf(f,crew==="Unassigned"?null:crew).filter(c=>(c.meta.crew||"Unassigned")===crew);
+      total+=list.length;
+      const cell=el("div",{class:`cell ${list.length?"":"empty"}`});
+      for(const c of list){
+        const sc=c.score;
+        /* red = the BASE side is off. Nearly every card fails the ascended-side check today
+           (OQ-04), so colouring on that would make the whole grid red and say nothing. */
+        const over = sc.scorable && sc.baseSeverity && sc.baseSeverity!=="good";
+        cell.append(el("button",{class:`mini ${over?"over":""}`,title:c.meta.name,
+          onclick:()=>{ setMode("cards"); select(c); }},
+          c.meta.name.split(",")[0]));
+      }
+      tr.append(el("td",{},cell));
+    }
+    tr.append(el("td",{style:"text-align:center;font-variant-numeric:tabular-nums;padding:8px",text:String(total)}));
+    tb.append(tr);
+  }
+  const foot=el("tr",{});
+  foot.append(el("td",{class:"rowh",text:"total"}));
+  for(const f of facs) foot.append(el("td",{style:"text-align:center;padding:8px;font-variant-numeric:tabular-nums",
+    text:String(cardsOf(f).length)}));
+  foot.append(el("td",{style:"text-align:center;padding:8px;font-weight:600",text:String(cards.length)}));
+  tb.append(foot);
+  t.append(tb);
+  main.append(el("div",{class:"panel"},t));
+}
+
+/* ------------------------------- HEALTH ---------------------------------- */
+function renderHealth(main){
+  main.append(el("div",{class:"topbar"},el("h2",{style:"font-size:20px",text:"Game health"})));
+  const scorable=cards.filter(c=>c.score.scorable);
+  /* base side only -- nearly every card fails the ascended-side check today (OQ-04), so the
+     raw headroom number is 25/25 and tells you nothing actionable. */
+  const over=scorable.filter(c=>c.score.baseSeverity!=="good");
+  const legalDeck = cards.filter(c=>(c.meta.subtype||"")!=="Ascendant").length;
+  main.append(el("div",{class:"grid",style:"grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px"},
+    el("div",{class:"kpi"},el("div",{class:"v",text:String(cards.length)}),el("div",{class:"l",text:"cards"})),
+    el("div",{class:`kpi`},el("div",{class:`v ${over.length?"critical-c":""}`,text:String(over.length)}),
+      el("div",{class:"l",text:"base side off"})),
+    el("div",{class:"kpi"},el("div",{class:`v ${legalDeck?"":"critical-c"}`,text:String(legalDeck)}),
+      el("div",{class:"l",text:"non-Ascendants"})),
+    el("div",{class:"kpi"},el("div",{class:"v",text:String((DB.findings||[]).filter(f=>f.severity==="error").length)}),el("div",{class:"l",text:"blocking"})),
+    el("div",{class:"kpi"},el("div",{class:"v",text:String((DB.playtests||[]).length)}),el("div",{class:"l",text:"playtests"}))));
+
+  /* window coverage */
+  const wc=el("table",{class:"wingrid"},el("thead",{},el("tr",{},
+    el("th",{text:"Window"}),...(DB.factionData||[]).map(f=>el("th",{text:f.name.slice(0,4)})),el("th",{text:"strong"}))));
+  const wb=el("tbody",{});
+  for(const w of DB.windowKeys){
+    const tr=el("tr",{}); tr.append(el("td",{text:DB.windowLabels[w]}));
+    let n=0;
+    for(const f of DB.factionData||[]){
+      const lvl=(f.windows||{})[w]||"blind";
+      if(lvl==="strong") n++;
+      tr.append(el("td",{}, el("span",{class:`lvl ${lvl}`,text:lvl[0].toUpperCase()})));
+    }
+    tr.append(el("td",{}, n<2?el("span",{class:"warning-c"},el("span",{class:"swatch warning-bg"}),String(n)):String(n)));
+    wb.append(tr);
+  }
+  wc.append(wb);
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px;margin-bottom:8px",text:"Window coverage — fewer than two strong is a gap"}),wc));
+
+  /* cost curve per faction */
+  const costs=[...new Set(scorable.map(c=>c.meta.cost))].sort((a,b)=>a-b);
+  const cc=el("table",{class:"wingrid"},el("thead",{},el("tr",{},
+    el("th",{text:"Faction"}),...costs.map(c=>el("th",{text:String(c)})),el("th",{text:"total"}))));
+  const cb=el("tbody",{});
+  for(const f of DB.factionData||[]){
+    const tr=el("tr",{}); tr.append(el("td",{text:f.name}));
+    let tot=0;
+    for(const cost of costs){
+      const n=scorable.filter(c=>c.meta.faction===f.name&&c.meta.cost===cost).length;
+      tot+=n;
+      tr.append(el("td",{class:n?"":"muted",text:n?String(n):"·"}));
+    }
+    tr.append(el("td",{text:String(tot)})); cb.append(tr);
+  }
+  cc.append(cb);
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px;margin-bottom:8px",text:"Cost curve by faction"}),cc));
+
+  /* budget share */
+  const bs=el("div",{class:"grid"});
+  for(const f of DB.factionData||[]){
+    const mine=scorable.filter(c=>c.meta.faction===f.name);
+    const st=mine.reduce((a,c)=>a+c.score.statsTotal,0);
+    const ef=mine.reduce((a,c)=>a+c.score.baseEffectPoints,0);
+    const kw=mine.reduce((a,c)=>a+c.score.baseKeywordPoints,0);
+    const tot=Math.max(1,st+ef+kw);
+    bs.append(el("div",{},
+      el("div",{class:"row spread",style:"font-size:12px;margin-bottom:4px"},
+        el("span",{},f.name),
+        el("span",{class:"muted",text:`stats ${Math.round(st/tot*100)}% · effects ${Math.round(ef/tot*100)}% · keywords ${Math.round(kw/tot*100)}%`})),
+      el("div",{class:"bar"},
+        el("i",{style:`width:${st/tot*100}%;background:var(--baseline)`}),
+        el("i",{style:`width:${ef/tot*100}%;background:var(--accent)`}),
+        el("i",{style:`width:${kw/tot*100}%;background:var(--good)`}))));
+  }
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px;margin-bottom:9px",text:"Where each faction spends its points"}),bs,
+    el("div",{class:"muted",style:"font-size:11.5px;margin-top:9px"},
+      "A faction that is mostly grey is a faction made of numbers rather than ideas.")));
+
+  /* deck feasibility */
+  const need={Descendant:24,Tactic:8,Attachment:3,Ascendant:5};
+  const have={}; for(const c of cards) have[c.meta.subtype]=(have[c.meta.subtype]||0)+1;
+  const df=el("table",{class:"wingrid"},el("thead",{},el("tr",{},
+    el("th",{text:"Card type"}),el("th",{text:"have"}),el("th",{text:"a 40-card deck wants"}),el("th",{text:""}))));
+  const dfb=el("tbody",{});
+  for(const [k,v] of Object.entries(need)){
+    const h=have[k]||0;
+    dfb.append(el("tr",{},el("td",{text:k}),el("td",{text:String(h)}),el("td",{text:String(v)}),
+      el("td",{}, h>=v?el("span",{class:"good-c"},el("span",{class:"swatch good-bg"}),"ok")
+                     :el("span",{class:"critical-c"},el("span",{class:"swatch critical-bg"}),`short ${v-h}`))));
+  }
+  df.append(dfb);
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px;margin-bottom:8px",text:"Can a legal deck be built from this pool?"}),df));
+
+  /* ---- playtest log: the only data the documents cannot produce ---- */
+  const draft={when:"",players:"",winner:"",cards:"",felt_bad:"",notes:""};
+  const field=(k,ph,rows=1)=>el("div",{},
+    el("label",{class:"fl",text:k.replace("_"," ")}),
+    el("textarea",{rows:String(rows),placeholder:ph,oninput:e=>{draft[k]=e.target.value;}}));
+  const log=el("div",{class:"panel",style:"padding:0"});
+  for(const g of [...(DB.playtests||[])].reverse()){
+    log.append(el("div",{class:"finding warn"},
+      el("span",{class:"code",text:"#"+g.id}),
+      el("div",{class:"body"},
+        el("div",{}, el("span",{class:"sub",text:g.when||"undated"}), " — ", g.players||"", 
+          g.winner?el("span",{class:"muted",text:`  ·  won: ${g.winner}`}):null),
+        g.felt_bad?el("div",{class:"fx",style:"color:var(--warning)",text:"felt bad: "+g.felt_bad}):null,
+        g.notes?el("div",{class:"fx",text:g.notes}):null)));
+  }
+  main.append(el("div",{class:"panel"},
+    el("div",{class:"row spread",style:"margin-bottom:6px"},
+      el("h3",{style:"font-size:13px",text:`Playtest log · ${(DB.playtests||[]).length} games`}),
+      el("span",{class:"muted",style:"font-size:11.5px",
+        text:"\"what felt bad\" is the field that matters — nothing else can tell you it"})),
+    el("div",{class:"grid2"},
+      el("div",{}, field("when","2026-08-05"), field("players","me vs Dre deck"),
+                   field("winner","who won")),
+      el("div",{}, field("cards","cards involved, comma separated"),
+                   field("felt_bad","what felt unfair or unanswerable?",2))),
+    field("notes","anything else",2),
+    el("div",{class:"row",style:"margin-top:10px;gap:8px"},
+      el("button",{class:"primary",onclick:async()=>{
+        const r=await fetch("/api/playtest",{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify(draft)});
+        const j=await r.json();
+        if(j.error) return toast("Failed: "+j.error,6000);
+        DB.playtests=j.playtests; toast("Game logged"); renderMain();
+      }},"Log this game"))));
+  if((DB.playtests||[]).length) main.append(log);
+
+  /* ---- snapshots ---- */
+  let label="";
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px",text:"Snapshots"}),
+    el("div",{class:"muted",style:"font-size:11.5px;margin:4px 0 8px"},
+      "Tag the pool before a playtest so you can tell what changed afterwards. Playtest feedback is worthless if you can't remember which version you played."),
+    el("div",{class:"row",style:"gap:8px"},
+      el("input",{class:"efsearch",style:"flex:1;margin:0",placeholder:"before playtest 3",
+        oninput:e=>{label=e.target.value;}}),
+      el("button",{class:"ghost",onclick:async()=>{
+        const r=await fetch("/api/snapshot",{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({label})});
+        const j=await r.json();
+        toast(j.error ? "Failed: "+j.error : `Snapshot "${j.label}" — ${j.cards} cards`);
+      }},"Take snapshot"))));
+}
+
+/* ------------------------------ PROBLEMS --------------------------------- */
+let probFilter="";
+function renderProblems(main){
+  const all=DB.findings||[];
+  const codes=[...new Set(all.map(f=>f.code))].sort();
+  main.append(el("div",{class:"topbar"},
+    el("div",{class:"row spread"},
+      el("div",{},el("h2",{style:"font-size:20px",text:"Problems"}),
+        el("div",{class:"muted",style:"font-size:12px;margin-top:3px",
+          text:`${all.filter(f=>f.severity==="error").length} blocking · ${all.filter(f=>f.severity!=="error").length} warnings — ranked worst first`})),
+      el("button",{class:"ghost",onclick:async()=>{await refreshFindings(); renderMain(); toast("re-checked");}},"Re-check"))));
+  const chips=el("div",{class:"chips",style:"margin-bottom:12px"});
+  chips.append(el("button",{class:"chip","aria-pressed":!probFilter,onclick:()=>{probFilter="";renderMain();}},"all"));
+  for(const c of codes) chips.append(el("button",{class:"chip","aria-pressed":probFilter===c,
+    onclick:()=>{probFilter=c;renderMain();}}, c, el("span",{class:"pts",text:String(all.filter(f=>f.code===c).length)})));
+  main.append(chips);
+  const list=el("div",{class:"panel",style:"padding:0"});
+  for(const f of all.filter(f=>!probFilter||f.code===probFilter)){
+    list.append(el("div",{class:`finding ${f.severity==="error"?"err":"warn"}`},
+      el("span",{class:"code",text:f.code}),
+      el("div",{class:"body"},
+        el("div",{}, el("span",{class:"sub",text:f.subject}), ": ", f.message),
+        f.fix?el("div",{class:"fx",text:"fix: "+f.fix}):null,
+        f.where?el("div",{class:"fx",text:f.where}):null),
+      cards.find(c=>c.meta.name===f.subject)
+        ? el("button",{class:"ghost",style:"padding:3px 9px;font-size:11.5px",
+            onclick:()=>{setMode("cards"); select(cards.find(c=>c.meta.name===f.subject));}},"open")
+        : null));
+  }
+  main.append(list);
+}
+
 function renderMain(){
   const main=$("#main"); main.replaceChildren();
+  if(MODE==="factions") return renderFactions(main);
+  if(MODE==="crews")    return renderCrews(main);
+  if(MODE==="matrix")   return renderMatrix(main);
+  if(MODE==="health")   return renderHealth(main);
+  if(MODE==="problems") return renderProblems(main);
   if(!current){ main.append(el("div",{class:"muted",style:"padding:40px 0",text:"Select a card."})); return; }
   const m=draft.meta, s=scoreDraft(draft);
 
@@ -815,6 +1298,7 @@ function renderArt(){
 
 function renderRail(){
   const rail=$("#raildyn"); rail.replaceChildren();
+  if(MODE!=="cards"){ $("#railart").replaceChildren(); return; }
   if(!current) return;
   const m=draft.meta;
 
@@ -882,6 +1366,7 @@ async function save(){
     const drift = local.scorable && saved.score.scorable && local.baseDelta!==saved.score.baseDelta;
     toast(drift ? "Saved — but the server scored it differently. Run tools/balance.py."
                 : `Saved to ${saved.relPath}`);
+    refreshFindings();
     renderMain(); renderRail(); renderList();
   }catch(e){ toast("Save failed: "+e.message, 6000); }
   finally{ btn.disabled=false; btn.textContent="Save to file"; }
@@ -918,6 +1403,7 @@ async function save(){
   });
   addEventListener("beforeunload",e=>{ if(dirty){ e.preventDefault(); e.returnValue=""; } });
 
+  renderModes();
   renderList();
   if(cards.length) select(cards[0]);
 })();

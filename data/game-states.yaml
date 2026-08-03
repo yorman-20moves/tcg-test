@@ -1,0 +1,38 @@
+# Controlled vocabulary of board conditions.
+#
+# Cards declare `plan.requires` (states the card needs) and `plan.produces` (states the card
+# creates). tools/rules.py builds a graph from these and reports every enabler chain --
+# card A producing what card B requires. Same-crew edges are the loud ones, because a cost
+# your own crewmate removes was never a cost (the Enabler Test).
+#
+# Keep this list SHORT. A vocabulary nobody can remember doesn't get used.
+
+states:
+  - key: opponent_board_empty
+    label: The opponent controls no cards on their Board
+    note: Characters, Tactics and Attachments all count
+  - key: opponent_characters_gone
+    label: The opponent controls no Characters
+  - key: opponent_hand_empty
+    label: The opponent has no cards in hand
+  - key: opponent_energy_hoarded
+    label: The opponent has unused Energy in their Resource Row
+  - key: opponent_damaged
+    label: The opponent has taken permanent PH or MH damage
+  - key: own_board_wide
+    label: You control three or more Characters
+  - key: own_board_empty
+    label: You control no Characters
+    note: The rubber-band condition -- see OQ-14
+  - key: own_crew_assembled
+    label: You control three or more Characters of one crew
+  - key: attachments_in_play
+    label: You control two or more Attachments
+  - key: self_damaged
+    label: This Character has taken permanent damage
+  - key: character_murdered
+    label: A Character was Murdered this Round
+  - key: combat_wave_declared
+    label: A Combat Wave has been declared this Round
+  - key: influence_accumulating
+    label: You are gaining Influence Points

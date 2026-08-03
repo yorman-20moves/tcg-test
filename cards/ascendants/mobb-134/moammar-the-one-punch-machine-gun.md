@@ -23,6 +23,9 @@ art:
   base: Moammarthe1punchmachinegun2ndversion
   ascended: Moammarthe1punchmachinegun2ndversionlvlup
 status: ported
+plan:
+  requires:
+  - opponent_board_empty
 ---
 
 # Moammar, The One Punch Machine Gun

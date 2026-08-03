@@ -1,0 +1,220 @@
+# Faction definitions. THIS FILE IS THE SOURCE OF TRUTH for faction identity.
+# docs/rulebook/03-factions.md is generated from it -- edit here, not there.
+#
+# unique:  ONLY this faction may have these. Marking the same tool unique to two
+#          factions is a hard error (F1). A card using another faction's unique
+#          tool is a hard error (F2).
+# never:   this faction may NEVER have these, even though others share them (F3).
+# Anything not marked unique and not on a never list is SHARED by default.
+#
+# windows: strong | weak | blind -- where this faction can answer a plan.
+#          Feeds the computed Reach on every card.
+#
+# SEEDED FROM CLAUDE'S DRAFTS, 2026-08-03. Not yet reviewed by Yorman.
+# Every entry traces to a sentence already printed in the rulebook.
+
+factions:
+  - key: warmongers
+    name: Warmongers
+    color: red
+    emoji: "🟥"
+    reviewed: false
+    identity: >-
+      To the Warmongers, the world is forged in violence and paid for in blood. They don't just
+      fight; they conquer. Their bodies are meticulously honed to be ultimate weapons and
+      unbreakable shields. Offensively they hit with the force of a freight train, overwhelming
+      blockers and spilling raw physical destruction directly into the enemy line. Defensively
+      they are masochistic guardians, throwing their massive frames into the line of fire to
+      absorb blows meant for their crew, turning pain into permanent power. They don't scheme or
+      play mind games -- they endure, they adapt, and they break you through sheer, unrelenting
+      physical dominance.
+    weakness: >-
+      But when a problem cannot be solved with fists, and their unbreakable bodies finally begin
+      to fail, what will they have left?
+    unique:
+      keywords: [Berserker, Combo-Striker, Executioner, Juggernaut, Protector]
+      effects: [Multiple Attacks, Permanent Buff 4, Permanent Buff 5]
+    never:
+      effects:
+        - Counterspell
+        - Searching (Tutors)
+        - Card Draw 1
+        - Card Draw 2
+        - Card Draw 3
+        - Card Draw 4
+        - Card Draw 5
+        - Hand Destruction 1
+        - Hand Destruction 2
+        - Hand Destruction 3
+        - Hand Destruction 4
+        - Hand Destruction 5
+        - Untargetable
+        - Spell Shield
+        - Recursion
+        - Resource Denial
+    windows:
+      pre_assembly: blind
+      during_assembly: strong
+      on_resolution: weak
+      post_resolution: blind
+      race: strong
+    window_notes:
+      during_assembly: "They kill the pieces on the board. Hard Removal through combat."
+      on_resolution: "Protector intercepts -- their only reactive tool, and it only stops attacks."
+      race: "Raw damage. They win before the plan matures."
+
+  - key: overthinkers
+    name: Overthinkers
+    color: blue
+    emoji: "🟦"
+    reviewed: false
+    identity: >-
+      The Overthinkers view the battlefield as a chessboard, and everyone else is just a pawn
+      waiting to be sacrificed. They rely on cold, calculating intellect, viewing physical
+      brawling as the primitive flailing of animals. Offensively they bypass the body entirely,
+      directly attacking your psyche and shattering your mental resolve from afar. Defensively
+      they manipulate the flow of combat, forcing you to attack decoys, redirecting your strikes,
+      or laying traps that violently punish your aggression. They hoard information, strip your
+      hand of options, control the board state, and dictate exactly how and when you are allowed
+      to breathe.
+    weakness: >-
+      But when their perfect plans are suddenly punched in the mouth, and the chaotic violence of
+      the streets overwhelms their grand designs, how long can a genius survive a street fight?
+    unique:
+      keywords: [Instigator, Interrogator, Tracker, Troll]
+      effects:
+        - Counterspell
+        - Searching (Tutors)
+        - Card Draw 1
+        - Card Draw 2
+        - Card Draw 3
+        - Card Draw 4
+        - Card Draw 5
+        - Untargetable
+        - Spell Shield
+        - Prevent 1 Attack
+        - Prevent Multiple Attacks
+        - Mass Removal (Wipes)
+    never:
+      effects: [Multiple Attacks, Permanent Buff 4, Permanent Buff 5, Recursion, Cleanse (Major)]
+    windows:
+      pre_assembly: strong
+      during_assembly: weak
+      on_resolution: strong
+      post_resolution: weak
+      race: blind
+    window_notes:
+      pre_assembly: "Strip the hand, deny the tutor, take the piece before it's played."
+      on_resolution: "Counterspell. The only faction that reliably answers in the Reaction Window."
+      race: "They are slow by design. Speed is their printed weakness."
+    notes: >-
+      Mass Removal is theirs, but ONLY as a deep-setup payoff (Dre's seven Commandments), never
+      as a cheap Tactic.
+
+  - key: assholes
+    name: Assholes
+    color: green
+    emoji: "🟩"
+    reviewed: false
+    identity: >-
+      Why play fair when playing dirty pays so much better? The Assholes don't care about honor,
+      physical endurance, or intellectual supremacy -- they only care about winning by making you
+      miserable. They are the ultimate opportunists. Offensively they bleed you dry, striking
+      from the shadows where you can't hit back and extorting your hard-earned cards and
+      resources. Defensively they don't block; they evade, slip past your defenses, or plant
+      spies directly onto your side of the board to sabotage you from the inside out. They
+      weaponize frustration, stealing your energy, hijacking your tempo, and laughing while your
+      empire crumbles.
+    weakness: >-
+      But if they are ever dragged out of the shadows and forced into a fair, head-on collision,
+      do they have the spine to survive it?
+    unique:
+      keywords: [Extortionist, "Hustler +1", "Hustler +2", "Hustler +3", "Hustler +4", "Hustler +5", Infiltrator, Prowler]
+      effects:
+        - Hand Destruction 1
+        - Hand Destruction 2
+        - Hand Destruction 3
+        - Hand Destruction 4
+        - Hand Destruction 5
+        - Energy Gen 1
+        - Energy Gen 2
+        - Energy Gen 3
+        - Energy Gen 4
+        - Energy Gen 5
+        - Energy Gen from Keyword
+        - Taxing 1
+        - Taxing 2
+        - Taxing 3
+        - Taxing 4
+        - Taxing 5
+        - Resource Denial
+        - Opponent energy generation
+    never:
+      effects:
+        - Counterspell        # "they don't block" -- countering IS blocking
+        - Cleanse (Minor)
+        - Cleanse (Major)
+        - Recursion
+        - Multiple Attacks
+        - Permanent Buff 4
+        - Permanent Buff 5
+    windows:
+      pre_assembly: strong
+      during_assembly: blind
+      on_resolution: weak
+      post_resolution: strong
+      race: weak
+    window_notes:
+      pre_assembly: "Steal it, discard it, or drain the Energy before the plan starts."
+      during_assembly: "BLIND BY DESIGN. Trading on the board is the fair fight they can't win."
+      post_resolution: "They evade, bounce, and slip away. They survive things."
+
+  - key: icons
+    name: Icons
+    color: gold
+    emoji: "🟨"
+    reviewed: false
+    identity: >-
+      The Icons do not fight for survival; they fight for the soul of the city. They are the
+      pillars of the community, commanding absolute respect and ruling through a heavy,
+      unbreakable aura of guilt and loyalty. Offensively they don't need to throw a single punch
+      -- they win the cultural war, accumulating so much societal Influence that you simply cease
+      to matter. Defensively they are the supreme caretakers, healing the broken, pacifying
+      violence before a single punch is thrown, and crippling attackers by making them carry the
+      immense shame of striking a legend. They are martyrs, sponsors, and untouchable kings.
+    weakness: >-
+      But if their followers are slaughtered, and their pristine image is violently dragged
+      through the mud, can a symbol actually bleed?
+    unique:
+      keywords: [Guilt-Tripper, Martyr, Nurturer, Pacifier, Sponsor]
+      effects: [Cleanse (Minor), Cleanse (Major), Recursion, Status Immunity]
+    never:
+      effects:
+        - Hand Destruction 1
+        - Hand Destruction 2
+        - Hand Destruction 3
+        - Hand Destruction 4
+        - Hand Destruction 5
+        - Multiple Attacks
+        - Resource Denial
+        - Taxing 1
+        - Taxing 2
+        - Taxing 3
+        - Taxing 4
+        - Taxing 5
+    windows:
+      pre_assembly: blind
+      during_assembly: strong
+      on_resolution: blind
+      post_resolution: strong
+      race: blind
+    window_notes:
+      during_assembly: "Pacify it. Prevent it before it happens."
+      post_resolution: "Heal through it, cleanse it, bring the fallen back."
+      race: "They never race. They win by lasting."
+    notes: >-
+      ZERO CARDS EXIST. This faction is five name-only stubs (OQ-06). Everything above is
+      derived from the rulebook's faction description, not from cards.
+      Known data-model problem: the effect table combines "Direct Damage/Heal N" into one
+      entry, so there is no way to say the Icons may heal but may not burn. Splitting that
+      entry is a prerequisite for their `never` list to be honest.

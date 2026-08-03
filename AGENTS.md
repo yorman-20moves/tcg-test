@@ -43,13 +43,27 @@ dimension is weakest and why it still ships.
 3. **Never cross faction keywords.** Gate G4. `data/keywords.yaml` owns the mapping.
 4. **Every ability declares its type** — `(Standard Ability)`, `(Fast Ability)`,
    `(Trigger Ability)`, `(Passive Ability)`. Gate G3.
-5. **Run the tools before claiming a card is balanced.**
+5. **Run the tools before claiming anything is finished.**
    ```
-   python tools/balance.py --failing      # G1
-   python tools/validate.py               # G1, G3, G4, G6, G8
-   python tools/studio.py                 # the visual design workbench
+   python tools/check.py                  # EVERYTHING -- one command, one exit code
+   python tools/check.py --next 5         # the five things to fix now
+   python tools/generate.py               # regenerate the docs derived from data/
+   python tools/studio.py                 # the workbench: Cards Factions Crews Matrix Health Problems
+   python tools/balance.py --failing      # just the budgets
    ```
-6. **`docs/rulebook/12-keywords.md` is generated** from `data/keywords.yaml`. Edit the YAML.
+   `check.py` is the one that matters. It validates all three levels at once and its exit code
+   is the number of blocking errors.
+6. ****Three documents are GENERATED and must never be hand-edited:**
+`docs/rulebook/03-factions.md` (from `data/factions.yaml`), `docs/rulebook/12-keywords.md`
+(from `data/keywords.yaml`), and `docs/design/crews.md` (from `data/crews.yaml`). Edit the YAML
+and run `python tools/generate.py`. `generate.py --check` fails if any is stale.
+
+Faction identity, toolkits and window profiles live in `data/factions.yaml`. Crew plans live in
+`data/crews.yaml`. Board conditions live in `data/game-states.yaml`, and every card declares
+`plan.requires` / `plan.produces` against that vocabulary so `check.py` can find enabler chains
+automatically — that is how Dre feeding Moammar was caught.
+
+`docs/rulebook/12-keywords.md` is generated** from `data/keywords.yaml`. Edit the YAML.
 7. **Append to `## Design Notes`, don't overwrite.** The history of why a card changed is worth
    more than the current state.
 8. **Lore gate L2 (the dignity line) is not negotiable and not a joke gate.** These are real

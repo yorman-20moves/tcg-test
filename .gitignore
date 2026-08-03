@@ -25,3 +25,6 @@ _to_delete/
 
 # Python virtual environment created by "Card Studio.bat"
 .venv/
+
+# Snapshots written by the Studio
+.snapshots/
