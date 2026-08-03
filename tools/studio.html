@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Studio</title>
+<style>
+/* Palette roles. Status steps are fixed and never themed; they always ship with an
+   icon + label so colour never carries the meaning alone. */
+:root{
+  color-scheme:dark;
+  --surface-1:#1a1a19; --plane:#0d0d0d; --raised:#232322;
+  --ink-1:#ffffff; --ink-2:#c3c2b7; --ink-3:#898781;
+  --rule:#2c2c2a; --baseline:#383835; --ring:rgba(255,255,255,.10);
+  --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+  --good-track:#0c3a0c; --warning-track:#4a3a0c; --serious-track:#4a2a1c; --critical-track:#4a1a1a;
+  --f-warmongers:#e34948; --f-overthinkers:#3987e5; --f-assholes:#008300; --f-icons:#eda100;
+  --accent:#3987e5;
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --surface-1:#fcfcfb; --plane:#f9f9f7; --raised:#ffffff;
+  --ink-1:#0b0b0b; --ink-2:#52514e; --ink-3:#898781;
+  --rule:#e1e0d9; --baseline:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --good-track:#cdeccd; --warning-track:#fbeccb; --serious-track:#fadfd3; --critical-track:#f5d4d4;
+  --f-warmongers:#c22e2d; --f-overthinkers:#2a78d6; --f-assholes:#006300; --f-icons:#a86f00;
+  --accent:#2a78d6;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--plane); color:var(--ink-1);
+  font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0;font-weight:600}
+a{color:var(--accent)}
+
+/* ---------- shell ---------- */
+#app{display:grid;grid-template-columns:270px minmax(460px,1fr) 350px;height:100vh}
+@media(max-width:1200px){#app{grid-template-columns:230px 1fr}#rail{display:none}}
+.col{overflow-y:auto;height:100vh}
+#list{background:var(--surface-1);border-right:1px solid var(--rule)}
+#rail{background:var(--surface-1);border-left:1px solid var(--rule)}
+#main{padding:0 28px 120px}
+
+/* ---------- topbar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:20;background:var(--surface-1);
+  border-bottom:1px solid var(--rule);padding:12px 14px;
+}
+#main .topbar{background:var(--plane);padding:14px 0;margin:0 0 4px}
+.row{display:flex;align-items:center;gap:8px}
+.spread{justify-content:space-between}
+.muted{color:var(--ink-3)}
+.sec{color:var(--ink-2)}
+
+/* ---------- card list ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.filters select,.filters input{
+  flex:1 1 auto;min-width:0;background:var(--raised);border:1px solid var(--rule);
+  border-radius:6px;padding:5px 7px;
+}
+.crewgroup{padding:14px 14px 2px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.cardrow{
+  display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+  padding:7px 14px;background:none;border:0;border-left:3px solid transparent;cursor:pointer;
+}
+.cardrow:hover{background:var(--raised)}
+.cardrow[aria-current="true"]{background:var(--raised);border-left-color:var(--accent)}
+.cardrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cardrow .cost{font-variant-numeric:tabular-nums;color:var(--ink-3);font-size:12px}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.dot.good{background:var(--good)} .dot.warning{background:var(--warning)}
+.dot.serious{background:var(--serious)} .dot.critical{background:var(--critical)}
+.dot.none{background:var(--baseline)}
+.fbar{width:3px;height:16px;border-radius:2px;flex:none}
+
+/* ---------- hero + meters ---------- */
+.panel{background:var(--surface-1);border:1px solid var(--rule);border-radius:10px;padding:16px;margin-bottom:14px}
+.hero{display:flex;align-items:flex-start;gap:22px;flex-wrap:wrap}
+.heronum{font-size:52px;line-height:1;font-weight:600;letter-spacing:-.02em}
+.herolabel{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.verdict{
+  display:inline-flex;align-items:center;gap:7px;font-weight:600;margin-top:10px;font-size:13px;
+  padding:4px 11px 4px 5px;border-radius:999px;border:1px solid var(--rule);color:var(--ink-1)
+}
+.verdict.sev-good{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent)}
+.verdict.sev-warning{border-color:var(--warning);background:color-mix(in srgb,var(--warning) 12%,transparent)}
+.verdict.sev-serious{border-color:var(--serious);background:color-mix(in srgb,var(--serious) 12%,transparent)}
+.verdict.sev-critical{border-color:var(--critical);background:color-mix(in srgb,var(--critical) 12%,transparent)}
+/* the glyph is a filled mark: pick ink or white by the fill's luminance */
+.glyph.warning-bg,.glyph.serious-bg{color:#1a1a19}
+.verdict .glyph{
+  width:18px;height:18px;border-radius:50%;display:grid;place-items:center;
+  font-size:11px;font-weight:700;color:#fff;flex:none
+}
+.good-c{color:var(--good)} .warning-c{color:var(--warning)}
+.serious-c{color:var(--serious)} .critical-c{color:var(--critical)}
+.good-bg{background:var(--good)} .warning-bg{background:var(--warning)}
+.serious-bg{background:var(--serious)} .critical-bg{background:var(--critical)}
+
+.meter{margin-top:14px}
+.meter .cap{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:5px}
+.meter .cap b{font-variant-numeric:tabular-nums;color:var(--ink-1)}
+.track{height:14px;border-radius:7px;position:relative;overflow:hidden}
+.fill{height:100%;border-radius:0 4px 4px 0;transition:width .12s ease-out}
+.budgetmark{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink-1);opacity:.85}
+.breakdown{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--ink-2)}
+.breakdown b{color:var(--ink-1);font-variant-numeric:tabular-nums}
+
+/* ---------- editors ---------- */
+.grid{display:grid;gap:12px}
+.stats{grid-template-columns:repeat(5,1fr)}
+@media(max-width:760px){.stats{grid-template-columns:repeat(3,1fr)}}
+.stepper{background:var(--raised);border:1px solid var(--rule);border-radius:8px;padding:9px 10px;text-align:center}
+.stepper .lb{font-size:11px;letter-spacing:.06em;color:var(--ink-3);text-transform:uppercase}
+.stepper .ctl{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.stepper input{
+  width:46px;text-align:center;font-size:19px;font-weight:600;background:none;border:0;
+  font-variant-numeric:tabular-nums;padding:0;
+}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.stepper input[type=number]{-moz-appearance:textfield}
+.sbtn{
+  width:24px;height:24px;border-radius:6px;border:1px solid var(--rule);background:var(--surface-1);
+  cursor:pointer;line-height:1;font-size:15px;color:var(--ink-2)
+}
+.sbtn:hover{border-color:var(--accent);color:var(--ink-1)}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;
+  border:1px solid var(--rule);background:var(--raised);cursor:pointer;font-size:12.5px;
+}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}
+.chip .pts{font-variant-numeric:tabular-nums;color:var(--ink-3);font-size:11px}
+.chip[aria-pressed="true"] .pts{color:var(--ink-2)}
+
+.efsearch{width:100%;background:var(--raised);border:1px solid var(--rule);border-radius:7px;padding:7px 9px;margin-bottom:8px}
+.eflist{max-height:190px;overflow-y:auto;border:1px solid var(--rule);border-radius:8px}
+.efrow{display:flex;align-items:center;gap:9px;padding:6px 10px;cursor:pointer;border-bottom:1px solid var(--rule)}
+.efrow:last-child{border-bottom:0}
+.efrow:hover{background:var(--raised)}
+.efrow input{accent-color:var(--accent);flex:none}
+.efrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.efrow .pts{font-variant-numeric:tabular-nums;color:var(--ink-3);font-size:12px}
+.sel{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;padding:3px 8px;border-radius:6px;background:var(--raised);border:1px solid var(--rule)}
+.tag button{background:none;border:0;cursor:pointer;color:var(--ink-3);padding:0;font-size:14px;line-height:1}
+
+textarea{
+  width:100%;background:var(--raised);border:1px solid var(--rule);border-radius:8px;
+  padding:10px;resize:vertical;line-height:1.55;
+}
+textarea:focus,input:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);margin:12px 0 5px}
+
+/* ---------- rail ---------- */
+.railsec{border-bottom:1px solid var(--rule);padding:14px}
+.railsec h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px}
+.weakness{border-left:3px solid var(--warning);padding:8px 0 8px 11px;margin-top:10px;font-style:italic;color:var(--ink-2);font-size:12.5px}
+.gate{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--rule);font-size:12.5px}
+.gate:last-child{border-bottom:0}
+.gate .gid{font-weight:600;font-variant-numeric:tabular-nums;flex:none;width:22px}
+.gate .msg{flex:1;color:var(--ink-2)}
+.sib{width:100%;border-collapse:collapse;font-size:12px}
+.sib th{text-align:left;font-weight:500;color:var(--ink-3);padding:4px 6px 6px 0;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.sib td{padding:5px 6px 5px 0;border-top:1px solid var(--rule);font-variant-numeric:tabular-nums}
+.sib td.nm{font-variant-numeric:normal}
+.sib tr.self td{color:var(--accent);font-weight:600}
+.sib tr.off td{opacity:.62}
+.sib .minibar{width:44px;height:6px;border-radius:3px;display:inline-block;vertical-align:middle}
+
+/* ---------- savebar ---------- */
+#savebar{
+  position:fixed;right:366px;bottom:22px;z-index:30;display:flex;align-items:center;gap:12px;
+  background:var(--surface-1);border:1px solid var(--rule);border-radius:12px;padding:10px 14px;
+  box-shadow:0 6px 24px rgba(0,0,0,.35);
+}
+@media(max-width:1200px){#savebar{right:22px}}
+#savebar[hidden]{display:none}
+.primary{
+  background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 18px;
+  font-weight:600;cursor:pointer
+}
+.ghost{background:none;border:1px solid var(--rule);border-radius:8px;padding:9px 14px;cursor:pointer;color:var(--ink-2)}
+.ghost:hover{color:var(--ink-1);border-color:var(--accent)}
+.fchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2)}
+.stub{border-left:3px solid var(--warning);padding:10px 12px;background:var(--raised);border-radius:0 8px 8px 0;margin-bottom:14px;font-size:13px}
+.gatepills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--rule);background:var(--raised);font-size:12.5px;font-weight:600}
+.pill.bad{border-color:var(--critical)}
+.pill .glyph{width:15px;height:15px;border-radius:50%;display:grid;place-items:center;font-size:9px;font-weight:700;color:#fff}
+.humangates{margin-top:12px;border-top:1px solid var(--rule);padding-top:10px;display:grid;gap:4px}
+.hg{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;cursor:pointer}
+.hg input{accent-color:var(--accent);margin-top:2px;flex:none}
+.hg b{flex:none;width:22px;font-variant-numeric:tabular-nums}
+.swatch{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--raised);border:1px solid var(--rule);border-radius:9px;padding:9px 16px;z-index:60;font-size:13px}
+#toast[hidden]{display:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="list" class="col">
+    <div class="topbar">
+      <div class="row spread">
+        <h1 style="font-size:15px">Card Studio</h1>
+        <button class="ghost" id="theme" style="padding:4px 9px" title="Toggle light/dark">◐</button>
+      </div>
+      <div class="filters">
+        <input id="q" placeholder="Search…" aria-label="Search cards">
+        <select id="ffac" aria-label="Filter by faction"><option value="">All factions</option></select>
+        <select id="fbal" aria-label="Filter by balance">
+          <option value="">All balance</option>
+          <option value="off">Outside tolerance</option>
+          <option value="good">In tolerance</option>
+          <option value="stub">Stubs</option>
+        </select>
+      </div>
+    </div>
+    <div id="rows"></div>
+  </div>
+
+  <div id="main" class="col"><div class="muted" style="padding:40px 0">Loading…</div></div>
+
+  <div id="rail" class="col"></div>
+</div>
+
+<div id="savebar" hidden>
+  <span class="muted" id="dirtynote">Unsaved changes</span>
+  <button class="ghost" id="revert">Revert</button>
+  <button class="primary" id="save">Save to file</button>
+</div>
+<div id="toast" hidden></div>
+
+<script>
+"use strict";
+const $ = (s,r=document)=>r.querySelector(s);
+const el = (t,p={},...kids)=>{const n=document.createElement(t);
+  for(const[k,v] of Object.entries(p)){
+    if(k==="class")n.className=v; else if(k==="text")n.textContent=v;
+    else if(k.startsWith("on"))n.addEventListener(k.slice(2),v);
+    /* aria-* wants the literal strings "true"/"false"; a bare "" neither styles nor announces */
+    else if(typeof v==="boolean"){
+      if(k.startsWith("aria-")) n.setAttribute(k,String(v));
+      else if(v) n.setAttribute(k,"");
+    }
+    else if(v!==null&&v!==undefined)n.setAttribute(k,v);
+  }
+  for(const c of kids.flat()) if(c!=null) n.append(c.nodeType?c:document.createTextNode(c));
+  return n;};
+const esc = s => String(s??"");
+
+const FACTION_VAR = {Warmongers:"--f-warmongers",Overthinkers:"--f-overthinkers",
+                     Assholes:"--f-assholes",Icons:"--f-icons"};
+const GLYPH = {good:"✓",warning:"!",serious:"!",critical:"✕"};
+const VERDICT_WORD = {good:"In tolerance",warning:"Slightly off",serious:"Off",critical:"Badly off"};
+
+let DB=null, cards=[], current=null, draft=null;
+
+/* ---------------- scoring (mirrors tools/scoring.py; constants come from the server) --- */
+function budgetOf(meta){
+  const c=DB.constants;
+  const isAsc=(meta.subtype||"").toLowerCase()==="ascendant";
+  return Number(meta.cost)*c.costMultiplier + c.baseAllowance + (isAsc?c.ascendantBonus:0);
+}
+const pointsOf=(names,table)=>(names||[]).reduce((a,n)=>a+(table[n]??0),0);
+
+function scoreDraft(d){
+  const m=d.meta, stats=m.stats||{};
+  const full = DB.statKeys.every(k=>stats[k]!==null&&stats[k]!==undefined&&stats[k]!=="");
+  if(m.cost===null||m.cost===undefined||m.cost==="") return {scorable:false,reason:"no cost defined"};
+  if(!full) return {scorable:false,reason:"incomplete stat line"};
+  const budget=budgetOf(m);
+  const statsTotal=DB.statKeys.reduce((a,k)=>a+Number(stats[k]||0),0);
+  const bk=pointsOf(m.base?.keywords,DB.kwPts), be=pointsOf(m.base?.effects,DB.efPts);
+  const ak=pointsOf(m.ascended?.keywords,DB.kwPts), ae=pointsOf(m.ascended?.effects,DB.efPts);
+  const baseSpent=statsTotal+bk+be, ascSpent=ak+ae;
+  const ascBudget=Math.trunc(budget*DB.constants.ascendedMultiplier);
+  return {scorable:true,budget,statsTotal,baseKeywordPoints:bk,baseEffectPoints:be,
+    ascendedKeywordPoints:ak,ascendedEffectPoints:ae,baseSpent,ascendedSpent:ascSpent,
+    baseDelta:budget-baseSpent, ascendedBudget:ascBudget,
+    ascendedDelta:ascBudget-(baseSpent+ascSpent)};
+}
+/* Two-sided on the base budget: underspending is as wrong as overspending. */
+function severity(delta){
+  const c=DB.constants, m=Math.abs(delta);
+  for(const [t,label] of c.severityBands) if(m<=t) return label;
+  return c.severityWorst;
+}
+/* One-sided on the ascended budget: ×1.5 is a ceiling, so spending under it is fine. */
+function ceilingSeverity(delta){
+  if(delta>=0) return "good";
+  const m=Math.abs(delta);
+  for(const [t,label] of DB.constants.severityBands) if(m<=t&&t>0) return label;
+  return DB.constants.severityWorst;
+}
+
+/* ---------------- gates (mirrors tools/scoring.py) ------------------------------------ */
+function gatesOf(d){
+  const m=d.meta, out={G1:[],G3:[],G4:[],G6:[],G8:[]}, s=scoreDraft(d);
+  if(s.scorable){
+    if(Math.abs(s.baseDelta)>DB.constants.tolerance)
+      out.G1.push(`base side ${s.baseDelta<0?"over":"under"} budget by ${Math.abs(s.baseDelta)}`);
+    if((m.subtype||"").toLowerCase()==="ascendant" && s.ascendedDelta<0)
+      out.G1.push(`ascended side exceeds base budget ×${DB.constants.ascendedMultiplier} by ${Math.abs(s.ascendedDelta)} (OQ-04)`);
+  }
+  const known=new Set([...DB.abilityTypes,...Object.keys(DB.kwPts)]);
+  for(const text of [d.rulesText,d.ascendedText]){
+    for(const mm of esc(text).matchAll(/\[([^\]]+)\]\s*(\([^)]*\))?/g)){
+      const [,name,declared]=mm;
+      if(DB.abilityTypes.includes(name)) continue;
+      if(!declared) out.G3.push(`ability [${name}] declares no ability type`);
+      else if(!known.has(declared.slice(1,-1))) out.G3.push(`ability [${name}] declares unknown type '${declared.slice(1,-1)}'`);
+    }
+  }
+  for(const side of ["base","ascended"])
+    for(const kw of (m[side]?.keywords||[])){
+      const owner=DB.kwFaction[kw];
+      if(!owner) out.G4.push(`unknown keyword '${kw}' on ${side} side`);
+      else if(owner!==m.faction) out.G4.push(`${side} keyword '${kw}' belongs to ${owner}, card is ${m.faction}`);
+    }
+  const blob=`${esc(d.rulesText)}\n${esc(d.ascendedText)}`.toLowerCase();
+  const applied=DB.statuses.map(s=>s.name).filter(n=>n&&new RegExp(`\\b${n.toLowerCase()}\\b`).test(blob));
+  if(applied.length && !DB.durationPhrases.some(p=>blob.includes(p)))
+    out.G6.push(`applies status (${applied.join(", ")}) with no stated duration`);
+  if(!m.faction) out.G8.push("no faction");
+  if(!m.art?.base) out.G8.push("no base art reference");
+  if(!("crew" in m)) out.G8.push("crew key absent");
+  return out;
+}
+
+/* ---------------- list ---------------------------------------------------------------- */
+function listSeverity(c){
+  const s=c===current?scoreDraft(draft):c.score;
+  return s.scorable?severity(s.baseDelta):"none";
+}
+function renderList(){
+  const q=$("#q").value.toLowerCase(), fac=$("#ffac").value, bal=$("#fbal").value;
+  const rows=$("#rows"); rows.replaceChildren();
+  const groups=new Map();
+  for(const c of cards){
+    const m=c.meta, sev=listSeverity(c);
+    if(q && !(`${m.name} ${m.crew||""} ${m.faction||""}`.toLowerCase().includes(q))) continue;
+    if(fac && m.faction!==fac) continue;
+    if(bal==="off" && (sev==="none"||sev==="good")) continue;
+    if(bal==="good" && sev!=="good") continue;
+    if(bal==="stub" && sev!=="none") continue;
+    const key=m.crew||"Unassigned";
+    if(!groups.has(key)) groups.set(key,[]);
+    groups.get(key).push(c);
+  }
+  if(!groups.size){ rows.append(el("div",{class:"crewgroup",text:"No cards match"})); return; }
+  for(const [crew,items] of [...groups].sort((a,b)=>a[0].localeCompare(b[0]))){
+    rows.append(el("div",{class:"crewgroup",text:`${crew} · ${items.length}`}));
+    for(const c of items){
+      const sev=listSeverity(c);
+      rows.append(el("button",{class:"cardrow","aria-current":c===current,
+          onclick:()=>select(c)},
+        el("span",{class:"fbar",style:`background:var(${FACTION_VAR[c.meta.faction]||"--baseline"})`}),
+        el("span",{class:`dot ${sev}`,title:sev}),
+        el("span",{class:"nm",text:c.meta.name}),
+        el("span",{class:"cost",text:c.meta.cost??"–"})));
+    }
+  }
+}
+
+/* ---------------- main surface -------------------------------------------------------- */
+function meter(label, spent, budget, sev, note){
+  const max=Math.max(spent,budget,1);
+  const pct=v=>Math.min(100,(v/max)*100);
+  return el("div",{class:"meter"},
+    el("div",{class:"cap"},
+      el("span",{},label),
+      el("span",{}, el("b",{text:String(spent)}), " / ", el("b",{text:String(budget)}), note?el("span",{class:"muted",text:" "+note}):null)),
+    el("div",{class:"track",style:`background:var(--${sev}-track)`},
+      el("div",{class:"fill",style:`width:${pct(spent)}%;background:var(--${sev})`}),
+      el("div",{class:"budgetmark",style:`left:calc(${pct(budget)}% - 1px)`,title:`budget ${budget}`})));
+}
+
+function stepper(label, value, onChange, min=0){
+  const input=el("input",{type:"number",value:value??"",min:String(min),"aria-label":label,
+    oninput:e=>onChange(e.target.value===""?null:Number(e.target.value))});
+  const bump=d=>{const v=(Number(input.value)||0)+d; if(v<min)return;
+    input.value=v; onChange(v);};
+  return el("div",{class:"stepper"},
+    el("div",{class:"lb",text:label}),
+    el("div",{class:"ctl"},
+      el("button",{class:"sbtn",text:"−","aria-label":`decrease ${label}`,onclick:()=>bump(-1)}),
+      input,
+      el("button",{class:"sbtn",text:"+","aria-label":`increase ${label}`,onclick:()=>bump(1)})));
+}
+
+function effectPicker(side){
+  const chosen=draft.meta[side].effects;
+  const search=el("input",{class:"efsearch",placeholder:`Filter ${DB.effects.length} effect types…`});
+  const list=el("div",{class:"eflist"});
+  const selected=el("div",{class:"sel"});
+  const drawSelected=()=>{
+    selected.replaceChildren(...chosen.map(n=>
+      el("span",{class:"tag"}, `${n} · ${DB.efPts[n]??"?"}`,
+        el("button",{text:"×","aria-label":`remove ${n}`,onclick:()=>{
+          chosen.splice(chosen.indexOf(n),1); touch(); }}))));
+    if(!chosen.length) selected.append(el("span",{class:"muted",text:"None selected"}));
+  };
+  const drawList=()=>{
+    const q=search.value.toLowerCase();
+    const matching=DB.effects.filter(e=>e.name.toLowerCase().includes(q));
+    /* selected first -- otherwise what you already picked scrolls out of sight */
+    matching.sort((a,b)=>(chosen.includes(b.name)?1:0)-(chosen.includes(a.name)?1:0));
+    list.replaceChildren(...matching.map(e=>{
+      const on=chosen.includes(e.name);
+      return el("label",{class:"efrow"},
+        el("input",{type:"checkbox",checked:on,onchange:ev=>{
+          if(ev.target.checked){ if(!chosen.includes(e.name)) chosen.push(e.name); }
+          else chosen.splice(chosen.indexOf(e.name),1);
+          touch();
+        }}),
+        el("span",{class:"nm",text:e.name,title:e.description}),
+        el("span",{class:"pts",text:String(e.points)}));
+    }));
+  };
+  search.addEventListener("input",drawList);
+  drawSelected(); drawList();
+  return el("div",{},search,list,selected);
+}
+
+function keywordChips(side){
+  const chosen=draft.meta[side].keywords;
+  const mine=DB.keywords.filter(k=>k.faction===draft.meta.faction);
+  return el("div",{class:"chips"}, ...mine.map(k=>{
+    const on=chosen.includes(k.name);
+    return el("button",{class:"chip","aria-pressed":on,title:k.definition,onclick:()=>{
+      on?chosen.splice(chosen.indexOf(k.name),1):chosen.push(k.name); touch();}},
+      k.name, el("span",{class:"pts",text:(k.points>0?"+":"")+k.points}));
+  }), mine.length?null:el("span",{class:"muted",text:"No keywords defined for this faction"}));
+}
+
+function textarea(label, value, key, rows=4){
+  return el("div",{},
+    el("label",{class:"fl",text:label}),
+    el("textarea",{rows:String(rows),oninput:e=>{draft[key]=e.target.value; touch(false);}},value||""));
+}
+
+
+function gateStrip(){
+  const g=gatesOf(draft);
+  const wrap=el("div",{class:"panel"},
+    el("div",{class:"row spread",style:"margin-bottom:10px"},
+      el("h3",{style:"font-size:13px",text:"Gates"}),
+      el("span",{class:"muted",style:"font-size:11.5px",text:"machine-checked · G2/G5/G7/G9 are your call"})));
+  const pills=el("div",{class:"gatepills"});
+  for(const [id,fails] of Object.entries(g)){
+    const ok=fails.length===0;
+    pills.append(el("span",{class:`pill ${ok?"ok":"bad"}`,title:fails.join("; ")||"pass"},
+      el("span",{class:`glyph ${ok?"good":"critical"}-bg`,text:ok?"✓":"✕"}), id));
+  }
+  wrap.append(pills);
+  const failing=Object.entries(g).filter(([,f])=>f.length);
+  for(const [id,fails] of failing)
+    for(const msg of fails)
+      wrap.append(el("div",{class:"gate"},
+        el("span",{class:"gid",text:id}),
+        el("span",{class:"swatch critical-bg"}),
+        el("span",{class:"msg",text:msg})));
+  const human=el("div",{class:"humangates"});
+  for(const [id,desc] of Object.entries(DB.humanGates))
+    human.append(el("label",{class:"hg"},
+      el("input",{type:"checkbox"}), el("b",{text:id}), el("span",{class:"sec",text:desc})));
+  wrap.append(human);
+  return wrap;
+}
+
+function siblingTable(){
+  const m=draft.meta;
+  const cost=m.cost;
+  const inRange = c => cost!==null && cost!==undefined
+    && c.meta.cost!==null && c.meta.cost!==undefined
+    && Math.abs(c.meta.cost-cost)<=1;
+  /* One cost either side, not just exact matches -- at the tails of the curve an exact-cost
+     filter often returns the card itself, which compares it to nothing. */
+  const sibs=cards.filter(inRange)
+    .sort((a,b)=>(a.meta.cost-b.meta.cost)||a.meta.name.localeCompare(b.meta.name));
+  const tbl=el("table",{class:"sib"},
+    el("thead",{}, el("tr",{}, ...["Card","","Cost",...DB.statKeys,"Σ","Δ"].map(h=>el("th",{text:h})))));
+  const tb=el("tbody",{});
+  for(const c of sibs){
+    const isSelf=c===current, cs=isSelf?scoreDraft(draft):c.score;
+    const st=isSelf?(m.stats||{}):(c.meta.stats||{});
+    const sev=cs.scorable?severity(cs.baseDelta):"none";
+    tb.append(el("tr",{class:isSelf?"self":(c.meta.cost===cost?"":"off")},
+      el("td",{class:"nm",text:isSelf?m.name:c.meta.name}),
+      el("td",{class:"nm"}, el("span",{class:"dot",style:`background:var(${FACTION_VAR[c.meta.faction]||"--baseline"})`})),
+      el("td",{text:String(isSelf?cost:c.meta.cost)}),
+      ...DB.statKeys.map(k=>el("td",{text:String(st[k]??"–")})),
+      el("td",{class:"muted",text:cs.scorable?String(cs.statsTotal):"–"}),
+      el("td",{}, cs.scorable
+        ? el("span",{style:"font-weight:600"},
+            el("span",{class:`swatch ${sev}-bg`}),
+            (cs.baseDelta<0?"+":cs.baseDelta>0?"−":"±")+Math.abs(cs.baseDelta))
+        : el("span",{class:"muted",text:"–"}))));
+  }
+  tbl.append(tb);
+  const exact=sibs.filter(c=>c.meta.cost===cost).length;
+  return el("div",{class:"panel"},
+    el("div",{class:"row spread",style:"margin-bottom:10px"},
+      el("h3",{style:"font-size:13px",
+        text:`Neighbours — cost ${cost===null||cost===undefined?"—":`${Math.max(0,cost-1)}–${cost+1}`}`}),
+      el("span",{class:"muted",style:"font-size:11.5px",
+        text:`${exact} at cost ${cost ?? "—"} · ${sibs.length-exact} adjacent`})),
+    sibs.length?tbl:el("div",{class:"muted",text:"Set a cost to compare against other cards."}),
+    el("div",{class:"muted",style:"font-size:11.5px;margin-top:10px",
+      text:"Σ is total stat points. Δ is points over (+) or under (−) budget. A 4-cost is only a 4-cost relative to its neighbours."}));
+}
+
+function renderMain(){
+  const main=$("#main"); main.replaceChildren();
+  if(!current){ main.append(el("div",{class:"muted",style:"padding:40px 0",text:"Select a card."})); return; }
+  const m=draft.meta, s=scoreDraft(draft);
+
+  main.append(el("div",{class:"topbar"},
+    el("div",{class:"row spread"},
+      el("div",{},
+        el("h2",{style:"font-size:20px",text:m.name}),
+        el("div",{class:"row",style:"gap:10px;margin-top:4px"},
+          el("span",{class:"fchip"},
+            el("span",{class:"dot",style:`background:var(${FACTION_VAR[m.faction]||"--baseline"})`}),
+            m.faction||"No faction"),
+          el("span",{class:"muted",text:m.crew||"No crew"}),
+          el("span",{class:"muted",text:m.subtype||"—"}),
+          el("span",{class:"muted",text:draft.relPath}))),
+      el("span",{class:"muted",style:"font-size:12px",text:`status: ${m.status||"—"}`}))));
+
+  /* hero + meters */
+  if(s.scorable){
+    const sev=severity(s.baseDelta), asev=ceilingSeverity(s.ascendedDelta);
+    const sign=s.baseDelta===0?"":(s.baseDelta<0?"+":"−");
+    main.append(el("div",{class:"panel"},
+      el("div",{class:"hero"},
+        el("div",{},
+          el("div",{class:"herolabel",text:"Base side vs budget"}),
+          el("div",{class:"heronum",text:`${sign}${Math.abs(s.baseDelta)}`}),
+          el("div",{class:`verdict sev-${sev}`},
+            el("span",{class:`glyph ${sev}-bg`,text:GLYPH[sev]}),
+            s.baseDelta===0?"Exactly on budget":
+              `${Math.abs(s.baseDelta)} ${s.baseDelta<0?"over":"under"} — ${VERDICT_WORD[sev]}`)),
+        el("div",{style:"flex:1;min-width:260px"},
+          meter("Base side", s.baseSpent, s.budget, sev),
+          meter("Base + level-up", s.baseSpent+s.ascendedSpent, s.ascendedBudget, asev,
+                `ceiling ×${DB.constants.ascendedMultiplier}`))),
+      el("div",{class:"breakdown"},
+        el("span",{}, "stats ", el("b",{text:String(s.statsTotal)})),
+        el("span",{}, "base keywords ", el("b",{text:String(s.baseKeywordPoints)})),
+        el("span",{}, "base effects ", el("b",{text:String(s.baseEffectPoints)})),
+        el("span",{}, "level-up ", el("b",{text:String(s.ascendedSpent)})),
+        el("span",{class:"muted",text:`budget = (cost ${m.cost} × ${DB.constants.costMultiplier}) + ${DB.constants.baseAllowance}${(m.subtype||"").toLowerCase()==="ascendant"?` + ${DB.constants.ascendantBonus} Ascendant`:""} = ${s.budget}`}))));
+  } else {
+    main.append(el("div",{class:"stub"},
+      el("b",{text:"Stub card. "}), s.reason,
+      " — set a cost and all four stats below to start scoring it."));
+  }
+
+  /* numbers */
+  const statBox=el("div",{class:"grid stats"},
+    stepper("Cost", m.cost, v=>{m.cost=v; touch();}, 0),
+    ...DB.statKeys.map(k=>stepper(k, m.stats?.[k], v=>{m.stats=m.stats||{}; m.stats[k]=v; touch();})));
+  main.append(gateStrip());
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px;margin-bottom:10px",text:"Cost & stats"}), statBox));
+  main.append(siblingTable());
+
+  /* base side */
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px",text:"Base side"}),
+    el("label",{class:"fl",text:`Keywords — ${m.faction||"?"} only (gate G4)`}), keywordChips("base"),
+    el("label",{class:"fl",text:"Effect types"}), effectPicker("base"),
+    textarea("Rules text", draft.rulesText, "rulesText", 5)));
+
+  /* level-up */
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px",text:"Level-up side"}),
+    el("label",{class:"fl",text:"Keywords gained"}), keywordChips("ascended"),
+    el("label",{class:"fl",text:"Effect types"}), effectPicker("ascended"),
+    textarea("Level-up condition", draft.levelupCondition, "levelupCondition", 3),
+    textarea("Ascended rules text", draft.ascendedText, "ascendedText", 5)));
+}
+
+/* ---------------- rail ---------------------------------------------------------------- */
+function renderRail(){
+  const rail=$("#rail"); rail.replaceChildren();
+  if(!current) return;
+  const m=draft.meta;
+
+  const brief=DB.factions[m.faction];
+  rail.append(el("div",{class:"railsec"},
+    el("h3",{text:"Faction identity"}),
+    brief?el("div",{},
+      el("div",{class:"row",style:"gap:8px;margin-bottom:8px"},
+        el("span",{class:"dot",style:`background:var(${FACTION_VAR[m.faction]})`}),
+        el("b",{text:m.faction})),
+      el("div",{class:"sec",style:"font-size:12.5px",text:brief.identity}),
+      el("div",{class:"weakness",text:brief.weakness}),
+      el("div",{class:"muted",style:"font-size:11.5px;margin-top:8px",
+        text:"Gameplay D1 and lore D4 both score 5 only if the card is exposed to this weakness, not just the strength."}
+      )):el("div",{class:"muted",text:"No faction assigned."})));
+
+  const lore=el("div",{class:"railsec"}, el("h3",{text:"Lore packet"}));
+  for(const f of DB.lorePacketFields){
+    lore.append(el("label",{class:"fl",text:f}));
+    lore.append(el("textarea",{rows:"2",placeholder:"—",
+      oninput:e=>{draft.lore[f]=e.target.value; touch(false);}}, draft.lore[f]||""));
+  }
+  lore.append(el("div",{class:"muted",style:"font-size:11.5px;margin-top:10px",
+    text:"The True Detail is the load-bearing field — one real, specific fact. Never invent it."}));
+  rail.append(lore);
+
+
+}
+
+/* ---------------- state ---------------------------------------------------------------- */
+let dirty=false;
+function touch(rerender=true){
+  dirty=true; $("#savebar").hidden=false;
+  if(rerender){ renderMain(); }
+  renderRail(); renderList();
+}
+function select(c){
+  if(dirty && !confirm("Discard unsaved changes to this card?")) return;
+  current=c; draft=structuredClone(c);
+  draft.meta.base=draft.meta.base||{keywords:[],effects:[]};
+  draft.meta.ascended=draft.meta.ascended||{keywords:[],effects:[]};
+  draft.meta.base.keywords??=[]; draft.meta.base.effects??=[];
+  draft.meta.ascended.keywords??=[]; draft.meta.ascended.effects??=[];
+  dirty=false; $("#savebar").hidden=true;
+  renderMain(); renderRail(); renderList();
+}
+function toast(msg,ms=2600){const t=$("#toast");t.textContent=msg;t.hidden=false;
+  clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,ms);}
+
+async function save(){
+  const btn=$("#save"); btn.disabled=true; btn.textContent="Saving…";
+  try{
+    const res=await fetch("/api/card",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({relPath:draft.relPath, meta:draft.meta, rulesText:draft.rulesText,
+        levelupCondition:draft.levelupCondition, ascendedText:draft.ascendedText, lore:draft.lore})});
+    const saved=await res.json();
+    if(!res.ok) throw new Error(saved.error||res.statusText);
+    const i=cards.indexOf(current);
+    cards[i]=saved; current=saved; draft=structuredClone(saved);
+    dirty=false; $("#savebar").hidden=true;
+    /* reconcile the browser's arithmetic against the server's */
+    const local=scoreDraft(draft);
+    const drift = local.scorable && saved.score.scorable && local.baseDelta!==saved.score.baseDelta;
+    toast(drift ? "Saved — but the server scored it differently. Run tools/balance.py."
+                : `Saved to ${saved.relPath}`);
+    renderMain(); renderRail(); renderList();
+  }catch(e){ toast("Save failed: "+e.message, 6000); }
+  finally{ btn.disabled=false; btn.textContent="Save to file"; }
+}
+
+/* ---------------- boot ------------------------------------------------------------------ */
+(async function(){
+  try{
+    const res=await fetch("/api/bootstrap");
+    DB=await res.json();
+    if(DB.error) throw new Error(DB.error);
+  }catch(e){ $("#main").replaceChildren(el("div",{class:"stub",text:"Could not load card data: "+e.message})); return; }
+
+  DB.kwPts=Object.fromEntries(DB.keywords.map(k=>[k.name,k.points]));
+  DB.kwFaction=Object.fromEntries(DB.keywords.map(k=>[k.name,k.faction]));
+  DB.efPts=Object.fromEntries(DB.effects.map(e=>[e.name,e.points]));
+  cards=DB.cards;
+
+  const sel=$("#ffac");
+  for(const f of [...new Set(cards.map(c=>c.meta.faction).filter(Boolean))].sort())
+    sel.append(el("option",{value:f,text:f}));
+  for(const id of ["q","ffac","fbal"]) $("#"+id).addEventListener("input",renderList);
+
+  $("#theme").addEventListener("click",()=>{
+    const r=document.documentElement;
+    r.dataset.theme = r.dataset.theme==="dark" ? "light" : "dark";
+  });
+  $("#save").addEventListener("click",save);
+  $("#revert").addEventListener("click",()=>{ if(current) select(current); });
+  addEventListener("keydown",e=>{
+    if((e.metaKey||e.ctrlKey)&&e.key==="s"){ e.preventDefault(); if(dirty) save(); }
+  });
+  addEventListener("beforeunload",e=>{ if(dirty){ e.preventDefault(); e.returnValue=""; } });
+
+  renderList();
+  if(cards.length) select(cards[0]);
+})();
+</script>
+</body>
+</html>

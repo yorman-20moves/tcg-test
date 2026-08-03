@@ -1,0 +1,5 @@
+# Everything here runs on Python 3.9+ with one dependency.
+#   python -m venv .venv
+#   .venv\Scripts\activate      (Windows)   |   source .venv/bin/activate  (mac/Linux)
+#   pip install -r requirements.txt
+PyYAML>=6.0

@@ -30,7 +30,29 @@ art/               character and UI artwork
 legacy/            original xlsx + docx, reference only
 ```
 
-## Tools
+## The design workbench
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate            # Windows.  macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+python tools/studio.py
+```
+
+A browser opens on `127.0.0.1:8765` (loopback only — nothing on your network can reach it).
+Pick a card, push the stat and cost steppers, and the budget meters move as you type. Hitting
+**Save** — or Ctrl-S — writes the card's `.md` file in place, so `git diff` shows exactly the
+lines you changed and nothing else.
+
+On screen while you design: the budget delta, the base and level-up meters, the live gate
+results, the cost/stat steppers, every card within one cost of this one, and — in the right
+rail — the faction's identity, its printed weakness, and this card's Lore Packet.
+
+**Two meters, not one.** The base meter is the old spreadsheet number. The second charges the
+level-up side against a ×1.5 ceiling, which the spreadsheet never did. A card can sit perfectly
+on the base budget and still be a problem; see OQ-04.
+
+## Command line
 
 ```bash
 python tools/balance.py                    # score every card against its budget
@@ -39,7 +61,9 @@ python tools/balance.py --charge-ascended  # model charging the level-up side (s
 python tools/validate.py                   # machine-checkable gates: G3, G4, G6, G8
 ```
 
-Both are dependency-light — Python 3 and PyYAML.
+`tools/card_io.py` reads and writes the card files; `tools/scoring.py` holds the budget
+arithmetic and the gates. Everything else — the CLIs and the workbench — goes through them,
+so the number in the browser is the number on the command line.
 
 ## Current state
 

@@ -46,7 +46,8 @@ dimension is weakest and why it still ships.
 5. **Run the tools before claiming a card is balanced.**
    ```
    python tools/balance.py --failing      # G1
-   python tools/validate.py               # G3, G4, G6, G8
+   python tools/validate.py               # G1, G3, G4, G6, G8
+   python tools/studio.py                 # the visual design workbench
    ```
 6. **`docs/rulebook/12-keywords.md` is generated** from `data/keywords.yaml`. Edit the YAML.
 7. **Append to `## Design Notes`, don't overwrite.** The history of why a card changed is worth
@@ -62,10 +63,23 @@ docs/rubrics/       the two rubrics — read these first
 docs/design/        open-questions.md (the backlog) · decisions.md (why) · canon.md (the world)
 data/               keywords.yaml · effects.yaml · status-effects.yaml — the point economy
 cards/              <subtype>/<crew>/<slug>.md — frontmatter for machines, prose for humans
-tools/              balance.py (the budget engine) · validate.py (the machine-checkable gates)
+tools/              card_io.py (read/write cards) · scoring.py (budget + gates)
+                    balance.py · validate.py (CLIs) · studio.py + studio.html (workbench)
 art/                characters/<crew>/ and ui/ — referenced by card frontmatter `art:`
 legacy/             the original xlsx and docx. Reference only.
 ```
+
+## Editing card files
+
+Two ways in, and they produce the same result:
+
+- `python tools/studio.py` — the visual workbench. Steppers, live budget meters, live gates,
+  cost-neighbour comparison, faction weakness and Lore Packet on screen. Saves in place.
+- Edit the markdown directly. `tools/card_io.py` round-trips every card byte-identically, so
+  a hand edit and a workbench edit produce identical files.
+
+**Never write a card file by hand from a template** — go through `card_io.render()` or the
+workbench, so section order and the Design Notes history stay intact.
 
 ## Card file anatomy
 
