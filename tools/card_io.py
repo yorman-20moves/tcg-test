@@ -12,12 +12,16 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CARDS_DIR = REPO_ROOT / "cards"
+ART_DIR = REPO_ROOT / "art"
+
+IMAGE_SUFFIXES = (".jpg", ".jpeg", ".png", ".webp", ".gif")
 
 STAT_KEYS = ("PA", "PH", "MA", "MH")
 
@@ -186,6 +190,40 @@ def load_all(root: Path | None = None) -> list[Card]:
             continue
         cards.append(load(path))
     return cards
+
+
+def _art_key(text: str) -> str:
+    """Card frontmatter stores art references with punctuation and spaces stripped
+    (`AlvinoTheLastCallv2`), while the files on disk keep them
+    (`Alvino, The Last Call v2.jpg`). Normalising both ends matches them."""
+    return re.sub(r"[^a-z0-9]", "", text.lower())
+
+
+@lru_cache(maxsize=1)
+def art_index() -> dict[str, str]:
+    """normalised filename -> repo-relative path.
+
+    Where the same name exists both as a character portrait and as a finished card
+    render, the portrait wins -- it is the reference a designer wants on screen.
+    """
+    index: dict[str, list[Path]] = {}
+    if ART_DIR.is_dir():
+        for path in ART_DIR.rglob("*"):
+            if path.suffix.lower() in IMAGE_SUFFIXES:
+                index.setdefault(_art_key(path.stem), []).append(path)
+    return {
+        key: sorted(paths, key=lambda p: (0 if "characters" in p.parts else 1,
+                                          p.as_posix()))[0]
+             .relative_to(REPO_ROOT).as_posix()
+        for key, paths in index.items()
+    }
+
+
+def resolve_art(reference: str | None) -> str | None:
+    """Repo-relative path for an art reference, or None if nothing matches."""
+    if not reference:
+        return None
+    return art_index().get(_art_key(reference))
 
 
 def load_table(filename: str, key: str) -> list[dict]:

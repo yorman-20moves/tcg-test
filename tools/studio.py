@@ -15,12 +15,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import mimetypes
 import sys
 import threading
 import webbrowser
 from functools import partial
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+from urllib.parse import quote, unquote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -61,9 +63,25 @@ def faction_briefs() -> dict[str, dict]:
     return briefs
 
 
+def art_urls(card: card_io.Card) -> dict:
+    """Resolved, URL-encoded links to this card's artwork, or None where nothing matched."""
+    art = card.meta.get("art") or {}
+    urls = {}
+    for side in ("base", "ascended"):
+        resolved = card_io.resolve_art(art.get(side))
+        urls[side] = {
+            "path": resolved,
+            # /art/ is rooted at the art directory, so strip the repo-relative prefix
+            "url": "/art/" + quote(resolved.removeprefix("art/")) if resolved else None,
+            "ref": art.get(side),
+        }
+    return urls
+
+
 def card_payload(card: card_io.Card) -> dict:
     return {
         "relPath": card.rel_path,
+        "art": art_urls(card),
         "meta": card.meta,
         "rulesText": card.rules_text,
         "levelupCondition": card.levelup_condition,
@@ -139,6 +157,8 @@ class StudioHandler(BaseHTTPRequestHandler):
                 self._send(500, b"studio.html is missing", "text/plain")
                 return
             self._send(200, STUDIO_HTML.read_bytes(), "text/html; charset=utf-8")
+        elif self.path.startswith("/art/"):
+            self._send_art(unquote(self.path[len("/art/"):]))
         elif self.path == "/api/bootstrap":
             try:
                 self._send_json(200, bootstrap())
@@ -146,6 +166,22 @@ class StudioHandler(BaseHTTPRequestHandler):
                 self._send_json(500, {"error": f"{type(exc).__name__}: {exc}"})
         else:
             self._send(404, b"not found", "text/plain")
+
+    def _send_art(self, relative: str) -> None:
+        target = (card_io.ART_DIR / relative).resolve()
+        if not target.is_relative_to(card_io.ART_DIR.resolve()) or not target.is_file():
+            self._send(404, b"no such artwork", "text/plain")
+            return
+        body = target.read_bytes()
+        content_type = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        # These are multi-megabyte photos and the editor re-renders on every keystroke --
+        # without a cache header the browser would re-fetch them constantly.
+        self.send_header("Cache-Control", "private, max-age=3600")
+        self.end_headers()
+        self.wfile.write(body)
 
     def do_POST(self) -> None:
         if self.path != "/api/card":

@@ -159,6 +159,23 @@ label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppe
 
 /* ---------- rail ---------- */
 .railsec{border-bottom:1px solid var(--rule);padding:14px}
+/* The source art runs 0.50-0.71 aspect -- far taller than any fixed cell, so the images
+   size naturally and nothing is cropped. */
+.artgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}
+.artcell{position:relative;border-radius:9px;overflow:hidden;border:1px solid var(--rule);background:var(--raised)}
+.artcell img{width:100%;height:auto;display:block;cursor:zoom-in;background:var(--raised)}
+.artcell .cap{
+  position:absolute;left:0;right:0;bottom:0;padding:5px 8px;font-size:10.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.78));pointer-events:none
+}
+.artcell.empty{display:grid;place-items:center;text-align:center;padding:14px 10px;font-size:11.5px;color:var(--ink-3);min-height:120px}
+#lightbox{
+  position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.92);display:grid;place-items:center;
+  padding:24px;cursor:zoom-out
+}
+#lightbox[hidden]{display:none}
+#lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+#lightbox .lbcap{position:fixed;top:16px;left:0;right:0;text-align:center;color:#fff;font-size:12.5px}
 .railsec h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px}
 .weakness{border-left:3px solid var(--warning);padding:8px 0 8px 11px;margin-top:10px;font-style:italic;color:var(--ink-2);font-size:12.5px}
 .gate{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--rule);font-size:12.5px}
@@ -226,7 +243,7 @@ label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppe
 
   <div id="main" class="col"><div class="muted" style="padding:40px 0">Loading…</div></div>
 
-  <div id="rail" class="col"></div>
+  <div id="rail" class="col"><div id="railart"></div><div id="raildyn"></div></div>
 </div>
 
 <div id="savebar" hidden>
@@ -234,6 +251,7 @@ label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppe
   <button class="ghost" id="revert">Revert</button>
   <button class="primary" id="save">Save to file</button>
 </div>
+<div id="lightbox" hidden><div class="lbcap"></div><img alt=""></div>
 <div id="toast" hidden></div>
 
 <script>
@@ -589,8 +607,47 @@ function renderMain(){
 }
 
 /* ---------------- rail ---------------------------------------------------------------- */
+function artPanel(){
+  const art=draft.art||{};
+  const sec=el("div",{class:"railsec"},
+    el("div",{class:"row spread",style:"margin-bottom:9px"},
+      el("h3",{style:"margin:0",text:"Artwork"}),
+      el("span",{class:"muted",style:"font-size:11px",text:"click to enlarge"})));
+  const grid=el("div",{class:"artgrid"});
+  for(const [side,label] of [["base","Base"],["ascended","Level-up"]]){
+    const a=art[side]||{};
+    if(a.url){
+      grid.append(el("div",{class:"artcell"},
+        el("img",{src:a.url,alt:`${draft.meta.name} — ${label}`,loading:"lazy",
+          onclick:()=>lightbox(a.url, `${draft.meta.name} — ${label} · ${a.path}`)}),
+        el("div",{class:"cap",text:label})));
+    } else {
+      grid.append(el("div",{class:"artcell empty"},
+        el("div",{}, el("b",{text:label}),
+          el("div",{style:"margin-top:5px"},
+            a.ref?`No file matches "${a.ref}"`:"No art reference set"))));
+    }
+  }
+  sec.append(grid);
+  return sec;
+}
+
+function lightbox(url,caption){
+  const box=$("#lightbox");
+  box.querySelector("img").src=url;
+  box.querySelector(".lbcap").textContent=caption;
+  box.hidden=false;
+}
+
+/* The artwork only changes when you change card, so it renders from select() and is
+   left alone by touch() -- otherwise every keystroke would rebuild a multi-megabyte img. */
+function renderArt(){
+  const host=$("#railart"); host.replaceChildren();
+  if(current) host.append(artPanel());
+}
+
 function renderRail(){
-  const rail=$("#rail"); rail.replaceChildren();
+  const rail=$("#raildyn"); rail.replaceChildren();
   if(!current) return;
   const m=draft.meta;
 
@@ -635,7 +692,7 @@ function select(c){
   draft.meta.base.keywords??=[]; draft.meta.base.effects??=[];
   draft.meta.ascended.keywords??=[]; draft.meta.ascended.effects??=[];
   dirty=false; $("#savebar").hidden=true;
-  renderMain(); renderRail(); renderList();
+  renderArt(); renderMain(); renderRail(); renderList();
 }
 function toast(msg,ms=2600){const t=$("#toast");t.textContent=msg;t.hidden=false;
   clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,ms);}
@@ -651,6 +708,7 @@ async function save(){
     const i=cards.indexOf(current);
     cards[i]=saved; current=saved; draft=structuredClone(saved);
     dirty=false; $("#savebar").hidden=true;
+    renderArt();
     /* reconcile the browser's arithmetic against the server's */
     const local=scoreDraft(draft);
     const drift = local.scorable && saved.score.scorable && local.baseDelta!==saved.score.baseDelta;
@@ -683,10 +741,12 @@ async function save(){
     const r=document.documentElement;
     r.dataset.theme = r.dataset.theme==="dark" ? "light" : "dark";
   });
+  $("#lightbox").addEventListener("click",()=>{ $("#lightbox").hidden=true; });
   $("#save").addEventListener("click",save);
   $("#revert").addEventListener("click",()=>{ if(current) select(current); });
   addEventListener("keydown",e=>{
     if((e.metaKey||e.ctrlKey)&&e.key==="s"){ e.preventDefault(); if(dirty) save(); }
+    if(e.key==="Escape") $("#lightbox").hidden=true;
   });
   addEventListener("beforeunload",e=>{ if(dirty){ e.preventDefault(); e.returnValue=""; } });
 
