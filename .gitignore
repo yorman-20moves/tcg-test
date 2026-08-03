@@ -1,0 +1,24 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Spreadsheet and document lockfiles
+~$*
+.~lock.*
+
+# Scratch
+*.tmp
+/tmp/
+
+# Staging leftovers -- safe for you to delete this whole folder
+_to_delete/

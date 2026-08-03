@@ -1,0 +1,157 @@
+# Effect-type point costs. An ability is decomposed into one or more effect types;
+# their points sum into the card's spend. Source of truth. tools/balance.py reads this file.
+
+effects:
+- name: Card Draw 1
+  points: 3
+  description: Gain raw numerical card advantage (1 Card).
+- name: Card Draw 2
+  points: 6
+  description: Gain raw numerical card advantage (2 Cards).
+- name: Card Draw 3
+  points: 9
+  description: Gain raw numerical card advantage (3 Cards).
+- name: Card Draw 4
+  points: 12
+  description: Gain raw numerical card advantage (4 Cards).
+- name: Card Draw 5
+  points: 15
+  description: Gain raw numerical card advantage (5 Cards).
+- name: Cleanse (Major)
+  points: 2
+  description: Remove all Status Effects from a target Character.
+- name: Cleanse (Minor)
+  points: 1
+  description: Remove one Status Effect from a target Character.
+- name: Counterspell
+  points: 4
+  description: Negate target Tactic card before it resolves.
+- name: Direct Damage/Heal 1
+  points: 1
+  description: Deal/Heal 1 damage directly to a character or Life Points.
+- name: Direct Damage/Heal 2
+  points: 2
+  description: Deal/Heal 2 damage directly to a character or Life Points.
+- name: Direct Damage/Heal 3
+  points: 3
+  description: Deal/Heal 3 damage directly to a character or Life Points.
+- name: Direct Damage/Heal 4
+  points: 4
+  description: Deal/Heal 4 damage directly to a character or Life Points.
+- name: Direct Damage/Heal 5
+  points: 5
+  description: Deal/Heal 5 damage directly to a character or Life Points.
+- name: Energy Gen 1
+  points: 3
+  description: Gain 1 temporary or permanent Energy.
+- name: Energy Gen 2
+  points: 6
+  description: Gain 2 temporary or permanent Energy.
+- name: Energy Gen 3
+  points: 9
+  description: Gain 3 temporary or permanent Energy.
+- name: Energy Gen 4
+  points: 12
+  description: Gain 4 temporary or permanent Energy.
+- name: Energy Gen 5
+  points: 15
+  description: Gain 5 temporary or permanent Energy.
+- name: Energy Gen from Keyword
+  points: 0
+  description: generate enery from hustler or any future keyword
+- name: Hand Destruction 1
+  points: 4
+  description: Force the opponent to discard 1 card.
+- name: Hand Destruction 2
+  points: 8
+  description: Force the opponent to discard 2 cards.
+- name: Hand Destruction 3
+  points: 12
+  description: Force the opponent to discard 3 cards.
+- name: Hand Destruction 4
+  points: 16
+  description: Force the opponent to discard 4 cards.
+- name: Hand Destruction 5
+  points: 20
+  description: Force the opponent to discard 5 cards.
+- name: Hard Removal
+  points: 5
+  description: Destroy target character outright (no stat checks).
+- name: Mass Removal (Wipes)
+  points: 8
+  description: Destroy all characters or deal massive global damage.
+- name: Multiple Attacks
+  points: 5
+  description: Character can attack multiple times in one Combat Wave.
+- name: Opponent energy generation
+  points: -2
+  description: Generate energy for the opponent
+- name: Permanent Buff 1
+  points: 1
+  description: Permanently increase a character's PA/MA or PH/MH by 1.
+- name: Permanent Buff 2
+  points: 2
+  description: Permanently increase a character's PA/MA or PH/MH by 2.
+- name: Permanent Buff 3
+  points: 3
+  description: Permanently increase a character's PA/MA or PH/MH by 3.
+- name: Permanent Buff 4
+  points: 4
+  description: Permanently increase a character's PA/MA or PH/MH by 4.
+- name: Permanent Buff 5
+  points: 5
+  description: Permanently increase a character's PA/MA or PH/MH by 5.
+- name: Prevent 1 Attack
+  points: 1
+  description: prevent one attack in the combat wave
+- name: Prevent Multiple Attacks
+  points: 2
+  description: Prevent 2 or more attacks in a combat wave
+- name: Protection (Immunity)
+  points: 3
+  description: Target character cannot be destroyed this turn.
+- name: Recursion
+  points: 3
+  description: Return characters/tactics from Graveyard to hand or board.
+- name: Resource Denial
+  points: 2
+  description: Drain or lock the opponent's Energy bank.
+- name: Searching (Tutors)
+  points: 4
+  description: Search the deck for a specific card.
+- name: Soft Removal (Bounce)
+  points: 2
+  description: Return target Character to owner's hand.
+- name: Soft Removal (Stun)
+  points: 2
+  description: Target is paralyzed (cannot attack, use abilities, or protect).
+- name: Spell Shield
+  points: 2
+  description: One-time barrier that breaks to absorb the next Tactic.
+- name: Status Application (Major)
+  points: 4
+  description: Apply a permanent status (e.g., Permanent Silence via Attachment).
+- name: Status Application (Minor)
+  points: 2
+  description: Apply a temporary status (e.g., Silenced or Feared until End Step).
+- name: Status Immunity
+  points: 3
+  description: 'Passive ability: This Character cannot receive Status Effects.'
+- name: Taxing 1
+  points: 2
+  description: Increase the Energy cost of the opponent's actions by 1.
+- name: Taxing 2
+  points: 4
+  description: Increase the Energy cost of the opponent's actions by 2.
+- name: Taxing 3
+  points: 6
+  description: Increase the Energy cost of the opponent's actions by 3.
+- name: Taxing 4
+  points: 8
+  description: Increase the Energy cost of the opponent's actions by 4.
+- name: Taxing 5
+  points: 10
+  description: Increase the Energy cost of the opponent's actions by 5.
+- name: Untargetable
+  points: 2
+  description: Hexproof. Cannot be targeted by enemy Tactics this turn.

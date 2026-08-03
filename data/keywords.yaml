@@ -1,0 +1,94 @@
+# Faction-exclusive Character keywords ('Roles').
+# points = budget cost charged against a card's point budget (see tools/balance.py).
+# Negative points = the keyword is a drawback the designer is PAID for.
+# Source of truth. tools/balance.py reads this file.
+
+keywords:
+- name: Infiltrator
+  faction: Assholes
+  points: -2
+  definition: Summoned to opponent's board for them to use, providing passive benefits to you.
+- name: Hustler +1
+  faction: Assholes
+  points: 3
+  definition: Generates 1 temporary Energy on hit.
+- name: Prowler
+  faction: Assholes
+  points: 3
+  definition: Stealth unit. Cannot be intercepted/targeted (unless Tracker); can hit Life Points directly.
+- name: Extortionist
+  faction: Assholes
+  points: 5
+  definition: When hitting Life Points, opponent discards a card.
+- name: Hustler +2
+  faction: Assholes
+  points: 5
+  definition: Generates 2 temporary Energy on hit.
+- name: Hustler +3
+  faction: Assholes
+  points: 7
+  definition: Generates 3 temporary Energy on hit.
+- name: Hustler +4
+  faction: Assholes
+  points: 9
+  definition: Generates 4 temporary Energy on hit.
+- name: Hustler +5
+  faction: Assholes
+  points: 11
+  definition: Generates 5 temporary Energy on hit.
+- name: Guilt-Tripper
+  faction: Icons
+  points: 2
+  definition: Enemy takes 2 MA damage purely from the shame of hitting them.
+- name: Martyr
+  faction: Icons
+  points: 2
+  definition: 0 PA/MA, but grants massive Influence Points when Murdered.
+- name: Sponsor
+  faction: Icons
+  points: 2
+  definition: On play, place one card from Hand face-down into Resource Row for free.
+- name: Nurturer
+  faction: Icons
+  points: 4
+  definition: Uses an action to heal permanent PH or MH damage.
+- name: Pacifier
+  faction: Icons
+  points: 5
+  definition: Aura completely preventing the declaration of a Combat Wave.
+- name: Instigator
+  faction: Overthinkers
+  points: 2
+  definition: Opponent must target this unit before Life Points or others.
+- name: Interrogator
+  faction: Overthinkers
+  points: 2
+  definition: On successful strike, opponent must reveal their Hand.
+- name: Tracker
+  faction: Overthinkers
+  points: 2
+  definition: Can target/intercept Prowlers, bypassing stealth.
+- name: Troll
+  faction: Overthinkers
+  points: 2
+  definition: Bypasses PA to attack MH directly.
+- name: Berserker
+  faction: Warmongers
+  points: 2
+  definition: Gains +1 PA every time they take permanent PH damage.
+- name: Executioner
+  faction: Warmongers
+  points: 2
+  definition: Instantly Murders any defending Character with permanent PH damage, bypassing math.
+- name: Protector
+  faction: Warmongers
+  points: 2
+  definition: Can intercept one attack intended for Life Points or another Character.
+- name: Juggernaut
+  faction: Warmongers
+  points: 3
+  definition: Excess PA damage beyond defender's PH spills over to Life Points.
+- name: Combo-Striker
+  faction: Warmongers
+  points: 4
+  definition: Attacks resolve in two strikes. The first deals damage without simultaneous retaliation.

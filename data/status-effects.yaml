@@ -1,0 +1,17 @@
+# Status effects. NOTE: these descriptions came from the spreadsheet's Elements sheet and
+# CONFLICT with rulebook section 11 for 'Exhausted'. See docs/design/open-questions.md (OQ-08).
+# The rulebook is authoritative until that conflict is resolved.
+
+status_effects:
+- name: Feared
+  description: A Character afflicted by Fear is terrified to act and highly vulnerable. For the duration of the effect, they are disabled from declaring attacks and they take +1 damage from all incoming sources (both Physical and Mental).
+- name: Stunned
+  description: A Character afflicted by Stun is completely paralyzed. They cannot declare attacks, use abilities for the duration of the effect.
+- name: Wounded
+  description: The Character is physically broken. They cannot have their Physical Health (PH) healed by abilities or Tactics. Additionally, the next time they take Physical Attack (PA) damage, they take an extra 1 permanent PH damage until wounded is removed.
+- name: Shattered
+  description: The Character is mentally broken. They cannot have their Mental Health (MH) healed by abilities or Tactics. Additionally, the next time they take Mental Attack (MA) damage, they take an extra 1 permanent MH damage until shattered is removed.
+- name: Exhausted
+  description: The character is physically spent. They're attack power (both physical and mental) is halved for the duration of the effect.
+- name: Silenced
+  description: The Character is completely shut down from communicating, leading, or using tech. All of their printed Character abilities are blanked (turned off) for the duration of the effect.
