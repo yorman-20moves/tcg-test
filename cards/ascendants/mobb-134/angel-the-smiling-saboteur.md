@@ -51,7 +51,7 @@ Keywords: Infiltrator
 
 ### Condition
 
-Angel finally shows his true colors.Once Angel has successfully siphoned 4 Energy from the opponent, he levels up.
+Angel finally shows his true colors. Once Angel has successfully siphoned 4 Energy from the opponent, he levels up.
 
 ### Ascended Rules Text
 

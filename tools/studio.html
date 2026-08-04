@@ -176,6 +176,16 @@ label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppe
 #lightbox[hidden]{display:none}
 #lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
 #lightbox .lbcap{position:fixed;top:16px;left:0;right:0;text-align:center;color:#fff;font-size:12.5px}
+.lorefield{margin-bottom:14px}
+.lorefield .hd{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.lorefield .nm{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+.lorefield .req{font-size:10px;color:var(--critical);letter-spacing:.04em}
+.lorefield .why{font-size:11.5px;color:var(--ink-3);line-height:1.45;margin:3px 0 5px}
+.lorefield .ctx{font-size:11.5px;color:var(--ink-2);border-left:2px solid var(--accent);padding:5px 0 5px 8px;margin:0 0 6px;font-style:italic}
+.lorefield.done .nm{color:var(--good)}
+.loremeter{display:flex;gap:3px;margin:2px 0 12px}
+.loremeter i{flex:1;height:5px;border-radius:3px;background:var(--rule)}
+.loremeter i.on{background:var(--good)}
 .railsec h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px}
 .weakness{border-left:3px solid var(--warning);padding:8px 0 8px 11px;margin-top:10px;font-style:italic;color:var(--ink-2);font-size:12.5px}
 .gate{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--rule);font-size:12.5px}
@@ -1397,26 +1407,89 @@ function renderRail(){
   const m=draft.meta;
 
   const brief=DB.factions[m.faction];
+  const wins=el("div",{style:"margin-top:10px"});
+  if(brief && brief.windows){
+    for(const w of DB.windowKeys){
+      const lvl=brief.windows[w]||"blind";
+      wins.append(el("div",{class:"row",style:"gap:7px;font-size:11.5px;padding:2px 0"},
+        el("span",{class:`lvl ${lvl}`,style:"min-width:52px;text-align:center",text:lvl}),
+        el("span",{class:"sec",text:DB.windowLabels[w]})));
+    }
+  }
   rail.append(el("div",{class:"railsec"},
     el("h3",{text:"Faction identity"}),
     brief?el("div",{},
       el("div",{class:"row",style:"gap:8px;margin-bottom:8px"},
         el("span",{class:"dot",style:`background:var(${FACTION_VAR[m.faction]})`}),
-        el("b",{text:m.faction})),
+        el("b",{text:`${brief.emoji||""} ${m.faction}`}),
+        brief.reviewed?null:el("span",{class:"muted",style:"font-size:11px",text:"· draft"})),
       el("div",{class:"sec",style:"font-size:12.5px",text:brief.identity}),
       el("div",{class:"weakness",text:brief.weakness}),
       el("div",{class:"muted",style:"font-size:11.5px;margin-top:8px",
-        text:"Gameplay D1 and lore D4 both score 5 only if the card is exposed to this weakness, not just the strength."}
-      )):el("div",{class:"muted",text:"No faction assigned."})));
+        text:"Gameplay D1 and lore D4 both score 5 only if the card is exposed to this weakness, not just the strength."}),
+      el("h3",{style:"margin-top:14px",text:"Where they can answer a plan"}), wins,
+      el("div",{class:"muted",style:"font-size:11.5px;margin-top:6px",
+        text:"This is the map that computes Reach. Edit it on the Factions screen."})
+      ):el("div",{class:"muted"},
+          el("b",{text:m.faction||"No faction assigned."}),
+          el("div",{style:"margin-top:6px"},
+            m.faction ? `"${m.faction}" is not in data/factions.yaml — check the spelling, or add it on the Factions screen.`
+                      : "Set a faction so the toolkit and window checks can run."))));
 
-  const lore=el("div",{class:"railsec"}, el("h3",{text:"Lore packet"}));
+  const crew=crewByName(m.crew);
+  const HELP={
+    "Premise (one line)":{
+      why:"The one-line pitch of this person as a mythologized figure. If you can't say it in a sentence, the card isn't a character yet.",
+      eg:"The bartender who decides when your night ends."},
+    "The True Detail":{
+      why:"One real, specific, verifiable thing about the ACTUAL person. This is the anchor everything else hangs off, and the one field nobody but you can supply. Never invent it.",
+      eg:"He closes down every bar. Always the last one out."},
+    "The Myth":{
+      why:"What the streets say happened. Exaggerated, unverifiable, better than the truth. This is where the True Detail becomes legend.",
+      eg:"They say nobody has ever seen him leave a bar. The bar leaves first."},
+    "Why This Faction":{
+      why:"Faction is METHODOLOGY, not vibe. Being clever isn't Overthinker — winning BY being clever is. Say why this person wins this particular way.",
+      eg:"He doesn't fight you. He makes the night cost you more than it cost him."},
+    "Why This Crew":{
+      why:"Who they run with and what they owe them. This is also the card's road: how does it advance the crew's plan DIFFERENTLY from the others?",
+      eg:"Everyone at Shea's leaves worse than they came in. He's the one pouring."},
+    "The Fall (printed weakness)":{
+      why:"Their exposure to the faction's printed weakness. Required. A card with only the strength is a card wearing the colour, not a card of that faction.",
+      eg:"Dragged into a fair fight before closing time, he's just a guy behind a bar."},
+    "The Ascension (what the level-up MEANS)":{
+      why:"What levelling up MEANS in the story — not the stat change. The base side should actively pursue this. If it merely happens to the card, the level-up isn't earned.",
+      eg:"The bar is trashed and he loves it. Now he decides when everyone goes home."},
+  };
+  const filled = DB.lorePacketFields.filter(f=>(draft.lore[f]||"").trim()).length;
+  const lore=el("div",{class:"railsec"},
+    el("div",{class:"row spread"},
+      el("h3",{style:"margin:0",text:"Lore packet"}),
+      el("span",{class:"muted",style:"font-size:11px",text:`${filled}/${DB.lorePacketFields.length}`})),
+    el("div",{class:"loremeter"},
+      ...DB.lorePacketFields.map(f=>el("i",{class:(draft.lore[f]||"").trim()?"on":""}))),
+    el("div",{class:"muted",style:"font-size:11.5px;margin-bottom:12px"},
+      "Your working notes, not printed text. You write the card's flavour sentence FROM this — the one line of story inside the rules text. Fill it before you write the card."));
+
   for(const f of DB.lorePacketFields){
-    lore.append(el("label",{class:"fl",text:f}));
-    lore.append(el("textarea",{rows:"2",placeholder:"—",
-      oninput:e=>{draft.lore[f]=e.target.value; touch(false);}}, draft.lore[f]||""));
+    const help=HELP[f]||{};
+    const val=(draft.lore[f]||"").trim();
+    let ctx=null;
+    if(f==="The Fall (printed weakness)" && brief && brief.weakness)
+      ctx=`${m.faction} weakness: ${brief.weakness}`;
+    if(f==="Why This Crew" && crew && crew.plan)
+      ctx=`${crew.name} plan: ${crew.plan}`;
+    if(f==="The Ascension (what the level-up MEANS)" && draft.levelupCondition)
+      ctx=`Level-up condition: ${draft.levelupCondition.slice(0,150)}`;
+    lore.append(el("div",{class:`lorefield ${val?"done":""}`},
+      el("div",{class:"hd"},
+        el("span",{class:"nm",text:f}),
+        (!val && (f==="The True Detail"||f==="The Fall (printed weakness)"))
+          ? el("span",{class:"req",text:"REQUIRED"}) : null),
+      el("div",{class:"why",text:help.why||""}),
+      ctx?el("div",{class:"ctx",text:ctx}):null,
+      el("textarea",{rows:"2",placeholder:help.eg?`e.g. ${help.eg}`:"—",
+        oninput:e=>{draft.lore[f]=e.target.value; touch(false);}}, draft.lore[f]||"")));
   }
-  lore.append(el("div",{class:"muted",style:"font-size:11.5px;margin-top:10px",
-    text:"The True Detail is the load-bearing field — one real, specific fact. Never invent it."}));
   rail.append(lore);
 
 

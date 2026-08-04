@@ -46,7 +46,7 @@ plan:
 
 ### Condition
 
-Corazon knows they are hooked, and now it's time to collect.When Corazon has successfully generated a cumulative total of 3 temporary Energy for the opponent across the game, he levels up.
+Corazon knows they are hooked, and now it's time to collect. When Corazon has successfully generated a cumulative total of 3 temporary Energy for the opponent across the game, he levels up.
 
 ### Ascended Rules Text
 

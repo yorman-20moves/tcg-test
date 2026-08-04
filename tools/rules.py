@@ -467,24 +467,93 @@ def w8_dead_entries(world: World) -> list[Finding]:
     return findings
 
 
+LORE_FALL = "The Fall (printed weakness)"
+LORE_ASCENSION = "The Ascension (what the level-up MEANS)"
+LORE_WHY_CREW = "Why This Crew"
+LORE_WHY_FACTION = "Why This Faction"
+
+
 def w9_lore_gates(world: World) -> list[Finding]:
+    """The Lore Packet is working notes, but some fields are load-bearing for the mechanics.
+
+    The Fall feeds gameplay D1 and lore D4 -- a card carrying only its faction's strength is a
+    card wearing the colour. The Ascension is what makes a level-up earned rather than a stat
+    bump. Why This Crew is the card's road, which the crew diversity rule (W3) reads.
+
+    One finding per card, not one per field -- four separate warnings about the same card is
+    noise, and noise is how a linter teaches you to ignore it.
+    """
     findings = []
     for card in world.cards:
         status = card.meta.get("status")
         if status in (None, "draft"):
             continue
-        if not (card.lore or {}).get(LORE_TRUE_DETAIL):
+        lore = card.lore or {}
+        required = [(LORE_TRUE_DETAIL, "the one real fact about the real person")]
+        if card.faction:
+            required.append((LORE_FALL, f"how it is exposed to the {card.faction} weakness"))
+        if card.meta.get("crew"):
+            required.append((LORE_WHY_CREW, "which is also its road for the crew diversity rule"))
+        if card.is_ascendant and card.levelup_condition:
+            required.append((LORE_ASCENSION, "what levelling up MEANS, beyond the stat change"))
+
+        missing = [(field, why) for field, why in required if not (lore.get(field) or "").strip()]
+        if not missing:
+            continue
+        names = ", ".join(f.split(" (")[0] for f, _ in missing)
+        findings.append(Finding(
+            "W9", "warning", card.name,
+            f"is '{status}' but its Lore Packet is missing {len(missing)} required field"
+            f"{'s' if len(missing) > 1 else ''}: {names}.",
+            where=card.rel_path,
+            fix="; ".join(f"{f.split(' (')[0]} — {why}" for f, why in missing)))
+    return findings
+
+
+# This game capitalises its rules terms ("pay 1 Energy", "a Character", "the Board") and
+# lower-cases prose. That, plus digits, separates mechanism from flavour far more reliably
+# than a keyword list -- "he draws all the squad's heat" and "feeds on the heavy energy of a
+# wild room" are both flavour, and a word list flags both.
+GAME_TERMS = ("Energy", "Board", "Round", "Character", "Life Point", "Physical Attack",
+              "Mental Attack", "Physical Health", "Mental Health", "Phase", "Combat Wave",
+              "Graveyard", "Hand", "Resource Row", "Attachment", "Tactic", "Murder",
+              "Ascendant", "Descendant", "Influence", "Commandment")
+MIN_FLAVOUR_WORDS = 5
+
+
+def w11_no_flavour(world: World) -> list[Finding]:
+    """The card's printed flavour: the one line of story inside the rules text.
+
+    The Lore Packet is private working notes; this sentence is what players actually read.
+    A card whose rules text is pure mechanism has no voice at the table.
+    """
+    findings = []
+    for card in world.cards:
+        if card.meta.get("status") in (None, "draft") or not card.rules_text:
+            continue
+        text = re.sub(r"\[[^\]]*\]|\([^)]*\)", " ", card.rules_text)
+        prose = []
+        for sentence in re.split(r"(?<=[.!?])\s+|\n+", text):
+            sentence = sentence.strip()
+            if len(sentence.split()) < MIN_FLAVOUR_WORDS:
+                continue
+            if re.search(r"\d", sentence):
+                continue
+            if any(term in sentence for term in GAME_TERMS):
+                continue
+            prose.append(sentence)
+        if not prose:
             findings.append(Finding(
-                "W9", "warning", card.name,
-                f"is marked '{status}' but its Lore Packet has no True Detail.",
+                "W11", "warning", card.name,
+                "has no flavour sentence — every line of its rules text is mechanism.",
                 where=card.rel_path,
-                fix="The True Detail is the one field only you can supply. Fill it or set "
-                    "status back to draft."))
+                fix="Write one line of story into the rules text, drawn from the Lore Packet. "
+                    "That sentence is the part players actually read."))
     return findings
 
 
 def w10_faction_gaps(world: World) -> list[Finding]:
-    """A faction blind in every window another faction is strong in has no game against them."""
+    """A faction blind in every window another is strong in has no game against them."""
     findings = []
     for attacker in world.factions:
         strong = {w for w in WINDOW_KEYS if (attacker.get("windows") or {}).get(w) == "strong"}
@@ -509,7 +578,7 @@ HARD = [f1_unique_conflicts, f2_f3_toolkit_violations, f4_over_ceiling, f5_reach
         f6_f7_card_gates, f8_undefined_terms, f9_broken_references]
 SOFT = [w1_window_coverage, w2_enabler_chains, w3_crew_diversity, w4_crew_plan_missing,
         w5_twins, w6_scaling_text, w7_ceiling_quota, w8_dead_entries, w9_lore_gates,
-        w10_faction_gaps]
+        w10_faction_gaps, w11_no_flavour]
 
 
 def run_all(world: World | None = None) -> list[Finding]:

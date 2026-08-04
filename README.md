@@ -64,6 +64,51 @@ Everything below is a thing you'll actually want to do.
 **Before you start**, open the **Crews** screen and read the crew's plan. A card that doesn't
 advance its crew's plan is a card in the wrong crew.
 
+## What is the Lore Packet, and where does it actually go?
+
+**It is your working notes. It is not printed on the card.**
+
+What *is* printed is one sentence of story sitting inside the rules text — the bit that reads
+*"Alvino forces you to drink up, and he doesn't take no for an answer"* before the mechanics
+start. You write that sentence **from** the packet. The packet is the thinking; the flavour
+sentence is the output.
+
+Seven boxes, in the order you should fill them:
+
+| Box | What goes in it |
+|---|---|
+| **Premise** | The one-line pitch of this person as a mythologized figure. If you can't say it in a sentence, the card isn't a character yet. |
+| **The True Detail** | One real, specific, verifiable thing about the **actual person**. The anchor everything else hangs off. **Never invent this** — it's the one field nobody but you can supply, and it's what makes the card land for the friends and feel real to strangers. |
+| **The Myth** | What the streets say happened. Exaggerated, unverifiable, better than the truth. This is where the True Detail becomes legend. |
+| **Why This Faction** | Faction is *methodology*, not vibe. Being clever isn't Overthinker — winning **by** being clever is. |
+| **Why This Crew** | Who they run with and what they owe them. This is also the card's **road**: how it advances the crew's plan *differently* from the others. |
+| **The Fall** | Their exposure to the faction's printed weakness. **Required.** A card carrying only the strength is a card wearing the colour. |
+| **The Ascension** | What levelling up *means* in the story, not the stat change. The base side should actively pursue it. |
+
+### Where it gets used
+
+**On screen while you design.** The Studio shows the faction's printed weakness next to *The
+Fall*, the crew's plan next to *Why This Crew*, and the level-up condition next to *The
+Ascension* — so you're writing each one against the thing it has to answer to.
+
+**In the consistency engine.** `check.py` rule **W9** flags any card past `draft` missing a
+required packet field, and tells you which. Rule **W11** flags a card whose rules text is pure
+mechanism with no flavour sentence at all.
+
+**In the lore rubric.** Gates L1 (is this recognizably the person), L2 (the dignity line), L4
+(does the flavour explain the rules), L5 (faction justification), L6 (crew coherence) and L7
+(level-up causality) are all judged *against* the packet. See
+[`docs/rubrics/lore-rubric.md`](docs/rubrics/lore-rubric.md).
+
+**As the brief for an AI.** Hand over the True Detail and the mythologizing is easy. Withhold it
+and you get seven interchangeable tough guys.
+
+### The order that works
+
+Packet → flavour sentence → mechanics. Not the other way round. A card whose mechanics came
+first and whose lore was bolted on to fit reads exactly like that, and lore rubric gate L4 exists
+to catch it.
+
 ## I want to make a variant of an existing card
 
 **Cards** → select it → **Clone**. Copies cost, stats, keywords, effects, plan, and rules text.
@@ -319,8 +364,9 @@ playtests.yaml         the playtest log
 | **W6** | Card text scales but is logged as a small fixed number |
 | **W7** | Too many cards above 2× base budget |
 | **W8** | A keyword or effect nobody uses and no faction owns |
-| **W9** | A card past draft with an empty Lore Packet |
+| **W9** | A card past draft missing required Lore Packet fields |
 | **W10** | A faction is blind everywhere another is strong |
+| **W11** | A card's rules text has no flavour sentence at all |
 | **GAP** | Something missing rather than wrong |
 
 ## Vocabulary

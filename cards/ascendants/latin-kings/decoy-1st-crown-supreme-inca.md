@@ -48,7 +48,7 @@ plan:
 
 ### Condition
 
-Decoy stands over his fallen brothers and steps up to end the war.When Decoy has Sacrificed 3 Latin Kings, he levels up.
+Decoy stands over his fallen brothers and steps up to end the war. When Decoy has Sacrificed 3 Latin Kings, he levels up.
 
 ### Ascended Rules Text
 

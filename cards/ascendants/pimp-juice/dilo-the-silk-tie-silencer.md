@@ -46,7 +46,7 @@ status: ported
 
 ### Condition
 
-He is done being just the muscle; he demands his voting seat at the table.When the opponent discards their 4th card of the game, Dilo levels up.
+He is done being just the muscle; he demands his voting seat at the table. When the opponent discards their 4th card of the game, Dilo levels up.
 
 Keywords gained: Extortionist
 

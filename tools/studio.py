@@ -41,33 +41,25 @@ STUDIO_HTML = Path(__file__).resolve().parent / "studio.html"
 MAX_BODY_BYTES = 1_000_000
 
 
-def faction_briefs() -> dict[str, dict]:
-    """Pull each faction's identity and printed weakness out of the rulebook so the
-    workbench shows the canonical text rather than a second copy of it."""
-    source = card_io.REPO_ROOT / "docs" / "rulebook" / "03-factions.md"
-    briefs: dict[str, dict] = {}
-    if not source.exists():
-        return briefs
+def faction_briefs() -> dict:
+    """Faction identity, keyed by the name cards actually use.
 
-    current = None
-    for line in source.read_text(encoding="utf-8").splitlines():
-        if line.startswith("## "):
-            heading = line.split("—")[-1].strip().removeprefix("The ").strip()
-            # "Assholes / Pwners" -> "Assholes": card frontmatter uses the first name only.
-            current = heading.split("/")[0].strip()
-            briefs[current] = {"identity": [], "weakness": ""}
-        elif current and line.startswith("> **The printed weakness:**"):
-            briefs[current]["weakness"] = (line.split("*", 4)[-1]
-                                           .strip(" *_>").replace("*", "").strip())
-        elif current and line.startswith("> "):
-            if briefs[current]["weakness"]:
-                briefs[current]["weakness"] += " " + line.lstrip("> ").strip(" *_")
-        elif current and line.strip() and not line.startswith(("---", "#", "|", ">")):
-            briefs[current]["identity"].append(line.strip())
-
-    for brief in briefs.values():
-        brief["identity"] = " ".join(brief["identity"]).replace("**", "")
-        brief["weakness"] = brief["weakness"].replace("*", "").strip()
+    Reads data/factions.yaml directly. It used to scrape docs/rulebook/03-factions.md, which
+    broke the moment that document became generated -- data should never be recovered from a
+    rendering of itself.
+    """
+    briefs = {}
+    for faction in rules.load_world().factions:
+        briefs[faction["name"]] = {
+            "identity": (faction.get("identity") or "").strip(),
+            "weakness": (faction.get("weakness") or "").strip(),
+            "windows": faction.get("windows") or {},
+            "windowNotes": faction.get("window_notes") or {},
+            "emoji": faction.get("emoji", ""),
+            "reviewed": bool(faction.get("reviewed")),
+            "unique": faction.get("unique") or {},
+            "never": faction.get("never") or {},
+        }
     return briefs
 
 

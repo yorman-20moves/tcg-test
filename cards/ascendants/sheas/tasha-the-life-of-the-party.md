@@ -37,7 +37,7 @@ status: ported
 
 ### Rules Text
 
-[Pre-Game Buzz] (Passive Ability): Tasha feeds on the heavy energy of a wild room.Tasha gains +1 Physical Attack (PA) for every Character on the Board equipped with a Beer or Blunt Attachment, or possessing permanent MH damage from a "Drink" ability.
+[Pre-Game Buzz] (Passive Ability): Tasha feeds on the heavy energy of a wild room. Tasha gains +1 Physical Attack (PA) for every Character on the Board equipped with a Beer or Blunt Attachment, or possessing permanent MH damage from a "Drink" ability.
 
 [Shots! Shots! Shots!] (Fast Ability): Pay 1 Energy to equip a Beer Attachment from your Hand to Tasha or an ally.
 

@@ -46,7 +46,7 @@ status: ported
 
 ### Condition
 
-Caleb starts literally melting the hardware with his toxicity.When Caleb has personally witnessed 3 Characters die while afflicted with either the Exhausted, Silenced, or Stunned status, he levels up.
+Caleb starts literally melting the hardware with his toxicity. When Caleb has personally witnessed 3 Characters die while afflicted with either the Exhausted, Silenced, or Stunned status, he levels up.
 
 ### Ascended Rules Text
 

@@ -48,7 +48,7 @@ Keywords: Protector
 
 ### Condition
 
-Benny sees his crew hurting and opens the premium stash.When Benny has successfully served [A1 Drinkz] to his allies 3 times throughout the game, he levels up.
+Benny sees his crew hurting and opens the premium stash. When Benny has successfully served [A1 Drinkz] to his allies 3 times throughout the game, he levels up.
 
 ### Ascended Rules Text
 

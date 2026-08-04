@@ -43,7 +43,7 @@ status: ported
 
 ### Condition
 
-Alvino watches the bar get completely trashed, and he loves it.Once 4 Characters (allied or enemy) have taken a shot from Alvino and suffered permanent MH damage, he levels up.
+Alvino watches the bar get completely trashed, and he loves it. Once 4 Characters (allied or enemy) have taken a shot from Alvino and suffered permanent MH damage, he levels up.
 
 ### Ascended Rules Text
 
