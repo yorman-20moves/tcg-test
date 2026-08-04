@@ -34,6 +34,7 @@ exit code is the number of blocking errors. Everything else in this README is a 
 | Screen | For |
 |---|---|
 | **Cards** | Designing one card — budget meters, gates, artwork, lore |
+| **Library** | Every keyword, effect and status: what it means, who owns it, which cards use it |
 | **Factions** | What each faction uniquely owns, never has, and which windows it answers in |
 | **Crews** | Each crew's plan, and the different road every card takes to it |
 | **Matrix** | Crew × faction grid. Where the holes are |
@@ -179,17 +180,43 @@ Reach is derived from this map.
    Duplicate roads are flagged. If you can't write a distinct road for a card, that card is a
    duplicate and needs rewriting.
 
-## I want to add a keyword or an effect
+## I can't remember what a keyword does
 
-Edit `data/keywords.yaml` or `data/effects.yaml` directly. Price it against **at least two
-existing entries** and say so in `docs/design/decisions.md`.
+**Library** screen. Three tabs — Keywords, Effects, Status effects — every entry with its full
+definition on screen, no hovering.
 
-Then assign it to a faction on the **Factions** screen, or it'll show up as a dead entry (W8).
+Each row tells you four things at a glance: the **point cost**, the **definition**, whether it's
+**unique to a faction or shared**, and **how many cards use it**. Entries nothing uses are
+tagged `unused`, which is usually either a gap or a dead entry.
 
-```
-python tools/generate.py     # rebuilds the rulebook keyword table
-python tools/check.py
-```
+Filter box at the top searches names *and* definitions, so "steal" finds everything about
+stealing even if the word isn't in the name.
+
+**You also no longer have to leave the card you're designing.** In the Cards screen, every
+effect in the picker shows its definition inline, and every keyword available to that faction
+lists its definition underneath the chips. The one you've selected is highlighted.
+
+## I want to add or change a keyword or an effect
+
+**Library** → **+ New keyword** (or effect, or status).
+
+Name it, write the definition as it would read on a card, set the point cost. While you're
+setting the cost the screen shows you **everything priced within a point of it** — price a new
+entry against at least two of those and note the reasoning in
+[`docs/design/decisions.md`](docs/design/decisions.md).
+
+For a keyword, pick its faction. Keywords are faction-exclusive by rule, so you also need to
+mark it **unique** to that faction on the **Factions** screen — rule **F10** will tell you if
+those two disagree.
+
+**Editing an existing one** works the same way. The editor shows which cards use it, and you can
+click straight through to any of them. Saving regenerates the rulebook tables.
+
+**Renaming** — use the **Rename everywhere** button, never the name field. It updates every card,
+data file and document in one pass. Editing the name field only renames the entry, which orphans
+every card still pointing at the old one.
+
+**Deleting** is guarded. If cards still use it, you get the list and have to confirm.
 
 ## I want to rename something
 
@@ -351,6 +378,7 @@ playtests.yaml         the playtest log
 | **F7** | A status is applied with no stated duration |
 | **F8** | Rules text uses a term defined nowhere |
 | **F9** | A reference points at something that doesn't exist |
+| **F10** | A keyword's faction disagrees with which faction owns it |
 
 **Warnings — read and judge.**
 

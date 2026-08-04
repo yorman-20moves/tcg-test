@@ -129,6 +129,7 @@ def bootstrap() -> dict:
         "windowLabels": rules.WINDOW_LABELS,
         "findings": findings_payload(),
         "playtests": playtests(),
+        "usage": library_usage(),
         "keywords": card_io.load_table("keywords.yaml", "keywords"),
         "effects": card_io.load_table("effects.yaml", "effects"),
         "statuses": card_io.load_table("status-effects.yaml", "status_effects"),
@@ -196,6 +197,100 @@ def save_crew(payload: dict) -> dict:
     write_table("crews.yaml", "crews", rows)
     run_generate()
     return {"ok": True, "crews": rows, "findings": findings_payload()}
+
+
+LIBRARY = {
+    "keywords": ("keywords.yaml", "keywords"),
+    "effects": ("effects.yaml", "effects"),
+    "statuses": ("status-effects.yaml", "status_effects"),
+}
+
+
+def library_rows(kind: str) -> list:
+    filename, key = LIBRARY[kind]
+    path = card_io.REPO_ROOT / "data" / filename
+    if not path.exists():
+        return []
+    return (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get(key, []) or []
+
+
+def library_usage() -> dict:
+    """name -> [card names that use it]. Answers 'can I safely change this?'"""
+    usage: dict[str, list] = {}
+    for card in card_io.load_all():
+        for side in ("base", "ascended"):
+            block = card.side(side)
+            for name in block["keywords"] + block["effects"]:
+                usage.setdefault(name, [])
+                if card.name not in usage[name]:
+                    usage[name].append(card.name)
+    # statuses are referenced in prose, not in frontmatter
+    for status in library_rows("statuses"):
+        name = status.get("name")
+        if not name:
+            continue
+        hits = [c.name for c in card_io.load_all()
+                if re.search(rf"\b{re.escape(name)}\b", f"{c.rules_text}\n{c.ascended_text}",
+                             re.IGNORECASE)]
+        if hits:
+            usage.setdefault(name, [])
+            usage[name] = sorted(set(usage[name]) | set(hits))
+    return usage
+
+
+def save_library_entry(payload: dict) -> dict:
+    kind = payload["kind"]
+    entry = payload["entry"]
+    original = payload.get("originalName") or entry.get("name")
+    filename, key = LIBRARY[kind]
+    rows = [dict(r) for r in library_rows(kind)]
+    for index, row in enumerate(rows):
+        if row.get("name") == original:
+            rows[index] = entry
+            break
+    else:
+        rows.append(entry)
+    write_table(filename, key, rows)
+    run_generate()
+    return {"ok": True, "rows": rows, "usage": library_usage(),
+            "findings": findings_payload()}
+
+
+def delete_library_entry(payload: dict) -> dict:
+    kind, name = payload["kind"], payload["name"]
+    used_by = library_usage().get(name, [])
+    if used_by and not payload.get("force"):
+        return {"ok": False, "blocked": True, "usedBy": used_by,
+                "error": f"{len(used_by)} card(s) still use '{name}'."}
+    filename, key = LIBRARY[kind]
+    rows = [r for r in library_rows(kind) if r.get("name") != name]
+    write_table(filename, key, rows)
+    run_generate()
+    return {"ok": True, "rows": rows, "usage": library_usage(),
+            "findings": findings_payload()}
+
+
+def rename_library_entry(payload: dict) -> dict:
+    """Rename everywhere at once -- data, cards and docs. Same engine as tools/rename.py."""
+    kind, old, new = payload["kind"], payload["old"], payload["new"]
+    import rename as rename_tool
+    pattern = re.compile(re.escape(old))
+    singular = {"keywords": "keyword", "effects": "effect", "statuses": "status"}[kind]
+    changed = 0
+    for path in rename_tool.targets(singular):
+        text = path.read_text(encoding="utf-8")
+        if pattern.search(text):
+            path.write_text(pattern.sub(new, text), encoding="utf-8")
+            changed += 1
+    rules.load_world.cache_clear()
+    scoring.plan_config.cache_clear()
+    scoring.keyword_points.cache_clear()
+    scoring.effect_points.cache_clear()
+    scoring.keyword_faction.cache_clear()
+    scoring.status_names.cache_clear()
+    run_generate()
+    return {"ok": True, "files": changed, "rows": library_rows(kind),
+            "usage": library_usage(), "findings": findings_payload()}
 
 
 def create_card(payload: dict) -> dict:
@@ -333,6 +428,9 @@ class StudioHandler(BaseHTTPRequestHandler):
             "/api/crew": save_crew,
             "/api/playtest": log_playtest,
             "/api/snapshot": take_snapshot,
+            "/api/library": save_library_entry,
+            "/api/library/delete": delete_library_entry,
+            "/api/library/rename": rename_library_entry,
             "/api/newcard": create_card,
             "/api/clonecard": clone_card,
             "/api/generate": lambda _: {"generated": generate.main.__doc__ and run_generate()},

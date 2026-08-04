@@ -139,7 +139,7 @@ a{color:var(--accent)}
 .chip[aria-pressed="true"] .pts{color:var(--ink-2)}
 
 .efsearch{width:100%;background:var(--raised);border:1px solid var(--rule);border-radius:7px;padding:7px 9px;margin-bottom:8px}
-.eflist{max-height:190px;overflow-y:auto;border:1px solid var(--rule);border-radius:8px}
+.eflist{max-height:260px;overflow-y:auto;border:1px solid var(--rule);border-radius:8px}
 .efrow{display:flex;align-items:center;gap:9px;padding:6px 10px;cursor:pointer;border-bottom:1px solid var(--rule)}
 .efrow:last-child{border-bottom:0}
 .efrow:hover{background:var(--raised)}
@@ -269,6 +269,26 @@ label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppe
 .tool.uniq{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
 .tool.never{border-color:var(--critical);background:color-mix(in srgb,var(--critical) 12%,transparent);text-decoration:line-through}
 .tool.taken{opacity:.45;cursor:not-allowed}
+.libwrap{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:1100px){.libwrap{grid-template-columns:1fr}}
+.librow{display:flex;gap:10px;padding:9px 11px;border-bottom:1px solid var(--rule);cursor:pointer;align-items:flex-start}
+.librow:hover{background:var(--raised)}
+.librow[aria-current="true"]{background:var(--raised);box-shadow:inset 3px 0 0 var(--accent)}
+.librow .pt{font-variant-numeric:tabular-nums;font-weight:600;min-width:26px;text-align:right;flex:none}
+.librow .bd{flex:1;min-width:0}
+.librow .t{font-weight:600;font-size:13px}
+.librow .d{font-size:11.5px;color:var(--ink-3);line-height:1.4;margin-top:2px}
+.librow .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.tag2{font-size:10.5px;padding:1px 7px;border-radius:999px;border:1px solid var(--rule);color:var(--ink-2)}
+.tag2.uniq{border-color:var(--accent);color:var(--accent)}
+.tag2.shared{border-color:var(--baseline)}
+.tag2.unused{border-color:var(--warning);color:var(--warning)}
+.libtabs{display:flex;gap:5px;margin-bottom:10px}
+.efrow .d{font-size:11px;color:var(--ink-3);line-height:1.35;margin-top:2px}
+.kwdefs{margin-top:8px;border-top:1px solid var(--rule);padding-top:8px;display:grid;gap:5px}
+.kwdef{font-size:11.5px;line-height:1.4}
+.kwdef b{color:var(--ink-1)}
+.kwdef.on b{color:var(--accent)}
 .finding{display:flex;gap:9px;padding:9px 10px;border-bottom:1px solid var(--rule);align-items:flex-start}
 .finding .code{font-weight:700;font-variant-numeric:tabular-nums;flex:none;width:32px}
 .finding.err .code{color:var(--critical)} .finding.warn .code{color:var(--warning)}
@@ -441,6 +461,7 @@ function listSeverity(c){
   return s.scorable?severity(s.baseDelta):"none";
 }
 function renderList(){
+  if(MODE==="library"){ $("#rows").replaceChildren(); return; }
   if(MODE==="factions"||MODE==="crews"){
     const rows=$("#rows"); rows.replaceChildren();
     const items = MODE==="factions" ? (DB.factionData||[]) : (DB.crews||[]);
@@ -537,14 +558,18 @@ function effectPicker(side){
     matching.sort((a,b)=>(chosen.includes(b.name)?1:0)-(chosen.includes(a.name)?1:0));
     list.replaceChildren(...matching.map(e=>{
       const on=chosen.includes(e.name);
-      return el("label",{class:"efrow"},
-        el("input",{type:"checkbox",checked:on,onchange:ev=>{
+      return el("label",{class:"efrow",style:"align-items:flex-start"},
+        el("input",{type:"checkbox",checked:on,style:"margin-top:3px",onchange:ev=>{
           if(ev.target.checked){ if(!chosen.includes(e.name)) chosen.push(e.name); }
           else chosen.splice(chosen.indexOf(e.name),1);
           touch();
         }}),
-        el("span",{class:"nm",text:e.name,title:e.description}),
-        el("span",{class:"pts",text:String(e.points)}));
+        el("span",{class:"nm",style:"white-space:normal"},
+          el("span",{style:"font-weight:600"},e.name),
+          /* the definition inline, not in a tooltip -- having to hover 51 entries to
+             remember what they mean is the friction this is here to remove */
+          el("div",{class:"d",text:e.description||"— no definition written —"})),
+        el("span",{class:"pts",style:"margin-top:2px",text:String(e.points)}));
     }));
   };
   search.addEventListener("input",drawList);
@@ -555,12 +580,18 @@ function effectPicker(side){
 function keywordChips(side){
   const chosen=draft.meta[side].keywords;
   const mine=DB.keywords.filter(k=>k.faction===draft.meta.faction);
-  return el("div",{class:"chips"}, ...mine.map(k=>{
+  const chips=el("div",{class:"chips"}, ...mine.map(k=>{
     const on=chosen.includes(k.name);
-    return el("button",{class:"chip","aria-pressed":on,title:k.definition,onclick:()=>{
+    return el("button",{class:"chip","aria-pressed":on,onclick:()=>{
       on?chosen.splice(chosen.indexOf(k.name),1):chosen.push(k.name); touch();}},
       k.name, el("span",{class:"pts",text:(k.points>0?"+":"")+k.points}));
   }), mine.length?null:el("span",{class:"muted",text:"No keywords defined for this faction"}));
+  /* Definitions always on screen. Having to remember what a Role does, or hover to find out,
+     is the friction this removes -- there are only a handful per faction, so show them all. */
+  const defs=el("div",{class:"kwdefs"}, ...mine.map(k=>
+    el("div",{class:`kwdef ${chosen.includes(k.name)?"on":""}`},
+      el("b",{text:k.name}), " — ", k.definition||"no definition written")));
+  return el("div",{}, chips, mine.length?defs:null);
 }
 
 function textarea(label, value, key, rows=4){
@@ -843,7 +874,7 @@ async function cloneCurrent(){
 
 /* ============================== MODES ====================================== */
 let MODE="cards";
-const MODE_LIST=[["cards","Cards"],["factions","Factions"],["crews","Crews"],
+const MODE_LIST=[["cards","Cards"],["library","Library"],["factions","Factions"],["crews","Crews"],
                  ["matrix","Matrix"],["health","Health"],["problems","Problems"]];
 
 function renderModes(){
@@ -889,6 +920,201 @@ function uniqueOwner(kind,name,exceptKey){
     if(((f.unique||{})[kind]||[]).includes(name)) return f.name;
   }
   return null;
+}
+
+
+/* ------------------------------- LIBRARY --------------------------------- */
+let libKind="keywords", libSel=null, libQuery="";
+const LIB_META={keywords:{label:"Keywords",noun:"keyword",hasFaction:true,hasPoints:true,
+                          defKey:"definition"},
+                effects:{label:"Effects",noun:"effect",hasFaction:false,hasPoints:true,
+                          defKey:"description"},
+                statuses:{label:"Status effects",noun:"status",hasFaction:false,hasPoints:false,
+                          defKey:"description"}};
+function libRows(kind){
+  return kind==="keywords" ? (DB.keywords||[])
+       : kind==="effects"  ? (DB.effects||[])
+       : (DB.statuses||[]);
+}
+function uniqueOwnerOf(kind,name){
+  const bucket = kind==="keywords" ? "keywords" : "effects";
+  for(const f of DB.factionData||[])
+    if((((f.unique||{})[bucket])||[]).includes(name)) return f.name;
+  return null;
+}
+function neverFor(kind,name){
+  const bucket = kind==="keywords" ? "keywords" : "effects";
+  return (DB.factionData||[]).filter(f=>(((f.never||{})[bucket])||[]).includes(name))
+                             .map(f=>f.name);
+}
+async function libSave(entry, originalName){
+  const j=await postJSON("/api/library",{kind:libKind,entry,originalName});
+  if(libKind==="keywords") DB.keywords=j.rows; else if(libKind==="effects") DB.effects=j.rows;
+  else DB.statuses=j.rows;
+  DB.usage=j.usage; DB.findings=j.findings;
+  DB.kwPts=Object.fromEntries((DB.keywords||[]).map(k=>[k.name,k.points]));
+  DB.kwFaction=Object.fromEntries((DB.keywords||[]).map(k=>[k.name,k.faction]));
+  DB.efPts=Object.fromEntries((DB.effects||[]).map(e=>[e.name,e.points]));
+  renderModes(); renderMain(); renderList();
+}
+
+function renderLibrary(main){
+  const meta=LIB_META[libKind];
+  const rows=libRows(libKind);
+  const usage=DB.usage||{};
+
+  main.append(el("div",{class:"topbar"},
+    el("div",{class:"row spread"},
+      el("div",{},
+        el("h2",{style:"font-size:20px",text:"Library"}),
+        el("div",{class:"muted",style:"font-size:12px;margin-top:3px",
+          text:"Every keyword, effect and status — what it means, who owns it, which cards use it"})),
+      el("button",{class:"primary",onclick:()=>{
+        libSel={__new:true,name:"",points:2,
+                [meta.defKey]:"", ...(meta.hasFaction?{faction:(DB.factionData||[])[0]?.name}:{})};
+        renderMain();
+      }},`+ New ${meta.noun}`)),
+    el("div",{class:"libtabs",style:"margin-top:10px"},
+      ...Object.entries(LIB_META).map(([k,m])=>
+        el("button",{class:"mode","aria-current":libKind===k,
+          onclick:()=>{libKind=k; libSel=null; renderMain();}},
+          m.label, el("span",{class:"n",text:String(libRows(k).length)})))),
+    el("input",{class:"efsearch",style:"margin-top:8px",value:libQuery,
+      placeholder:`Filter ${rows.length} ${meta.label.toLowerCase()}…`,
+      oninput:e=>{libQuery=e.target.value; renderMain();}})));
+
+  /* ---- list ---- */
+  const q=libQuery.toLowerCase();
+  const list=el("div",{class:"panel",style:"padding:0;max-height:70vh;overflow-y:auto"});
+  const shown=rows.filter(r=>!q ||
+    `${r.name} ${r[meta.defKey]||""} ${r.faction||""}`.toLowerCase().includes(q));
+  const sorted=[...shown].sort((a,b)=>
+    meta.hasFaction ? (a.faction||"").localeCompare(b.faction||"")||((a.points||0)-(b.points||0))
+                    : ((a.points||0)-(b.points||0))||a.name.localeCompare(b.name));
+  let lastGroup=null;
+  for(const r of sorted){
+    if(meta.hasFaction && r.faction!==lastGroup){
+      lastGroup=r.faction;
+      list.append(el("div",{class:"crewgroup",text:lastGroup||"unassigned"}));
+    }
+    const owner=uniqueOwnerOf(libKind,r.name);
+    const used=(usage[r.name]||[]).length;
+    list.append(el("div",{class:"librow","aria-current":libSel&&libSel.name===r.name,
+      onclick:()=>{libSel={...r}; renderMain();}},
+      meta.hasPoints?el("span",{class:"pt",text:String(r.points ?? "–")}):null,
+      el("div",{class:"bd"},
+        el("div",{class:"t",text:r.name}),
+        el("div",{class:"d",text:r[meta.defKey]||"— no definition written —"}),
+        el("div",{class:"meta"},
+          owner?el("span",{class:"tag2 uniq",text:`unique · ${owner}`})
+               :el("span",{class:"tag2 shared",text:"shared"}),
+          el("span",{class:used?"tag2":"tag2 unused",
+            text:used?`${used} card${used===1?"":"s"}`:"unused"}),
+          ...neverFor(libKind,r.name).map(f=>el("span",{class:"tag2",text:`never · ${f}`}))))));
+  }
+  if(!sorted.length) list.append(el("div",{style:"padding:16px"},
+    el("span",{class:"muted",text:"Nothing matches."})));
+
+  /* ---- editor ---- */
+  let editor;
+  if(!libSel){
+    editor=el("div",{class:"panel"},
+      el("div",{class:"muted",style:"padding:22px 4px;text-align:center"},
+        `Select a ${meta.noun} to see its definition and edit it, or create a new one.`));
+  } else {
+    const isNew=!!libSel.__new;
+    const original=isNew?null:libSel.name;
+    const owner=isNew?null:uniqueOwnerOf(libKind,libSel.name);
+    const used=isNew?[]:(usage[libSel.name]||[]);
+    const dupe=isNew && rows.some(r=>r.name.trim().toLowerCase()===(libSel.name||"").trim().toLowerCase());
+
+    /* comparable prices, so a new entry is costed against its neighbours */
+    const near=meta.hasPoints ? rows.filter(r=>Math.abs((r.points||0)-(libSel.points||0))<=1
+                                            && r.name!==libSel.name).slice(0,6) : [];
+    editor=el("div",{class:"panel"},
+      el("h3",{style:"font-size:14px;margin-bottom:10px",
+        text:isNew?`New ${meta.noun}`:libSel.name}),
+      el("label",{class:"fl",text:"Name"}),
+      el("input",{class:"efsearch",value:libSel.name||"",
+        oninput:e=>{libSel.name=e.target.value;}}),
+      dupe?el("div",{class:"stub",style:"margin:8px 0 0",
+        text:`A ${meta.noun} called "${libSel.name}" already exists.`}):null,
+
+      el("label",{class:"fl",text:"Definition — write it as it would read on a card"}),
+      el("textarea",{rows:"3",value:"",
+        oninput:e=>{libSel[meta.defKey]=e.target.value;}}, libSel[meta.defKey]||""),
+
+      meta.hasPoints?el("div",{},
+        el("label",{class:"fl",text:"Point cost — charged against a card's budget"}),
+        el("div",{class:"row",style:"gap:8px;align-items:center"},
+          el("button",{class:"sbtn",text:"−",onclick:()=>{libSel.points=(libSel.points||0)-1; renderMain();}}),
+          el("input",{type:"number",class:"efsearch",style:"width:80px;margin:0;text-align:center",
+            value:String(libSel.points ?? 0),
+            oninput:e=>{libSel.points=Number(e.target.value)||0;}}),
+          el("button",{class:"sbtn",text:"+",onclick:()=>{libSel.points=(libSel.points||0)+1; renderMain();}}),
+          el("span",{class:"muted",style:"font-size:11.5px",
+            text:"negative means it's a drawback and you're paid for it"}))):null,
+
+      near.length?el("div",{style:"margin-top:8px"},
+        el("div",{class:"muted",style:"font-size:11.5px;margin-bottom:4px",
+          text:"Priced near this — a new entry should be defensible against at least two of them:"}),
+        el("div",{class:"chips"}, ...near.map(r=>
+          el("span",{class:"chip",style:"cursor:default",title:r[meta.defKey]||""},
+            r.name, el("span",{class:"pts",text:String(r.points)}))))):null,
+
+      meta.hasFaction?el("div",{},
+        el("label",{class:"fl",text:"Faction"}),
+        el("select",{class:"efsearch",onchange:e=>{libSel.faction=e.target.value;}},
+          ...(DB.factionData||[]).map(f=>
+            el("option",{value:f.name,selected:libSel.faction===f.name},f.name)))):null,
+
+      !isNew?el("div",{style:"margin-top:14px;border-top:1px solid var(--rule);padding-top:10px"},
+        el("div",{class:"row spread",style:"font-size:12px"},
+          el("span",{class:"muted",text:"Ownership"}),
+          el("span",{}, owner?`unique to the ${owner}`:"shared — change it on the Factions screen")),
+        el("div",{class:"row spread",style:"font-size:12px;margin-top:6px"},
+          el("span",{class:"muted",text:`Used by ${used.length} card${used.length===1?"":"s"}`}),
+          el("span",{})),
+        used.length?el("div",{class:"chips",style:"margin-top:6px"},
+          ...used.map(n=>el("button",{class:"chip",onclick:()=>{
+            const c=cards.find(x=>x.meta.name===n); if(c){ setMode("cards"); select(c); }
+          }},n.split(",")[0]))):null):null,
+
+      el("div",{class:"row",style:"gap:8px;margin-top:16px;justify-content:flex-end"},
+        !isNew?el("button",{class:"ghost",onclick:async()=>{
+          const next=prompt(`Rename "${libSel.name}" to — this updates every card, data file and doc at once.`, libSel.name);
+          if(!next || next===libSel.name) return;
+          try{
+            const j=await postJSON("/api/library/rename",{kind:libKind,old:libSel.name,new:next});
+            toast(`Renamed across ${j.files} file(s)`);
+            location.reload();
+          }catch(e){ toast("Rename failed: "+e.message,6000); }
+        }},"Rename everywhere"):null,
+        !isNew?el("button",{class:"ghost",style:"border-color:var(--critical);color:var(--critical)",
+          onclick:async()=>{
+            try{
+              let j=await postJSON("/api/library/delete",{kind:libKind,name:libSel.name});
+              if(j.blocked){
+                if(!confirm(`${j.usedBy.length} card(s) still use "${libSel.name}":\n\n`+
+                            j.usedBy.join("\n")+`\n\nDelete anyway? They will fail validation.`)) return;
+                j=await postJSON("/api/library/delete",{kind:libKind,name:libSel.name,force:true});
+              }
+              if(libKind==="keywords") DB.keywords=j.rows;
+              else if(libKind==="effects") DB.effects=j.rows; else DB.statuses=j.rows;
+              DB.usage=j.usage; DB.findings=j.findings; libSel=null;
+              toast("Deleted"); renderModes(); renderMain();
+            }catch(e){ toast("Delete failed: "+e.message,6000); }
+          }},"Delete"):null,
+        el("button",{class:"primary",onclick:async()=>{
+          if(!(libSel.name||"").trim()) return toast("Give it a name");
+          const entry={...libSel}; delete entry.__new;
+          try{ await libSave(entry, original);
+               libSel={...entry}; toast("Saved — docs regenerated"); }
+          catch(e){ toast("Save failed: "+e.message,6000); }
+        }},isNew?"Create":"Save")));
+  }
+
+  main.append(el("div",{class:"libwrap"}, list, editor));
 }
 
 /* ------------------------------ FACTIONS --------------------------------- */
@@ -1264,6 +1490,7 @@ function renderProblems(main){
 
 function renderMain(){
   const main=$("#main"); main.replaceChildren();
+  if(MODE==="library")  return renderLibrary(main);
   if(MODE==="factions") return renderFactions(main);
   if(MODE==="crews")    return renderCrews(main);
   if(MODE==="matrix")   return renderMatrix(main);

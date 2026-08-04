@@ -69,6 +69,15 @@ automatically — that is how Dre feeding Moammar was caught.
 8. **Lore gate L2 (the dignity line) is not negotiable and not a joke gate.** These are real
    people. When in doubt, the answer is "ask them," not "it's probably fine."
 
+## Keywords, effects and statuses
+
+They live in `data/keywords.yaml`, `data/effects.yaml`, `data/status-effects.yaml` and are
+edited on the Studio's **Library** screen, which also shows ownership and per-card usage.
+
+Pricing a new entry means defending it against **at least two existing entries** and recording
+the reasoning in `docs/design/decisions.md`. Keywords are faction-exclusive: a keyword's own
+`faction` field and the owning faction's `unique` list must agree, or F10 fails.
+
 ## Creating, cloning, retiring
 
 Never hand-write a card file from a template — go through `card_io.new_card()` or the Studio's

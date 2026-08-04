@@ -123,6 +123,35 @@ def f1_unique_conflicts(world: World) -> list[Finding]:
     return findings
 
 
+def f10_keyword_ownership(world: World) -> list[Finding]:
+    """A keyword carries its own `faction` field AND appears in a faction's unique list.
+    Those two can disagree, and if they do the toolkit check silently reads the wrong one."""
+    unique_owner = {}
+    for faction in world.factions:
+        for name in (faction.get("unique") or {}).get("keywords") or []:
+            unique_owner[name] = faction["name"]
+    findings = []
+    for keyword in world.keywords:
+        name, stated = keyword.get("name"), keyword.get("faction")
+        owner = unique_owner.get(name)
+        if owner and stated and owner != stated:
+            findings.append(Finding(
+                "F10", "error", name,
+                f"is listed as a {stated} keyword in data/keywords.yaml but is marked unique to "
+                f"the {owner} in data/factions.yaml.",
+                where="data/keywords.yaml",
+                fix=f"Pick one. The Library screen edits the keyword's faction; the Factions "
+                    f"screen edits who owns it."))
+        elif stated and not owner:
+            findings.append(Finding(
+                "F10", "error", name,
+                f"is a {stated} keyword but no faction claims it as unique. Keywords are "
+                f"faction-exclusive by rule.",
+                where="data/factions.yaml",
+                fix=f"Mark '{name}' unique to the {stated} on the Factions screen."))
+    return findings
+
+
 def f2_f3_toolkit_violations(world: World) -> list[Finding]:
     """Cards reaching for tools their faction doesn't own."""
     owner: dict[tuple, str] = {}
@@ -574,7 +603,7 @@ def w10_faction_gaps(world: World) -> list[Finding]:
 
 # ------------------------------------------------------------------ runner
 
-HARD = [f1_unique_conflicts, f2_f3_toolkit_violations, f4_over_ceiling, f5_reach_overclaim,
+HARD = [f1_unique_conflicts, f10_keyword_ownership, f2_f3_toolkit_violations, f4_over_ceiling, f5_reach_overclaim,
         f6_f7_card_gates, f8_undefined_terms, f9_broken_references]
 SOFT = [w1_window_coverage, w2_enabler_chains, w3_crew_diversity, w4_crew_plan_missing,
         w5_twins, w6_scaling_text, w7_ceiling_quota, w8_dead_entries, w9_lore_gates,
