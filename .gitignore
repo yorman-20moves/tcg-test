@@ -20,3 +20,8 @@ venv/
 *.tmp
 /tmp/
 _to_delete/
+
+# Claude Code: launch.json is shared project config and IS tracked;
+# anything ending in .local.json is per-machine and is not.
+.claude/*.local.json
+.claude/settings.local.json

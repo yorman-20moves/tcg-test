@@ -5,333 +5,731 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Card Studio</title>
 <style>
-/* Palette roles. Status steps are fixed and never themed; they always ship with an
-   icon + label so colour never carries the meaning alone. */
+/* ============================================================================
+   CARD STUDIO — built on the 20 Moves design system (dark cinematic).
+
+   Tokens map 1:1 onto 20 Moves' names, so anything learned here transfers to
+   the site: --color-bg, --color-ink, --color-orange, --color-cyan, Anton /
+   Inter / IBM Plex Mono, the 8px spacing base, the chip/btn/card radii, the
+   dot-grid field. The faces are self-hosted from tools/fonts/ rather than the
+   CDN the system's stylesheet uses -- a local workbench should not need the
+   internet to look like itself.
+
+   ONE STUDIO-SPECIFIC RULE. The four factions already own red, blue, green and
+   gold, so there is no hue left for status. Two channels, kept strictly apart:
+
+     HUE   belongs to FACTION only.  A solid ink band or a dot.
+           Never text, never a meter fill.
+     FILL  belongs to STATUS only.   Meter fill, numerals, pill outlines.
+           Never a band, never a dot.
+
+   Status runs the system's own orange as an escalating ramp -- quiet ink, dim
+   orange, orange, hot -- so "in tolerance" is simply clean and only OVER gets
+   to raise its voice. Every status ships a glyph and a word too, so colour is
+   never carrying the meaning alone.
+   ========================================================================= */
+@font-face{font-family:Anton;src:url(/fonts/Anton-400.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Inter;src:url(/fonts/Inter-var.woff2) format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:"IBM Plex Mono";src:url(/fonts/IBMPlexMono-400.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:"IBM Plex Mono";src:url(/fonts/IBMPlexMono-500.woff2) format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:"IBM Plex Mono";src:url(/fonts/IBMPlexMono-600.woff2) format('woff2');font-weight:600;font-display:swap}
+
 :root{
   color-scheme:dark;
-  --surface-1:#1a1a19; --plane:#0d0d0d; --raised:#232322;
-  --ink-1:#ffffff; --ink-2:#c3c2b7; --ink-3:#898781;
-  --rule:#2c2c2a; --baseline:#383835; --ring:rgba(255,255,255,.10);
-  --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
-  --good-track:#0c3a0c; --warning-track:#4a3a0c; --serious-track:#4a2a1c; --critical-track:#4a1a1a;
-  --f-warmongers:#e34948; --f-overthinkers:#3987e5; --f-assholes:#008300; --f-icons:#eda100;
-  --accent:#3987e5;
+
+  /* COLOR — 20 Moves */
+  --color-bg:#080808; --color-bg-raised:#111111; --color-bg-band:#0b0b0b;
+  --color-bg-card:rgba(255,255,255,.046); --color-bg-card-hover:rgba(255,255,255,.072);
+  --color-bg-input:rgba(255,255,255,.028);
+  --color-orange:#f27127; --color-orange-hover:#f5843f; --color-orange-press:#d95f1c;
+  --color-cyan:#1fb6e8; --color-cyan-hover:#3fc4f0;
+  --color-ink:#f2eee4; --color-ink-80:rgba(242,238,228,.80);
+  --color-ink-60:rgba(242,238,228,.60); --color-ink-40:rgba(242,238,228,.40);
+  --color-border:rgba(242,238,228,.13); --color-border-med:rgba(242,238,228,.22);
+  --color-orange-glow:rgba(242,113,39,.35); --color-cyan-glow:rgba(31,182,232,.30);
+  --color-orange-tint:rgba(242,113,39,.10); --color-cyan-tint:rgba(31,182,232,.09);
+  --color-overlay:rgba(8,8,8,.88);
+
+  /* studio roles, expressed in system tokens */
+  --press:var(--color-bg); --bench:var(--color-bg-raised); --band:var(--color-bg-band);
+  --well:var(--color-bg-card); --lift:var(--color-bg-card-hover);
+  --key:var(--color-ink); --pencil:var(--color-ink-80); --ghost:var(--color-ink-60);
+  --faint:var(--color-ink-40);
+  --rule:var(--color-border); --edge:var(--color-border-med);
+  --gridline:var(--color-border); --baseline:var(--color-border-med);
+
+  /* faction inks — hue channel. Held clear of the system's cyan and orange so a
+     faction band can never be mistaken for a UI accent or an alarm. */
+  --f-warmongers:#e23b3b; --f-overthinkers:#5570e8; --f-assholes:#3fa757; --f-icons:#e8c233;
+
+  /* status ramp — fill channel. Neutral, then the system orange escalating. */
+  --good:var(--color-ink-60); --warning:#c08a3e;
+  --serious:var(--color-orange); --critical:#ff4d3d;
+
+  --shadow:0 12px 40px rgba(0,0,0,.45);
+
+  --display:Anton,Impact,"Arial Narrow",sans-serif;
+  --text:Inter,"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+  --data:"IBM Plex Mono","Cascadia Mono",Consolas,ui-monospace,monospace;
+
+  /* SIZE — 8px base, and the system's radii */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+  --radius-chip:3px; --radius-btn:6px; --radius-card:12px; --radius-pill:999px;
+  --roster:268px; --rail:352px; --bench-max:1180px;
 }
 :root[data-theme="light"]{
   color-scheme:light;
-  --surface-1:#fcfcfb; --plane:#f9f9f7; --raised:#ffffff;
-  --ink-1:#0b0b0b; --ink-2:#52514e; --ink-3:#898781;
-  --rule:#e1e0d9; --baseline:#c3c2b7; --ring:rgba(11,11,11,.10);
-  --good-track:#cdeccd; --warning-track:#fbeccb; --serious-track:#fadfd3; --critical-track:#f5d4d4;
-  --f-warmongers:#c22e2d; --f-overthinkers:#2a78d6; --f-assholes:#006300; --f-icons:#a86f00;
-  --accent:#2a78d6;
+  --color-bg:#f4f2ec; --color-bg-raised:#fbfaf7; --color-bg-band:#efece5;
+  --color-bg-card:rgba(16,14,10,.035); --color-bg-card-hover:rgba(16,14,10,.06);
+  --color-bg-input:rgba(16,14,10,.02);
+  --color-orange:#ba4805; --color-cyan:#0e6f92;
+  --color-ink:#14120e; --color-ink-80:rgba(20,18,14,.80);
+  --color-ink-60:rgba(20,18,14,.62); --color-ink-40:rgba(20,18,14,.42);
+  --color-border:rgba(20,18,14,.14); --color-border-med:rgba(20,18,14,.26);
+  --color-orange-glow:rgba(186,72,5,.28); --color-cyan-glow:rgba(14,111,146,.26);
+  --color-orange-tint:rgba(186,72,5,.09); --color-cyan-tint:rgba(14,111,146,.08);
+  --color-overlay:rgba(244,242,236,.90);
+  --f-warmongers:#b52a2a; --f-overthinkers:#3a4fc0; --f-assholes:#227a38; --f-icons:#8a6b00;
+  --warning:#8a5a13; --critical:#c22a1c;
+  --shadow:0 12px 34px rgba(40,32,20,.20);
 }
-*{box-sizing:border-box}
+
+*,*::before,*::after{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0; background:var(--plane); color:var(--ink-1);
-  font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;
+  margin:0; background:var(--color-bg); color:var(--color-ink);
+  font:14px/1.55 var(--text);
+  -webkit-font-smoothing:antialiased;
 }
 button,input,select,textarea{font:inherit;color:inherit}
 h1,h2,h3{margin:0;font-weight:600}
-a{color:var(--accent)}
+a{color:var(--color-cyan);text-decoration:none}
+a:hover{color:var(--color-cyan-hover)}
+::selection{background:var(--color-orange);color:var(--color-bg)}
+:focus-visible{outline:3px solid var(--color-cyan-glow);outline-offset:2px;border-radius:var(--radius-chip)}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-thumb{background:var(--color-border-med);border-radius:var(--radius-pill);border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:var(--color-ink-40);background-clip:content-box}
+::-webkit-scrollbar-track{background:transparent}
 
-/* ---------- shell ---------- */
-#app{display:grid;grid-template-columns:270px minmax(460px,1fr) 350px;height:100vh}
-@media(max-width:1200px){#app{grid-template-columns:230px 1fr}#rail{display:none}}
-.col{overflow-y:auto;height:100vh}
-#list{background:var(--surface-1);border-right:1px solid var(--rule)}
-#rail{background:var(--surface-1);border-left:1px solid var(--rule)}
-#main{padding:0 28px 120px}
-
-/* ---------- topbar ---------- */
-.topbar{
-  position:sticky;top:0;z-index:20;background:var(--surface-1);
-  border-bottom:1px solid var(--rule);padding:12px 14px;
+/* the system's field of analysis, behind everything */
+#dotgrid{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--color-border) 1px,transparent 1px);
+  background-size:32px 32px;opacity:.5;
 }
-#main .topbar{background:var(--plane);padding:14px 0;margin:0 0 4px}
-.row{display:flex;align-items:center;gap:8px}
+
+/* The system's eyebrow: IBM Plex Mono, tracked, uppercase. Every label in this
+   tool is one, which is the single repeated gesture that ties the bench together. */
+.slug,.herolabel,.crewgroup,label.fl,.railsec h3,.stepper .lb,.kpi .l,.famlabel,.sib th{
+  font-family:var(--data); font-size:11px; font-weight:500; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--color-ink-60);
+}
+.num,.cost,.pts,.pt,.kpi .v,.stepper input,.credit input,
+.sib td,.matrix .tot,.scorebar b,.meter .cap b,.breakdown b,.mode .n{
+  font-family:var(--data); font-variant-numeric:tabular-nums;
+}
+.muted{color:var(--ghost)}
+.sec{color:var(--pencil)}
+.row{display:flex;align-items:center;gap:var(--s2)}
 .spread{justify-content:space-between}
-.muted{color:var(--ink-3)}
-.sec{color:var(--ink-2)}
 
-/* ---------- card list ---------- */
-.filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.filters select,.filters input{
-  flex:1 1 auto;min-width:0;background:var(--raised);border:1px solid var(--rule);
-  border-radius:6px;padding:5px 7px;
+/* ---------- masthead ------------------------------------------------------
+   The nav used to live inside the card list, which made a seven-screen tool
+   read as a file browser with tabs bolted on. It is a masthead now. */
+#app{
+  display:grid;
+  grid-template-columns:var(--roster) minmax(440px,1fr) var(--rail);
+  grid-template-rows:52px 1fr; height:100vh;
 }
-.crewgroup{padding:14px 14px 2px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+#masthead{
+  grid-column:1/-1; display:flex; align-items:center; gap:var(--s4);
+  padding:0 var(--s4) 0 var(--s3); background:var(--bench);
+  border-bottom:1px solid var(--rule); position:relative; z-index:40;
+}
+.wordmark{display:flex;align-items:center;gap:10px;flex:none}
+/* the mark is the game's own palette used as a printer's colour control strip */
+.colorbar{display:flex;gap:2px;flex:none}
+.colorbar i{width:5px;height:19px;border-radius:1px;display:block}
+.wordmark b{
+  font-family:var(--display);font-size:20px;font-weight:400;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--color-ink);
+}
+#modes{display:flex;gap:2px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+#modes::-webkit-scrollbar{display:none}
+.mode{
+  font-family:var(--text);font-size:13px;font-weight:500;letter-spacing:.01em;
+  color:var(--color-ink-60);background:none;border:0;cursor:pointer;
+  padding:0 13px;height:52px;position:relative;white-space:nowrap;
+}
+.mode:hover{color:var(--color-ink)}
+.mode[aria-current="true"]{color:var(--key)}
+/* the active screen is marked by an ink line at the foot of the masthead */
+.mode[aria-current="true"]::after{
+  content:"";position:absolute;left:6px;right:6px;bottom:0;height:2px;background:var(--color-cyan);
+}
+.mode .n{font-family:var(--data);font-size:10.5px;color:var(--color-ink-60);margin-left:6px}
+.mode.bad .n{color:var(--critical);font-weight:700}
+.mastright{display:flex;align-items:center;gap:var(--s3);flex:none;font-size:11.5px}
+.iconbtn{
+  width:28px;height:28px;border-radius:var(--radius-btn);border:1px solid var(--rule);background:none;
+  cursor:pointer;color:var(--pencil);display:grid;place-items:center;line-height:1;flex:none;
+}
+.iconbtn:hover{color:var(--key);border-color:var(--edge)}
+
+/* ---------- columns ---------- */
+.col{overflow-y:auto;min-height:0}
+#list{background:var(--bench);border-right:1px solid var(--rule);display:flex;flex-direction:column;
+  position:relative;z-index:2}
+#rail{background:var(--bench);border-left:1px solid var(--rule);position:relative;z-index:2}
+/* On a 2000px monitor every table used to stretch the full width, which put the
+   first column and the last one a foot apart. The system caps a reading column at
+   1240px; the bench holds to that and lets the surplus become margin. */
+#main{padding:0 var(--s5) 140px;position:relative;z-index:1}
+#main>*{max-width:var(--bench-max)}
+#main>.topbar{max-width:none;padding-right:var(--s5)}
+#main>.topbar>*{max-width:var(--bench-max)}
+@media(max-width:1240px){
+  #app{grid-template-columns:var(--roster) 1fr}
+  #rail{display:none}
+}
+@media(max-width:820px){
+  #app{grid-template-columns:1fr;grid-template-rows:52px auto 1fr}
+  #list{border-right:0;border-bottom:1px solid var(--rule);max-height:38vh}
+  #main{padding:0 var(--s3) 140px}
+}
+
+/* ---------- roster ---------- */
+.topbar{
+  position:sticky;top:0;z-index:20;background:var(--bench);
+  border-bottom:1px solid var(--rule);padding:var(--s3);
+}
+#main .topbar{
+  background:var(--press);padding:var(--s4) 0 var(--s3);margin-bottom:var(--s3);
+  border-bottom:1px solid var(--rule);
+}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--s2)}
+.filters select,.filters input{
+  flex:1 1 auto;min-width:0;background:var(--well);border:1px solid var(--rule);
+  border-radius:var(--radius-btn);padding:6px 8px;font-size:12.5px;
+}
+.crewgroup{
+  padding:var(--s4) var(--s3) 6px;display:flex;align-items:baseline;gap:7px;color:var(--ghost);
+}
+.crewgroup::after{content:"";flex:1;height:1px;background:var(--rule)}
 .cardrow{
   display:flex;align-items:center;gap:9px;width:100%;text-align:left;
-  padding:7px 14px;background:none;border:0;border-left:3px solid transparent;cursor:pointer;
+  padding:6px var(--s3) 6px 0;background:none;border:0;cursor:pointer;color:var(--pencil);
+  position:relative;
 }
-.cardrow:hover{background:var(--raised)}
-.cardrow[aria-current="true"]{background:var(--raised);border-left-color:var(--accent)}
-.cardrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cardrow .cost{font-variant-numeric:tabular-nums;color:var(--ink-3);font-size:12px}
-.dot{width:9px;height:9px;border-radius:50%;flex:none}
-.dot.good{background:var(--good)} .dot.warning{background:var(--warning)}
-.dot.serious{background:var(--serious)} .dot.critical{background:var(--critical)}
-.dot.none{background:var(--baseline)}
-.fbar{width:3px;height:16px;border-radius:2px;flex:none}
+.cardrow:hover{background:var(--well);color:var(--key)}
+.cardrow[aria-current="true"]{background:var(--well);color:var(--key);font-weight:600}
+.cardrow[aria-current="true"]::after{
+  content:"";position:absolute;right:0;top:0;bottom:0;width:2px;background:var(--color-cyan);
+}
+.cardrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.cardrow .cost{color:var(--ghost);font-size:11.5px}
+/* faction ink: a band flush to the column edge, so the roster reads as four ink columns */
+.fbar{width:4px;height:26px;flex:none;border-radius:0 2px 2px 0}
+/* balance: fill channel. In tolerance is a hollow ring — quiet on purpose. */
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.dot.good{box-shadow:inset 0 0 0 1.5px var(--ghost)}
+.dot.warning{background:var(--warning)}
+.dot.serious{background:var(--serious)}
+.dot.critical{background:var(--critical)}
+.dot.none{border-radius:var(--radius-chip);box-shadow:inset 0 0 0 1.5px var(--edge)}
 
-/* ---------- hero + meters ---------- */
-.panel{background:var(--surface-1);border:1px solid var(--rule);border-radius:10px;padding:16px;margin-bottom:14px}
-.hero{display:flex;align-items:flex-start;gap:22px;flex-wrap:wrap}
-.heronum{font-size:52px;line-height:1;font-weight:600;letter-spacing:-.02em}
-.herolabel{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
-.verdict{
-  display:inline-flex;align-items:center;gap:7px;font-weight:600;margin-top:10px;font-size:13px;
-  padding:4px 11px 4px 5px;border-radius:999px;border:1px solid var(--rule);color:var(--ink-1)
+/* ---------- sections ------------------------------------------------------
+   Panels used to be border + radius + background, thirty times down the page,
+   which flattened everything into one grey stack. A section is now space and a
+   hairline; only things you touch get a surface. */
+.panel{
+  border-top:1px solid var(--rule);padding:var(--s4) 0 var(--s5);margin:0;
 }
-.verdict.sev-good{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent)}
-.verdict.sev-warning{border-color:var(--warning);background:color-mix(in srgb,var(--warning) 12%,transparent)}
-.verdict.sev-serious{border-color:var(--serious);background:color-mix(in srgb,var(--serious) 12%,transparent)}
-.verdict.sev-critical{border-color:var(--critical);background:color-mix(in srgb,var(--critical) 12%,transparent)}
-/* the glyph is a filled mark: pick ink or white by the fill's luminance */
-.glyph.warning-bg,.glyph.serious-bg{color:#1a1a19}
-.verdict .glyph{
-  width:18px;height:18px;border-radius:50%;display:grid;place-items:center;
-  font-size:11px;font-weight:700;color:#fff;flex:none
+.panel h3{
+  font-family:var(--display);font-size:19px;font-weight:400;letter-spacing:.005em;
+  text-transform:uppercase;color:var(--color-ink);
 }
+.panel>h3{margin-bottom:var(--s3)}
+.panel>h3+label.fl{margin-top:0}
+.screentitle{font-family:var(--display);font-size:clamp(28px,2.6vw,38px);font-weight:400;
+  letter-spacing:-.005em;text-transform:uppercase;line-height:1}
+.modal{
+  background:var(--bench);border:1px solid var(--edge);border-radius:var(--radius-card);
+  padding:var(--s4) var(--s5) var(--s5);box-shadow:var(--shadow);
+}
+.modal h3{font-family:var(--display);font-size:27px;font-weight:400;text-transform:uppercase;margin-bottom:var(--s2)}
+
+/* ---------- THE PROOF ---------------------------------------------------- */
+/* face · words · arithmetic. All three at once, because pricing a card you cannot
+   currently read is how a card ends up costed for what you remember it doing. */
+.proof{
+  display:grid;grid-template-columns:230px minmax(300px,1.05fr) minmax(290px,1fr);
+  gap:var(--s5);padding:var(--s4) 0 var(--s5);position:relative;align-items:start;
+}
+@media(max-width:1560px){
+  /* the bench narrows when the rail is up: words below, full width, still above the fold */
+  .proof{grid-template-columns:230px minmax(0,1fr);}
+  .proof>.facetext{grid-column:1/-1;order:3;padding-top:var(--s3);border-top:1px solid var(--color-border)}
+}
+@media(max-width:820px){.proof{grid-template-columns:1fr}.cardface{max-width:280px}}
+
+/* the card as an object: 5:7, art bled to the edges, faction ink down the spine */
+.cardface{
+  position:relative;aspect-ratio:5/7;border-radius:var(--radius-card);background:var(--well);
+  perspective:1400px;
+}
+.flipper{
+  position:absolute;inset:0;transform-style:preserve-3d;
+  transition:transform .5s cubic-bezier(.2,.7,.2,1);
+}
+.cardface.flipped .flipper{transform:rotateY(180deg)}
+.side{
+  position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;border-radius:var(--radius-card);
+  border:1px solid var(--edge);background:var(--well);box-shadow:var(--shadow);
+}
+.side.back{transform:rotateY(180deg)}
+.side img{width:100%;height:100%;object-fit:cover;object-position:50% 22%;display:block}
+.side .noart{
+  display:grid;place-items:center;height:100%;text-align:center;padding:var(--s3);
+  color:var(--ghost);font-size:11.5px;line-height:1.4;
+}
+.spine{position:absolute;left:0;top:0;bottom:0;width:5px;z-index:3}
+.plate{
+  position:absolute;left:0;right:0;bottom:0;padding:30px 11px 10px 14px;z-index:2;
+  background:linear-gradient(transparent,rgba(6,4,10,.82) 46%,rgba(6,4,10,.94));
+  pointer-events:none;
+}
+.plate .cname{
+  font-family:var(--display);font-size:18px;font-weight:400;line-height:1;color:#fff;
+  letter-spacing:0;text-transform:uppercase;
+}
+.plate .cstats{
+  display:flex;gap:9px;margin-top:6px;font-family:var(--data);font-size:11px;color:#e6e0d4;
+}
+.plate .cstats span{opacity:.7}
+.plate .cstats b{font-weight:600;opacity:1}
+.pip{
+  position:absolute;top:10px;left:12px;z-index:3;width:27px;height:27px;border-radius:50%;
+  display:grid;place-items:center;font-family:var(--data);font-size:13px;font-weight:700;
+  color:#fff;background:rgba(6,4,10,.72);border:1.5px solid rgba(255,255,255,.7);
+}
+.faceswitch{display:flex;gap:4px;margin-top:9px}
+.faceswitch button{
+  flex:1;font-family:var(--data);font-size:10.5px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;padding:6px 4px;border:1px solid var(--rule);background:none;
+  color:var(--ghost);cursor:pointer;border-radius:var(--radius-chip);
+}
+.faceswitch button[aria-pressed="true"]{border-color:var(--color-cyan);color:var(--color-cyan)}
+.faceswitch button:hover{color:var(--pencil)}
+.zoomlink{
+  display:block;width:100%;margin-top:6px;background:none;border:0;cursor:pointer;
+  color:var(--ghost);font-size:11px;text-align:center;padding:2px;
+}
+.zoomlink:hover{color:var(--key)}
+
+/* the verdict: the one place this tool is allowed to shout */
+.verdictblock{display:flex;align-items:flex-start;gap:var(--s4);flex-wrap:wrap}
+.heronum{
+  font-family:var(--display);font-size:clamp(58px,6vw,84px);line-height:.86;font-weight:400;
+  letter-spacing:-.01em;color:var(--color-ink);font-variant-numeric:tabular-nums;
+}
+.heronum.off{color:var(--critical)}
+.herolabel{margin-bottom:8px;display:block;color:var(--color-cyan)}
+.verdictword{
+  font-family:var(--display);font-size:21px;font-weight:400;letter-spacing:.01em;
+  text-transform:uppercase;line-height:1.05;margin-top:2px;
+}
+.verdictwhy{font-size:12px;color:var(--pencil);margin-top:5px;max-width:34ch}
 .good-c{color:var(--good)} .warning-c{color:var(--warning)}
 .serious-c{color:var(--serious)} .critical-c{color:var(--critical)}
 .good-bg{background:var(--good)} .warning-bg{background:var(--warning)}
 .serious-bg{background:var(--serious)} .critical-bg{background:var(--critical)}
+.glyph{
+  width:17px;height:17px;border-radius:50%;display:inline-grid;place-items:center;
+  font-size:10px;font-weight:700;flex:none;color:var(--press);
+}
+/* The glyph's ink is always the page ground, which clears 4.5:1 against all four
+   fills in both themes. It used to force #fff on the two warm fills, which put a
+   white mark on orange at 3.1:1 — the exact thing the rest of this file avoids. */
+.swatch{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle}
 
-.meter{margin-top:14px}
-.meter .cap{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:5px}
-.meter .cap b{font-variant-numeric:tabular-nums;color:var(--ink-1)}
-.track{height:14px;border-radius:7px;position:relative;overflow:hidden}
-.fill{height:100%;border-radius:0 4px 4px 0;transition:width .12s ease-out}
-.budgetmark{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink-1);opacity:.85}
-.breakdown{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--ink-2)}
-.breakdown b{color:var(--ink-1);font-variant-numeric:tabular-nums}
+/* ---------- the ledger: the budget as a receipt ---------- */
+.ledger{
+  font-family:var(--data);font-size:12px;line-height:1.75;margin-top:var(--s4);
+  max-width:400px;
+}
+.ledger div{display:flex;align-items:baseline;gap:var(--s2)}
+.ledger .lbl{color:var(--pencil);white-space:nowrap}
+.ledger .dots{flex:1;border-bottom:1px dotted var(--edge);transform:translateY(-3px)}
+.ledger .v{color:var(--key);font-variant-numeric:tabular-nums}
+.ledger .total{border-top:1px solid var(--edge);margin-top:4px;padding-top:4px;font-weight:700}
+.ledger .gap{margin-top:var(--s3)}
+.ledger .neg .v{color:var(--critical)}
 
-/* ---------- editors ---------- */
-.grid{display:grid;gap:12px}
-.stats{grid-template-columns:repeat(5,1fr)}
+.meter{margin-top:var(--s3);max-width:460px}
+.meter .cap{display:flex;justify-content:space-between;font-size:11.5px;color:var(--pencil);margin-bottom:5px;gap:var(--s2)}
+.meter .cap b{color:var(--key);font-size:12px}
+.track{height:9px;border-radius:var(--radius-chip);position:relative;overflow:hidden;background:var(--well)}
+.fill{height:100%;transition:width .14s ease-out}
+@media(prefers-reduced-motion:reduce){
+  .fill{transition:none} .flipper{transition:none}
+}
+/* the budget is a hard mark on the track, not a colour change — you can see the
+   exact point the card stopped being affordable */
+.budgetmark{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--key)}
+.breakdown{display:flex;gap:var(--s4);flex-wrap:wrap;margin-top:var(--s3);font-size:11.5px;color:var(--pencil)}
+.breakdown b{color:var(--key)}
+
+/* ---------- card header ---------- */
+.cardhead h2{font-family:var(--display);font-size:clamp(24px,2.2vw,32px);font-weight:400;
+  letter-spacing:-.005em;line-height:1.02;text-transform:uppercase;text-wrap:balance}
+.cardhead .meta{display:flex;gap:var(--s3);flex-wrap:wrap;margin-top:6px;font-size:11.5px;color:var(--ghost)}
+.fchip{display:inline-flex;align-items:center;gap:6px;color:var(--pencil)}
+.path{font-family:var(--data);font-size:10.5px}
+
+/* ---------- controls ---------- */
+.grid{display:grid;gap:var(--s3)}
+.stats{grid-template-columns:repeat(5,1fr);max-width:600px}
 @media(max-width:760px){.stats{grid-template-columns:repeat(3,1fr)}}
-.stepper{background:var(--raised);border:1px solid var(--rule);border-radius:8px;padding:9px 10px;text-align:center}
-.stepper .lb{font-size:11px;letter-spacing:.06em;color:var(--ink-3);text-transform:uppercase}
-.stepper .ctl{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.stepper{background:var(--well);border:1px solid var(--rule);border-radius:var(--radius-btn);padding:9px 8px;text-align:center}
+.stepper:focus-within{border-color:var(--edge)}
+.stepper .ctl{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:5px}
 .stepper input{
-  width:46px;text-align:center;font-size:19px;font-weight:600;background:none;border:0;
-  font-variant-numeric:tabular-nums;padding:0;
+  width:44px;text-align:center;font-size:20px;font-weight:600;background:none;border:0;padding:0;
 }
 .stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .stepper input[type=number]{-moz-appearance:textfield}
 .sbtn{
-  width:24px;height:24px;border-radius:6px;border:1px solid var(--rule);background:var(--surface-1);
-  cursor:pointer;line-height:1;font-size:15px;color:var(--ink-2)
+  width:23px;height:23px;border-radius:var(--radius-chip);border:1px solid var(--rule);background:var(--bench);
+  cursor:pointer;line-height:1;font-size:14px;color:var(--ghost);flex:none;
 }
-.sbtn:hover{border-color:var(--accent);color:var(--ink-1)}
+.sbtn:hover{border-color:var(--color-cyan);color:var(--color-cyan)}
 
-.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
 .chip{
-  display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;
-  border:1px solid var(--rule);background:var(--raised);cursor:pointer;font-size:12.5px;
+  display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--radius-chip);
+  border:1px solid var(--rule);background:var(--well);cursor:pointer;font-size:12.5px;
+  color:var(--pencil);
 }
-.chip:hover{border-color:var(--accent)}
-.chip[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}
+.chip:hover{border-color:var(--edge);color:var(--key)}
+.chip[aria-pressed="true"]{border-color:var(--color-cyan);background:var(--color-cyan-tint);color:var(--color-cyan);font-weight:600}
 .famlabel{
-  align-self:center;font-size:10px;letter-spacing:.09em;text-transform:uppercase;
-  color:var(--ink-3);margin:0 2px 0 10px;padding-left:10px;
-  border-left:1px solid var(--gridline);line-height:1.9}
+  align-self:center;margin:0 2px 0 var(--s3);padding-left:var(--s3);
+  border-left:1px solid var(--gridline);line-height:1.9;
+}
 .chips>.famlabel:first-child{border-left:0;padding-left:0;margin-left:0}
-.chip.faded{opacity:.42}
+.chip.faded{opacity:.4}
 .chip.faded[aria-pressed="true"]{opacity:1}
-.chip .pts{font-variant-numeric:tabular-nums;color:var(--ink-3);font-size:11px}
-.chip[aria-pressed="true"] .pts{color:var(--ink-2)}
+.chip .pts{color:var(--ghost);font-size:11px}
+.chip[aria-pressed="true"] .pts{color:var(--pencil)}
 
-.efsearch{width:100%;background:var(--raised);border:1px solid var(--rule);border-radius:7px;padding:7px 9px;margin-bottom:8px}
-.eflist{max-height:260px;overflow-y:auto;border:1px solid var(--rule);border-radius:8px}
-.efrow{display:flex;align-items:center;gap:9px;padding:6px 10px;cursor:pointer;border-bottom:1px solid var(--rule)}
+.efsearch{width:100%;background:var(--well);border:1px solid var(--rule);border-radius:var(--radius-btn);padding:7px 9px;font-size:12.5px}
+.eflist{max-height:270px;overflow-y:auto;border:1px solid var(--rule);border-radius:var(--radius-btn);margin-top:var(--s2)}
+.efrow{display:flex;align-items:flex-start;gap:9px;padding:7px 10px;cursor:pointer;border-bottom:1px solid var(--rule)}
 .efrow:last-child{border-bottom:0}
-.efrow:hover{background:var(--raised)}
-.efrow input{accent-color:var(--accent);flex:none}
-.efrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.efrow .pts{font-variant-numeric:tabular-nums;color:var(--ink-3);font-size:12px}
-.sel{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
-.tag{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;padding:3px 8px;border-radius:6px;background:var(--raised);border:1px solid var(--rule)}
-.tag button{background:none;border:0;cursor:pointer;color:var(--ink-3);padding:0;font-size:14px;line-height:1}
+.efrow:hover{background:var(--well)}
+.efrow input{accent-color:var(--color-cyan);flex:none}
+.efrow .nm{flex:1;min-width:0}
+.efrow .pts{color:var(--pencil);font-size:12px}
+.efrow .d{font-size:11px;color:var(--ghost);line-height:1.35;margin-top:2px}
+.sel{display:flex;flex-wrap:wrap;gap:5px;margin-top:var(--s2)}
+.tag{
+  display:inline-flex;align-items:center;gap:6px;font-size:11.5px;padding:3px 5px 3px 9px;
+  border-radius:var(--radius-chip);background:var(--lift);border:1px solid var(--rule);font-family:var(--data);
+}
+.tag button{background:none;border:0;cursor:pointer;color:var(--ghost);padding:0 3px;font-size:14px;line-height:1}
+.tag button:hover{color:var(--critical)}
 
 textarea{
-  width:100%;background:var(--raised);border:1px solid var(--rule);border-radius:8px;
-  padding:10px;resize:vertical;line-height:1.55;
+  width:100%;background:var(--well);border:1px solid var(--rule);border-radius:var(--radius-btn);
+  padding:9px 10px;resize:vertical;line-height:1.6;font-size:13px;
 }
-textarea:focus,input:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px}
-label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);margin:12px 0 5px}
+textarea:hover,.efsearch:hover{border-color:var(--edge)}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--color-cyan);box-shadow:0 0 0 3px var(--color-cyan-glow)}
+label.fl{display:block;margin:var(--s4) 0 6px}
+select{background:var(--well);border:1px solid var(--rule);border-radius:var(--radius-btn);padding:6px 8px}
 
 /* ---------- rail ---------- */
-.railsec{border-bottom:1px solid var(--rule);padding:14px}
-/* The source art runs 0.50-0.71 aspect -- far taller than any fixed cell, so the images
-   size naturally and nothing is cropped. */
-.artgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}
-.artcell{position:relative;border-radius:9px;overflow:hidden;border:1px solid var(--rule);background:var(--raised)}
-.artcell img{width:100%;height:auto;display:block;cursor:zoom-in;background:var(--raised)}
-.artcell .cap{
-  position:absolute;left:0;right:0;bottom:0;padding:5px 8px;font-size:10.5px;letter-spacing:.06em;
-  text-transform:uppercase;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.78));pointer-events:none
-}
-.artcell.empty{display:grid;place-items:center;text-align:center;padding:14px 10px;font-size:11.5px;color:var(--ink-3);min-height:120px}
+.railsec{border-bottom:1px solid var(--rule);padding:var(--s4) var(--s3)}
+.railsec h3{margin-bottom:var(--s2)}
 #lightbox{
-  position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.92);display:grid;place-items:center;
-  padding:24px;cursor:zoom-out
+  position:fixed;inset:0;z-index:100;background:rgba(8,6,12,.94);display:grid;place-items:center;
+  padding:var(--s5);cursor:zoom-out;backdrop-filter:blur(3px);
 }
 #lightbox[hidden]{display:none}
-#lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
-#lightbox .lbcap{position:fixed;top:16px;left:0;right:0;text-align:center;color:#fff;font-size:12.5px}
-.lorefield{margin-bottom:14px}
-.lorefield .hd{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-.lorefield .nm{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
-.lorefield .req{font-size:10px;color:var(--critical);letter-spacing:.04em}
-.lorefield .why{font-size:11.5px;color:var(--ink-3);line-height:1.45;margin:3px 0 5px}
-.lorefield .ctx{font-size:11.5px;color:var(--ink-2);border-left:2px solid var(--accent);padding:5px 0 5px 8px;margin:0 0 6px;font-style:italic}
-.lorefield.done .nm{color:var(--good)}
-.loremeter{display:flex;gap:3px;margin:2px 0 12px}
-.loremeter i{flex:1;height:5px;border-radius:3px;background:var(--rule)}
-.loremeter i.on{background:var(--good)}
-.railsec h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px}
-.weakness{border-left:3px solid var(--warning);padding:8px 0 8px 11px;margin-top:10px;font-style:italic;color:var(--ink-2);font-size:12.5px}
-.gate{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--rule);font-size:12.5px}
+#lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:var(--radius-btn)}
+#lightbox .lbcap{position:fixed;top:var(--s4);left:0;right:0;text-align:center;color:#fff;font-size:12px}
+
+.weakness{
+  border-left:2px solid var(--color-cyan);padding:2px 0 2px 12px;margin-top:var(--s3);
+  font-style:italic;color:var(--pencil);font-size:12.5px;line-height:1.5;
+}
+.lorefield{margin-bottom:var(--s4)}
+.lorefield .hd{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s2)}
+.lorefield .nm{
+  font-family:var(--data);font-size:10.5px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--pencil);
+}
+.lorefield.done .nm{color:var(--key)}
+.lorefield .req{font-family:var(--data);font-size:9.5px;letter-spacing:.16em;color:var(--color-orange)}
+.lorefield .why{font-size:11.5px;color:var(--ghost);line-height:1.5;margin:4px 0 6px}
+.lorefield .ctx{
+  font-size:11.5px;color:var(--pencil);border-left:2px solid var(--color-cyan);padding:4px 0 4px 10px;
+  margin:0 0 7px;font-style:italic;line-height:1.45;
+}
+.loremeter{display:flex;gap:3px;margin:4px 0 var(--s3)}
+.loremeter i{flex:1;height:3px;background:var(--rule)}
+.loremeter i.on{background:var(--color-cyan)}
+
+/* ---------- gates: pass/fail stamps on a proof ---------- */
+.gatepills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:var(--s2)}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:var(--radius-chip);
+  border:1px solid var(--rule);background:var(--well);font-family:var(--data);font-size:12px;
+  font-weight:500;letter-spacing:.12em;color:var(--color-ink-60);
+}
+.pill.ok .glyph{background:none;color:var(--ghost);box-shadow:inset 0 0 0 1px var(--edge)}
+.pill.bad{border-color:var(--critical);color:var(--key)}
+.pill .glyph{width:14px;height:14px;font-size:8.5px}
+.gate{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--rule);font-size:12.5px}
 .gate:last-child{border-bottom:0}
-.gate .gid{font-weight:600;font-variant-numeric:tabular-nums;flex:none;width:22px}
-.gate .msg{flex:1;color:var(--ink-2)}
+.gate .gid{font-family:var(--data);font-weight:700;flex:none;width:24px;color:var(--pencil)}
+.gate .msg{flex:1;color:var(--pencil)}
+.humangates{margin-top:var(--s3);border-top:1px solid var(--rule);padding-top:var(--s3);display:grid;gap:6px}
+.hg{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;cursor:pointer;color:var(--pencil)}
+.hg:hover{color:var(--key)}
+.hg input{accent-color:var(--color-cyan);margin-top:2px;flex:none}
+.hg b{flex:none;width:24px;font-family:var(--data)}
+
+/* ---------- neighbours ---------- */
 .sib{width:100%;border-collapse:collapse;font-size:12px}
-.sib th{text-align:left;font-weight:500;color:var(--ink-3);padding:4px 6px 6px 0;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
-.sib td{padding:5px 6px 5px 0;border-top:1px solid var(--rule);font-variant-numeric:tabular-nums}
-.sib td.nm{font-variant-numeric:normal}
-.sib tr.self td{color:var(--accent);font-weight:600}
-.sib tr.off td{opacity:.62}
-.sib .minibar{width:44px;height:6px;border-radius:3px;display:inline-block;vertical-align:middle}
+.sib th{text-align:left;padding:0 8px 7px 0}
+.sib td{padding:6px 8px 6px 0;border-top:1px solid var(--rule)}
+.sib td.nm{font-family:var(--text);font-variant-numeric:normal}
+.sib tr.self td{color:var(--key);font-weight:700;background:var(--well)}
+.sib tr.off td{color:var(--ghost)}
 
 /* ---------- savebar ---------- */
 #savebar{
-  position:fixed;right:366px;bottom:22px;z-index:30;display:flex;align-items:center;gap:12px;
-  background:var(--surface-1);border:1px solid var(--rule);border-radius:12px;padding:10px 14px;
-  box-shadow:0 6px 24px rgba(0,0,0,.35);
+  position:fixed;left:var(--roster);right:var(--rail);bottom:0;z-index:30;
+  display:flex;align-items:center;gap:var(--s3);justify-content:flex-end;
+  background:linear-gradient(transparent,var(--press) 38%);padding:var(--s5) var(--s5) var(--s4);
+  pointer-events:none;
 }
-@media(max-width:1200px){#savebar{right:22px}}
+#savebar>*{pointer-events:auto}
+@media(max-width:1240px){#savebar{right:0}}
+@media(max-width:820px){#savebar{left:0}}
 #savebar[hidden]{display:none}
+#dirtynote{font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-orange)}
 .primary{
-  background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 18px;
-  font-weight:600;cursor:pointer
+  background:var(--color-orange);color:var(--color-bg);border:0;border-radius:var(--radius-btn);
+  padding:10px 20px;font-family:var(--text);font-size:13px;font-weight:600;letter-spacing:.01em;
+  cursor:pointer;box-shadow:0 0 0 0 var(--color-orange-glow);
+  transition:background .18s ease,box-shadow .25s ease,transform .12s ease;
 }
-.ghost{background:none;border:1px solid var(--rule);border-radius:8px;padding:9px 14px;cursor:pointer;color:var(--ink-2)}
-.ghost:hover{color:var(--ink-1);border-color:var(--accent)}
-.fchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2)}
-.stub{border-left:3px solid var(--warning);padding:10px 12px;background:var(--raised);border-radius:0 8px 8px 0;margin-bottom:14px;font-size:13px}
-.scorebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 4px;font-size:13px}
+.primary:hover{background:var(--color-orange-hover);box-shadow:0 8px 30px var(--color-orange-glow);transform:translateY(-1px)}
+.primary:active{background:var(--color-orange-press);transform:translateY(0);box-shadow:none}
+.primary:disabled{opacity:.5;cursor:default}
+.ghost{
+  background:var(--bench);border:1px solid var(--rule);border-radius:var(--radius-btn);padding:8px 14px;
+  cursor:pointer;color:var(--pencil);font-size:12.5px;
+}
+.ghost:hover{color:var(--color-ink);border-color:var(--color-ink-60);background:var(--color-bg-card)}
+
+/* ---------- notices ---------- */
+.stub{
+  border-left:2px solid var(--warning);padding:10px 13px;background:var(--well);
+  margin:var(--s3) 0;font-size:12.5px;line-height:1.5;
+}
+
+/* ---------- the score ---------- */
+.scorebar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:var(--s3) 0 var(--s2);
+  font-size:12px;color:var(--pencil);
+}
 .scorebar .step{display:flex;align-items:baseline;gap:5px}
-.scorebar .step b{font-size:17px;font-variant-numeric:tabular-nums}
-.scorebar .arrow{color:var(--ink-3)}
-.scorebar .final{padding:4px 12px;border-radius:8px;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
-.creditgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:9px;margin-top:6px}
-.credit{background:var(--raised);border:1px solid var(--rule);border-radius:8px;padding:8px 9px}
-.credit .lb{font-size:11px;color:var(--ink-2);line-height:1.3;min-height:29px}
-.credit .rw{display:flex;align-items:center;justify-content:space-between;margin-top:5px}
+.scorebar .step b{font-size:15px;color:var(--key)}
+.scorebar .arrow{color:var(--ghost);font-size:11.5px}
+.scorebar .final{
+  padding:4px 11px;border:1px solid var(--color-cyan);border-radius:var(--radius-chip);color:var(--color-cyan);
+  font-family:var(--display);letter-spacing:.1em;text-transform:uppercase;font-weight:400;
+}
+.creditgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:8px;margin-top:6px}
+.credit{background:var(--well);border:1px solid var(--rule);border-radius:var(--radius-btn);padding:9px}
+.credit .lb{font-size:11px;color:var(--pencil);line-height:1.35;min-height:30px}
+.credit .rw{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
 .credit .val{display:flex;align-items:center;gap:5px}
-.credit input{width:34px;text-align:center;background:none;border:0;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;padding:0}
+.credit input{width:32px;text-align:center;background:none;border:0;font-size:16px;font-weight:600;padding:0}
 .credit input::-webkit-outer-spin-button,.credit input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .credit input[type=number]{-moz-appearance:textfield}
-.credit .pts{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
-.credit.on{border-color:var(--accent)}
-.tests{display:grid;gap:4px;margin-top:7px;border-top:1px solid var(--rule);padding-top:6px}
-.tests select{background:var(--surface-1);border:1px solid var(--rule);border-radius:5px;padding:3px 5px;font-size:11px;width:100%}
-.windows{display:grid;gap:5px;margin-top:4px}
-.win{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;cursor:pointer;padding:5px 7px;border-radius:7px;border:1px solid transparent}
-.win:hover{background:var(--raised)}
-.win.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
-.win input{accent-color:var(--accent);margin-top:2px;flex:none}
-.win .q{color:var(--ink-3);font-size:11.5px}
-.proh{display:grid;gap:4px;margin-top:10px;border-top:1px solid var(--rule);padding-top:10px}
-.modes{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap}
-.mode{padding:5px 10px;border-radius:7px;border:1px solid var(--rule);background:var(--raised);cursor:pointer;font-size:12.5px}
-.mode[aria-current="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,transparent);font-weight:600}
-.mode .n{font-variant-numeric:tabular-nums;color:var(--ink-3);margin-left:5px}
-.mode.bad .n{color:var(--critical);font-weight:700}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.credit .pts{font-size:10.5px;color:var(--ghost)}
+.credit.on{border-color:var(--color-cyan)}
+.tests{display:grid;gap:4px;margin-top:8px;border-top:1px solid var(--rule);padding-top:7px}
+.tests select{border-radius:var(--radius-chip);padding:3px 5px;font-size:11px;width:100%}
+.windows{display:grid;gap:4px;margin-top:4px}
+.win{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;cursor:pointer;padding:6px 8px;border-radius:var(--radius-btn);border:1px solid transparent;color:var(--pencil)}
+.win:hover{background:var(--well)}
+.win.on{border-color:var(--color-cyan);background:var(--color-cyan-tint);color:var(--color-ink)}
+.win input{accent-color:var(--color-cyan);margin-top:3px;flex:none}
+.win .q{color:var(--ghost);font-size:11.5px}
+.proh{display:grid;gap:4px;margin-top:var(--s3);border-top:1px solid var(--rule);padding-top:var(--s3)}
+
+/* ---------- matrix ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
 @media(max-width:900px){.grid2{grid-template-columns:1fr}}
 .matrix{width:100%;border-collapse:collapse;font-size:12.5px}
-.matrix th{padding:7px 6px;text-align:center;font-weight:500;color:var(--ink-2);border-bottom:1px solid var(--rule)}
+.matrix th{padding:8px 6px;text-align:center;font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pencil);border-bottom:1px solid var(--edge)}
 .matrix th.rowh{text-align:left}
 .matrix td{padding:0;border:1px solid var(--rule);vertical-align:top}
-.matrix td.rowh{padding:8px;font-weight:600;border:0;border-bottom:1px solid var(--rule)}
+.matrix td.rowh{padding:9px 8px;font-weight:600;border:0;border-bottom:1px solid var(--rule)}
 .cell{min-height:46px;padding:5px;display:flex;flex-wrap:wrap;gap:3px;align-content:flex-start}
-.cell.empty{background:repeating-linear-gradient(45deg,transparent,transparent 5px,var(--rule) 5px,var(--rule) 6px)}
-.mini{font-size:10.5px;padding:2px 5px;border-radius:4px;background:var(--raised);border:1px solid var(--rule);cursor:pointer;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
-.mini:hover{border-color:var(--accent)}
-.mini.over{border-color:var(--critical)}
+.cell.empty{background:repeating-linear-gradient(45deg,transparent,transparent 6px,var(--rule) 6px,var(--rule) 7px)}
+.mini{font-size:10.5px;padding:2px 6px;border-radius:3px;background:var(--well);border:1px solid var(--rule);cursor:pointer;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;color:var(--pencil)}
+.mini:hover{border-color:var(--color-cyan);color:var(--color-cyan)}
+.mini.over{border-color:var(--critical);color:var(--key)}
+
+/* ---------- tables & health ---------- */
 .wingrid{width:100%;border-collapse:collapse;font-size:12.5px}
-.wingrid th,.wingrid td{padding:7px 8px;border-bottom:1px solid var(--rule);text-align:center}
-.wingrid th:first-child,.wingrid td:first-child{text-align:left}
-.lvl{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--rule)}
-.lvl.strong{background:color-mix(in srgb,var(--good) 22%,transparent);border-color:var(--good)}
-.lvl.weak{background:color-mix(in srgb,var(--warning) 18%,transparent);border-color:var(--warning)}
-.lvl.blind{background:var(--raised);color:var(--ink-3)}
-.tools{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
-.tool{font-size:11.5px;padding:3px 8px;border-radius:6px;border:1px solid var(--rule);background:var(--raised);cursor:pointer}
-.tool.uniq{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
-.tool.never{border-color:var(--critical);background:color-mix(in srgb,var(--critical) 12%,transparent);text-decoration:line-through}
-.tool.taken{opacity:.45;cursor:not-allowed}
-.libwrap{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wingrid th{padding:8px;border-bottom:1px solid var(--edge);text-align:center;font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pencil)}
+.wingrid td{padding:8px;border-bottom:1px solid var(--rule);text-align:center;color:var(--pencil)}
+.wingrid th:first-child,.wingrid td:first-child{text-align:left;color:var(--key)}
+.lvl{
+  display:inline-block;padding:2px 10px;border-radius:var(--radius-chip);font-family:var(--data);font-size:10.5px;
+  font-weight:500;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border:1px solid var(--rule);
+}
+.lvl.strong{border-color:var(--color-cyan);color:var(--color-cyan)}
+.lvl.weak{border-color:var(--edge);color:var(--pencil)}
+.lvl.blind{color:var(--ghost);border-style:dashed}
+.kpi{border-left:2px solid var(--rule);padding:2px 0 2px 13px}
+.kpi .v{font-family:var(--display);font-size:34px;font-weight:400;line-height:1}
+.kpi .l{margin-top:3px;display:block}
+.bar{height:7px;border-radius:var(--radius-chip);background:var(--well);overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+
+.tools{display:flex;flex-wrap:wrap;gap:5px;margin-top:var(--s2)}
+.tool{font-size:11.5px;padding:3px 9px;border-radius:var(--radius-chip);border:1px solid var(--rule);background:var(--well);cursor:pointer;color:var(--pencil)}
+.tool:hover{border-color:var(--edge);color:var(--key)}
+.tool.uniq{border-color:var(--color-cyan);color:var(--color-cyan);background:var(--color-cyan-tint)}
+.tool.never{border-color:var(--critical);color:var(--pencil);text-decoration:line-through}
+.tool.taken{opacity:.4;cursor:not-allowed}
+
+/* ---------- library ---------- */
+.libwrap{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);align-items:start}
 @media(max-width:1100px){.libwrap{grid-template-columns:1fr}}
-.librow{display:flex;gap:10px;padding:9px 11px;border-bottom:1px solid var(--rule);cursor:pointer;align-items:flex-start}
-.librow:hover{background:var(--raised)}
-.librow[aria-current="true"]{background:var(--raised);box-shadow:inset 3px 0 0 var(--accent)}
-.librow .pt{font-variant-numeric:tabular-nums;font-weight:600;min-width:26px;text-align:right;flex:none}
+.librow{display:flex;gap:11px;padding:10px 12px;border-bottom:1px solid var(--rule);cursor:pointer;align-items:flex-start}
+.librow:hover{background:var(--well)}
+.librow[aria-current="true"]{background:var(--well);box-shadow:inset 2px 0 0 var(--color-cyan)}
+.librow .pt{font-weight:700;min-width:26px;text-align:right;flex:none;color:var(--pencil)}
 .librow .bd{flex:1;min-width:0}
 .librow .t{font-weight:600;font-size:13px}
-.librow .d{font-size:11.5px;color:var(--ink-3);line-height:1.4;margin-top:2px}
-.librow .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
-.tag2{font-size:10.5px;padding:1px 7px;border-radius:999px;border:1px solid var(--rule);color:var(--ink-2)}
-.tag2.uniq{border-color:var(--accent);color:var(--accent)}
-.tag2.shared{border-color:var(--baseline)}
+.librow .d{font-size:11.5px;color:var(--ghost);line-height:1.45;margin-top:3px}
+.librow .meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.tag2{font-family:var(--data);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border-radius:3px;border:1px solid var(--rule);color:var(--ghost)}
+.tag2.uniq{border-color:var(--color-cyan);color:var(--color-cyan)}
 .tag2.unused{border-color:var(--warning);color:var(--warning)}
-.libtabs{display:flex;gap:5px;margin-bottom:10px}
-.efrow .d{font-size:11px;color:var(--ink-3);line-height:1.35;margin-top:2px}
-.kwdefs{margin-top:8px;border-top:1px solid var(--rule);padding-top:8px;display:grid;gap:5px}
-.kwdef{font-size:11.5px;line-height:1.4}
-.kwdef b{color:var(--ink-1)}
-.kwdef.on b{color:var(--accent)}
-.finding{display:flex;gap:9px;padding:9px 10px;border-bottom:1px solid var(--rule);align-items:flex-start}
-.finding .code{font-weight:700;font-variant-numeric:tabular-nums;flex:none;width:32px}
-.finding.err .code{color:var(--critical)} .finding.warn .code{color:var(--warning)}
+.libtabs{display:flex;gap:var(--s1);margin-top:var(--s3)}
+.libtabs .mode{height:auto;padding:6px 12px;border:1px solid var(--rule);border-radius:var(--radius-chip);font-size:11.5px}
+.libtabs .mode[aria-current="true"]{border-color:var(--color-cyan);color:var(--color-cyan)}
+.libtabs .mode[aria-current="true"]::after{display:none}
+.kwdefs{margin-top:var(--s3);border-top:1px solid var(--rule);padding-top:var(--s3);display:grid;gap:6px}
+.kwdef{font-size:11.5px;line-height:1.5;color:var(--ghost)}
+.kwdef b{color:var(--pencil)}
+.kwdef.on{color:var(--pencil)}
+.kwdef.on b{color:var(--color-cyan)}
+
+/* ---------- problems ---------- */
+.listpane{border:1px solid var(--rule);border-radius:var(--radius-btn);overflow:auto;background:var(--bench)}
+.listpane>*:last-child{border-bottom:0}
+.finding{display:flex;gap:11px;padding:11px 12px;border-bottom:1px solid var(--rule);align-items:flex-start}
+.finding .code{font-family:var(--data);font-weight:700;flex:none;width:34px;color:var(--pencil)}
+.finding.err .code{color:var(--critical)}
+.finding.warn .code{color:var(--warning)}
 .finding .body{flex:1;min-width:0}
 .finding .sub{font-weight:600}
-.finding .fx{color:var(--ink-3);font-size:11.5px;margin-top:3px}
-.bar{height:9px;border-radius:5px;background:var(--raised);overflow:hidden;display:flex}
-.bar i{display:block;height:100%}
-.kpi{background:var(--raised);border:1px solid var(--rule);border-radius:9px;padding:11px 13px}
-.kpi .v{font-size:26px;font-weight:600;line-height:1.1}
-.kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin-top:3px}
-.gatepills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px}
-.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--rule);background:var(--raised);font-size:12.5px;font-weight:600}
-.pill.bad{border-color:var(--critical)}
-.pill .glyph{width:15px;height:15px;border-radius:50%;display:grid;place-items:center;font-size:9px;font-weight:700;color:#fff}
-.humangates{margin-top:12px;border-top:1px solid var(--rule);padding-top:10px;display:grid;gap:4px}
-.hg{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;cursor:pointer}
-.hg input{accent-color:var(--accent);margin-top:2px;flex:none}
-.hg b{flex:none;width:22px;font-variant-numeric:tabular-nums}
-.swatch{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle}
-#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--raised);border:1px solid var(--rule);border-radius:9px;padding:9px 16px;z-index:60;font-size:13px}
+.finding .fx{color:var(--ghost);font-size:11.5px;margin-top:4px}
+
+#toast{
+  position:fixed;left:50%;bottom:var(--s5);transform:translateX(-50%);background:var(--color-bg-raised);
+  color:var(--color-ink);border:1px solid var(--color-border-med);border-radius:var(--radius-btn);
+  padding:12px 20px;z-index:60;font-size:13px;font-weight:500;
+  box-shadow:var(--shadow);max-width:min(560px,90vw);
+}
 #toast[hidden]{display:none}
+
+/* ---------- tooltips ------------------------------------------------------
+   Every abbreviation in this tool is jargon: PA, G3, W12, Reach, Ceiling, Σ.
+   Anything with an explanation gets a dotted underline and shows it on hover
+   AND on keyboard focus, so the shorthand is never the only thing on offer. */
+[data-tip]{cursor:help}
+.term{
+  text-decoration:underline dotted var(--color-ink-40);text-underline-offset:3px;
+  text-decoration-thickness:1px;
+}
+.term:hover,.term:focus-visible{text-decoration-color:var(--color-cyan)}
+#tip{
+  position:fixed;z-index:200;max-width:340px;pointer-events:none;
+  background:var(--color-bg-raised);border:1px solid var(--color-border-med);
+  border-radius:var(--radius-btn);box-shadow:var(--shadow);padding:10px 13px;
+  font-size:12.5px;line-height:1.5;color:var(--color-ink-80);
+  opacity:0;transition:opacity .12s ease;
+}
+#tip[hidden]{display:none}
+#tip.show{opacity:1}
+#tip b{
+  display:block;font-family:var(--data);font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--color-cyan);margin-bottom:5px;font-weight:500;
+}
+@media(prefers-reduced-motion:reduce){#tip{transition:none}}
+
+/* ---------- printed text: the card's own words ---------------------------- */
+.facetext{display:flex;flex-direction:column;gap:var(--s3);min-width:0}
+.facetext .side-rule{
+  display:flex;align-items:center;gap:var(--s2);font-family:var(--data);font-size:10.5px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--color-ink-60);
+}
+.facetext .side-rule::after{content:"";flex:1;height:1px;background:var(--color-border)}
+.facetext .side-rule.lvl::before{
+  content:"";width:7px;height:7px;border-radius:50%;background:var(--color-cyan);flex:none;
+}
+.cardtext{
+  width:100%;background:var(--color-bg-input);border:1px solid var(--color-border);
+  border-left:2px solid var(--color-border-med);border-radius:0 var(--radius-btn) var(--radius-btn) 0;
+  padding:11px 14px;font-family:var(--text);font-size:13.5px;line-height:1.72;
+  color:var(--color-ink);resize:none;overflow:hidden;min-height:52px;display:block;
+}
+.cardtext:hover{border-color:var(--color-border-med)}
+.cardtext:focus{outline:none;border-color:var(--color-cyan);border-left-color:var(--color-cyan);
+  box-shadow:0 0 0 3px var(--color-cyan-glow)}
+.cardtext::placeholder{color:var(--color-ink-40);font-style:italic}
+.textlabel{
+  display:flex;align-items:baseline;justify-content:space-between;gap:var(--s2);margin-bottom:5px;
+}
+.textlabel .cnt{font-family:var(--data);font-size:10.5px;color:var(--color-ink-60)}
 </style>
 </head>
 <body>
+<div id="dotgrid" aria-hidden="true"></div>
 <div id="app">
+  <header id="masthead">
+    <div class="wordmark">
+      <span class="colorbar" aria-hidden="true">
+        <i style="background:var(--f-warmongers)"></i><i style="background:var(--f-overthinkers)"></i><i style="background:var(--f-assholes)"></i><i style="background:var(--f-icons)"></i>
+      </span>
+      <b>Card Studio</b>
+    </div>
+    <nav id="modes" aria-label="Screens"></nav>
+    <div class="mastright">
+      <span class="muted" id="poolcount"></span>
+      <button class="iconbtn" id="theme" title="Toggle light and dark" aria-label="Toggle light and dark">◐</button>
+    </div>
+  </header>
+
   <div id="list" class="col">
     <div class="topbar">
-      <div class="row spread">
-        <h1 style="font-size:15px">Card Studio</h1>
-        <button class="ghost" id="theme" style="padding:4px 9px" title="Toggle light/dark">◐</button>
-      </div>
-      <div class="modes" id="modes"></div>
-      <div class="row" id="cardactions" style="gap:6px;margin-top:8px">
-        <button class="ghost" id="newcard" style="padding:5px 10px;font-size:12px">+ New card</button>
-        <button class="ghost" id="clonecard" style="padding:5px 10px;font-size:12px">Clone</button>
+      <div class="row" id="cardactions" style="gap:6px">
+        <button class="ghost" id="newcard" style="padding:6px 11px;font-size:12px">+ New card</button>
+        <button class="ghost" id="clonecard" style="padding:6px 11px;font-size:12px">Clone</button>
       </div>
       <div class="filters" id="cardfilters">
         <input id="q" placeholder="Search name, effect, keyword, text…" aria-label="Search cards">
@@ -349,17 +747,17 @@ label.fl{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppe
 
   <div id="main" class="col"><div class="muted" style="padding:40px 0">Loading…</div></div>
 
-  <div id="rail" class="col"><div id="railart"></div><div id="raildyn"></div></div>
+  <div id="rail" class="col"><div id="raildyn"></div></div>
 </div>
 
 <div id="savebar" hidden>
-  <span class="muted" id="dirtynote">Unsaved changes</span>
+  <span id="dirtynote">Unsaved changes</span>
   <button class="ghost" id="revert">Revert</button>
   <button class="primary" id="save">Save to file</button>
 </div>
 <div id="lightbox" hidden><div class="lbcap"></div><img alt=""></div>
 <div id="toast" hidden></div>
-
+<div id="tip" hidden role="tooltip"></div>
 <script>
 "use strict";
 const $ = (s,r=document)=>r.querySelector(s);
@@ -384,6 +782,158 @@ const GLYPH = {good:"✓",warning:"!",serious:"!",critical:"✕"};
 const VERDICT_WORD = {good:"In tolerance",warning:"Slightly off",serious:"Off",critical:"Badly off"};
 
 let DB=null, cards=[], current=null, draft=null;
+
+/* ================= GLOSSARY =============================================================
+   Every abbreviation this tool prints. Definitions are lifted from the rulebook and the
+   rubrics -- docs/rulebook/06-character-anatomy.md for the stats, 13-glossary.md for the
+   universal terms, docs/rubrics/gameplay-rubric.md for the gates, and
+   docs/design/balance-philosophy.md for The Score. The validation codes — F…, W… and GAP —
+   are NOT here: they come from the server as DB.ruleDocs, read off the rule functions
+   themselves, so a tooltip can never drift from what the checker actually does.
+   ===================================================================================== */
+const GLOSSARY = {
+  Cost:["Energy cost","What the card costs to play, and the number the whole budget is derived from: (cost × 3) + 1, plus 3 for an Ascendant."],
+  PA:["Physical Attack","Damage dealt by physical strikes. The default stat in a standard Combat Wave."],
+  PH:["Physical Health","Physical stamina. At 0 the Character is Murdered. All PH damage is permanent and persists across Rounds."],
+  MA:["Mental Attack","Damage dealt by psychological strikes. Reaches the board through Tactics, Attachments and specific abilities — not standard combat unless the card says so."],
+  MH:["Mental Health","Mental fortitude. At 0 the Character is Murdered, exactly like PH."],
+
+  G1:["Gate G1 — stays under its Ceiling","Power is earned, not capped. The card may spend up to its Ceiling and no further."],
+  G2:["Gate G2 — every term is defined","Every rules term on the card already exists in the rulebook or data/. No card may be the first place a mechanic is defined."],
+  G3:["Gate G3 — ability type declared","Every printed ability states its type — Standard, Fast, Trigger or Passive — and the type must be capable of what the text says."],
+  G4:["Gate G4 — faction keyword exclusivity","A card carries keywords only from its own faction. No exceptions, including Ascendants. Cross-faction power comes through crew, never keywords."],
+  G5:["Gate G5 — no unbounded loop","The card cannot produce infinite Energy, damage, cards or Influence with any existing card."],
+  G6:["Gate G6 — deterministic resolution","Two players reading the card reach the same board state. Who chooses, how many, and in what order must all be explicit."],
+  G7:["Gate G7 — answerability","At least one existing card can answer this, including from the poorest-tooled faction."],
+  G8:["Gate G8 — art and identity present","art.base resolves to a real file, the card has a faction, and a Character has a crew or an explicit null with a reason in Design Notes."],
+  G9:["Gate G9 — the friendship gate","Losing to this card must feel like being outplayed or roasted, never robbed or insulted. These are real people. Not a joke gate."],
+
+  budget:["Base Budget","(cost × 3) + 1, plus 3 if the card is an Ascendant. What the printed cost entitles the card to spend."],
+  credits:["Credits","Points earned by paying in a currency other than Energy — setup, telegraph, sacrifice, cards, life, matchup narrowness."],
+  allowance:["Allowance","Base Budget plus credits. What the card has earned before Reach caps it."],
+  ceiling:["Ceiling","The hard limit on what this card may spend: the lower of its Allowance and its Reach cap. Four prohibitions no Ceiling buys past."],
+  reach:["Reach","How many factions can answer this card using tools their own toolkit allows — not how many windows it offers. Reach 0 is not printable."],
+  window:["Interaction window","A real moment where the opponent can stop the plan. Each one must name a specific existing card or rule; every window raises the Ceiling by 25%."],
+  headroom:["Headroom","Ceiling minus what the card actually spends. Negative means it is over and cannot be printed as written."],
+  impact:["Spend","Stats plus keyword points plus effect points. What the card actually costs against its budget."],
+  tolerance:["Tolerance","How far off budget a card may sit before it counts as off. Under-spending is as wrong as over-spending; it just fails quietly."],
+
+  sigma:["Σ — total stat points","PA + PH + MA + MH added together. The share of the budget spent on raw numbers rather than ideas."],
+  delta:["Δ — distance from budget","Points over (+) or under (−) the base budget. ±0 is exactly on."],
+
+  Ascendant:["Ascendant","A Character that levels up mid-game into a second, stronger face. Capped at 5 per 40-card deck."],
+  Descendant:["Descendant","A standard Character with one face. The backbone of a deck — a 40-card deck wants about 24."],
+  Tactic:["Tactic","A one-shot card played through a Caster of matching faction."],
+  Attachment:["Attachment","A persistent card attached to a Character."],
+  Arena:["Arena","A card that changes a rule of the game symmetrically, for both players."],
+
+  strong:["Strong","This faction can answer a plan in this window using tools its toolkit already allows."],
+  weak:["Weak","This faction has a partial or conditional answer here."],
+  blind:["Blind","This faction has no answer in this window at all."],
+
+  unique:["Unique","Only this faction may have this tool. Marking the same tool unique to two factions is a hard error."],
+  never:["Never","This faction may never have this tool, even though other factions share it."],
+  shared:["Shared","Any faction may use this, unless a faction has explicitly marked it never."],
+
+  Job:["Job","The position a Character plays for its crew — not a keyword. A keyword is a Role: one of the tools it plays the position with."],
+  Formation:["Formation","The five-person structure a crew declares: four required Jobs and one free slot."],
+  coordinated:["Coordinated","The crew advances one shared plan, and cards may enable each other."],
+  chaotic:["Chaotic","Not an exemption from validation, a different rule: no card may require a state a crewmate produces, and none may reference its own crew. In exchange those cards get a higher individual rate."],
+
+  draft:["Draft","Not yet scored or reviewed. Exempt from the budget gate."],
+  ported:["Ported","Carried over from the original spreadsheet, numbers intact, not yet re-reviewed."],
+  reviewed:["Reviewed","Read against both rubrics and passed."],
+  playtested:["Playtested","Has been played in at least one logged game."],
+  final:["Final","Locked. Change it only with a very good reason."],
+  retired:["Retired","Out of the pool, kept on disk so the Design Notes survive."],
+
+  P1:["P1 — no self-restarting payoff","The payoff may not pay for its own repetition."],
+  P2:["P2 — no passive lock","No card may shut the opponent out with no action required from its controller."],
+  P3:["P3 — no unbounded repetition","Trigger and Passive abilities bypass the alternating-action structure, so they may not repeat without a bound."],
+  P4:["P4 — no cheap + wide + uninterruptible","A card may have two of the three. Never all three."],
+};
+
+/* term -> [title, body]; codes come from the server so they track rules.py */
+function glossaryFor(key){
+  if(GLOSSARY[key]) return GLOSSARY[key];
+  if(key.startsWith("family:")){
+    const fam=key.slice(7);
+    const names=(DB.jobs||[]).filter(j=>j.family===fam).map(j=>j.name);
+    if(names.length) return [`${fam} Jobs`,
+      `The ${fam} family: ${names.join(", ")}. A Job is the position a Character plays for its crew.`];
+    return null;
+  }
+  const doc=(DB&&DB.ruleDocs)?DB.ruleDocs[key]:null;
+  if(doc) return [/^GAP$/.test(key)?"GAP — an unfilled hole":`${key} — validation check`, doc];
+  return null;
+}
+
+/* Attach an explanation to a node. Works on hover and on keyboard focus, because a
+   tooltip only reachable by mouse is a tooltip half the people cannot read. */
+function tipped(node, key, {underline=true}={}){
+  const g=glossaryFor(key);
+  if(!g) return node;
+  node.dataset.tipTitle=g[0];
+  node.dataset.tip=g[1];
+  if(underline) node.classList.add("term");
+  if(node.tabIndex<0 && !/^(BUTTON|INPUT|SELECT|TEXTAREA|A)$/.test(node.tagName)) node.tabIndex=0;
+  return node;
+}
+/* a bare <span> carrying a term, e.g. the PA in a table header */
+const term = (key, label) => tipped(el("span",{text:label??key}), key);
+
+/* Faction and crew already carry a written identity in data/. Show it where the card
+   names them, rather than making you leave the screen to remember what a crew is for. */
+function factionChip(name){
+  const chip=el("span",{class:"fchip"},
+    el("span",{class:"dot",style:`background:var(${FACTION_VAR[name]||"--edge"})`}),
+    name||"No faction");
+  const b=(DB.factions||{})[name];
+  if(b && b.identity){
+    chip.dataset.tipTitle=`${name} — how they win`;
+    chip.dataset.tip=b.identity.split(". ").slice(0,2).join(". ")+".";
+    chip.classList.add("term"); chip.tabIndex=0;
+  }
+  return chip;
+}
+function crewChip(name){
+  const chip=el("span",{text:name||"No crew"});
+  const c=crewByName(name);
+  if(c && (c.plan||"").trim()){
+    chip.dataset.tipTitle=`${name} — the crew plan`;
+    chip.dataset.tip=c.plan.trim();
+    chip.classList.add("term"); chip.tabIndex=0;
+  }
+  return chip;
+}
+
+function initTips(){
+  const box=$("#tip");
+  let shown=null;
+  const hide=()=>{ shown=null; box.classList.remove("show"); box.hidden=true; };
+  const show=node=>{
+    if(shown===node) return;
+    shown=node;
+    box.replaceChildren(el("b",{text:node.dataset.tipTitle||""}), node.dataset.tip);
+    box.hidden=false;
+    const r=node.getBoundingClientRect();
+    box.style.left="0px"; box.style.top="0px";           // measure unconstrained
+    const w=box.offsetWidth, h=box.offsetHeight, pad=10;
+    const left=Math.min(Math.max(pad, r.left), innerWidth-w-pad);
+    let top=r.top-h-8;                                   // above by default
+    if(top<pad) top=r.bottom+8;                          // flip under when it would clip
+    top=Math.min(Math.max(pad, top), innerHeight-h-pad); // and never leave the viewport
+    box.style.left=`${left}px`; box.style.top=`${top}px`;
+    box.classList.add("show");
+  };
+  const target=e=>e.target.closest?.("[data-tip]");
+  document.addEventListener("pointerover",e=>{ const t=target(e); t?show(t):hide(); });
+  document.addEventListener("pointerdown",hide);
+  document.addEventListener("focusin",e=>{ const t=target(e); t?show(t):hide(); });
+  document.addEventListener("focusout",hide);
+  addEventListener("scroll",hide,true);
+  addEventListener("keydown",e=>{ if(e.key==="Escape") hide(); });
+}
 
 /* ---------------- scoring (mirrors tools/scoring.py; constants come from the server) --- */
 function budgetOf(meta){
@@ -528,9 +1078,151 @@ function meter(label, spent, budget, sev, note){
     el("div",{class:"cap"},
       el("span",{},label),
       el("span",{}, el("b",{text:String(spent)}), " / ", el("b",{text:String(budget)}), note?el("span",{class:"muted",text:" "+note}):null)),
-    el("div",{class:"track",style:`background:var(--${sev}-track)`},
+    /* the budget is a hard mark on the track rather than a colour change, so you can see
+       the exact point the card stopped being affordable */
+    el("div",{class:"track"},
       el("div",{class:"fill",style:`width:${pct(spent)}%;background:var(--${sev})`}),
       el("div",{class:"budgetmark",style:`left:calc(${pct(budget)}% - 1px)`,title:`budget ${budget}`})));
+}
+
+/* ---------------- the proof ------------------------------------------------------------
+   The card as an object, next to the arithmetic that decides whether it can be printed.
+   Built once per card and updated in place: the artwork is multi-megabyte and renderMain
+   runs on every keystroke, so rebuilding the <img> here would flash on every edit. */
+let PROOF=null;
+function buildProof(){
+  PROOF=null;
+  if(!current) return;
+  const art=draft.art||{};
+  const face=(side,label)=>{
+    const a=art[side]||{};
+    const inner = a.url
+      ? el("img",{src:a.url,alt:`${draft.meta.name} — ${label}`})
+      : el("div",{class:"noart"}, el("div",{},
+          el("div",{class:"slug",text:label}),
+          el("div",{style:"margin-top:6px"},
+            a.ref?`No file matches “${a.ref}”`:"No art reference set")));
+    return inner;
+  };
+  const spine=el("div",{class:"spine"});
+  const pip=el("div",{class:"pip"});
+  const cname=el("div",{class:"cname"});
+  const cstats=el("div",{class:"cstats"});
+  const front=el("div",{class:"side front"}, face("base","Base"), spine, pip,
+                 el("div",{class:"plate"}, cname, cstats));
+  const back =el("div",{class:"side back"}, face("ascended","Level-up"),
+                 el("div",{class:"plate"}, el("div",{class:"slug",style:"color:#cfc8bb",
+                   text:"Level-up side"})));
+  const card=el("div",{class:"cardface"}, el("div",{class:"flipper"}, front, back));
+
+  const sw=el("div",{class:"faceswitch"});
+  const show=key=>{
+    PROOF.face=key;
+    card.classList.toggle("flipped", key==="ascended");
+    for(const b of sw.children) b.setAttribute("aria-pressed", String(b.dataset.k===key));
+  };
+  for(const [key,label] of [["base","Base"],["ascended","Level-up"]])
+    sw.append(el("button",{"data-k":key,"aria-pressed":key==="base",text:label,
+      onclick:()=>show(key)}));
+  const zoom=el("button",{class:"zoomlink",text:"Open full artwork",onclick:()=>{
+    const a=art[PROOF.face]||{};
+    if(a.url) lightbox(a.url,`${draft.meta.name} — ${PROOF.face==="base"?"Base":"Level-up"} · ${a.path}`);
+    else toast("No artwork on that side yet");
+  }});
+  PROOF={node:el("div",{}, card, sw, zoom), card, spine, pip, cname, cstats, face:"base"};
+}
+function syncProof(){
+  if(!PROOF) return;
+  const m=draft.meta;
+  PROOF.spine.style.background=`var(${FACTION_VAR[m.faction]||"--edge"})`;
+  PROOF.pip.textContent = (m.cost===null||m.cost===undefined||m.cost==="") ? "–" : String(m.cost);
+  PROOF.cname.textContent = m.name||"Untitled";
+  PROOF.cstats.replaceChildren(...DB.statKeys.map(k=>
+    el("span",{}, k+" ", el("b",{text:String(m.stats?.[k] ?? "–")}))));
+}
+
+/* one row of the receipt: label, leader dots, right-aligned figure */
+function line(label, value, cls=""){
+  return el("div",{class:cls},
+    el("span",{class:"lbl",text:label}),
+    el("span",{class:"dots"}),
+    el("span",{class:"v",text:String(value)}));
+}
+
+/* A card-text field: the card's own words, set like printed text rather than like a form.
+   Grows to fit so there is never a scrollbar inside the card's voice. */
+function cardText(label, key, placeholder, tipKey){
+  const ta=el("textarea",{class:"cardtext",placeholder,
+    oninput:e=>{ draft[key]=e.target.value; grow(e.target); touch(false); }}, draft[key]||"");
+  const count=el("span",{class:"cnt"});
+  const grow=n=>{ n.style.height="auto"; n.style.height=Math.max(52,n.scrollHeight+2)+"px";
+                  count.textContent=(n.value||"").trim()?`${n.value.trim().length} chars`:"empty"; };
+  requestAnimationFrame(()=>grow(ta));
+  const lbl=el("span",{class:"slug",text:label});
+  if(tipKey) tipped(lbl, tipKey);
+  return el("div",{}, el("div",{class:"textlabel"}, lbl, count), ta);
+}
+
+/* The card's words, next to the card's face, next to the card's arithmetic. Reading the
+   text and the budget in two different scroll positions is how a card gets priced without
+   anyone re-reading what it actually does. */
+function faceText(){
+  return el("div",{class:"facetext"},
+    el("div",{class:"side-rule",text:"Base side"}),
+    cardText("Rules text","rulesText",
+      "[Ability Name] (Standard Ability): what it does, who chooses, how many.","G3"),
+    el("div",{class:"side-rule lvl",text:"Level-up"}),
+    cardText("Level-up condition","levelupCondition",
+      "What has to happen for this Character to ascend.","Ascendant"),
+    cardText("Ascended rules text","ascendedText",
+      "[Improved Ability] (Fast Ability): what changes once it has ascended.","G3"));
+}
+
+function proofPanel(s){
+  syncProof();
+  const m=draft.meta;
+  const right=el("div",{});
+  if(s.scorable){
+    const sev=severity(s.baseDelta), asev=ceilingSeverity(s.ascendedDelta);
+    const over=s.baseDelta<0;
+    right.append(
+      el("span",{class:"herolabel",text:"Base side against budget"}),
+      el("div",{class:"verdictblock"},
+        el("div",{class:`heronum ${sev==="good"?"":"off"}`,
+          text:`${s.baseDelta===0?"":over?"+":"−"}${Math.abs(s.baseDelta)}`}),
+        el("div",{style:"flex:1;min-width:180px"},
+          el("div",{class:`verdictword ${sev}-c`},
+            el("span",{class:`glyph ${sev}-bg`,text:GLYPH[sev]}), " ",
+            s.baseDelta===0?"Exactly on budget"
+              :`${Math.abs(s.baseDelta)} ${over?"over":"under"} — ${VERDICT_WORD[sev]}`),
+          el("div",{class:"verdictwhy",
+            text: over ? "This card is stronger than its cost pays for. Cut points, raise the cost, or declare a plan that earns a higher ceiling."
+                : s.baseDelta>0 ? "This card is weaker than its cost pays for. Underpowered is as wrong as overpowered here — it just fails quietly instead of loudly."
+                : "The card spends exactly what its cost buys."}))),
+      /* one ledger, two totals: what the cost entitles it to, and what it actually spent.
+         The old layout said this three times over -- a breakdown row, a budget sentence
+         and two meters -- so the composition lives inside the receipt now. */
+      el("div",{class:"ledger"},
+        line(`cost ${m.cost} × ${DB.constants.costMultiplier}`, m.cost*DB.constants.costMultiplier),
+        line("base allowance", "+"+DB.constants.baseAllowance),
+        (m.subtype||"").toLowerCase()==="ascendant"
+          ? line("Ascendant", "+"+DB.constants.ascendantBonus) : null,
+        line("budget", s.budget, "total"),
+        line("stats", s.statsTotal, "gap"),
+        line("keywords", s.baseKeywordPoints),
+        line("effects", s.baseEffectPoints),
+        line("this card spends", s.baseSpent, "total"+(s.baseDelta<0?" neg":""))),
+      meter("Base side", s.baseSpent, s.budget, sev),
+      meter("Base + level-up", s.baseSpent+s.ascendedSpent, s.ascendedBudget, asev,
+            `ceiling ×${DB.constants.ascendedMultiplier}`));
+  } else {
+    right.append(
+      el("span",{class:"herolabel",text:"Not scorable yet"}),
+      el("div",{class:"verdictword",text:"Stub"}),
+      el("div",{class:"verdictwhy",style:"font-size:13px",
+        text:`${s.reason} — set a cost and all four stats below to start scoring it.`}));
+  }
+  return el("div",{class:"proof"}, PROOF?PROOF.node:el("div",{}), faceText(), right);
 }
 
 function stepper(label, value, onChange, min=0){
@@ -539,7 +1231,7 @@ function stepper(label, value, onChange, min=0){
   const bump=d=>{const v=(Number(input.value)||0)+d; if(v<min)return;
     input.value=v; onChange(v);};
   return el("div",{class:"stepper"},
-    el("div",{class:"lb",text:label}),
+    tipped(el("div",{class:"lb",text:label}), label, {underline:false}),
     el("div",{class:"ctl"},
       el("button",{class:"sbtn",text:"−","aria-label":`decrease ${label}`,onclick:()=>bump(-1)}),
       input,
@@ -601,11 +1293,8 @@ function keywordChips(side){
   return el("div",{}, chips, mine.length?defs:null);
 }
 
-function textarea(label, value, key, rows=4){
-  return el("div",{},
-    el("label",{class:"fl",text:label}),
-    el("textarea",{rows:String(rows),oninput:e=>{draft[key]=e.target.value; touch(false);}},value||""));
-}
+/* the old generic textarea() helper lived here; the card's three text fields moved into
+   the proof as cardText(), which auto-grows and sits beside the face and the budget */
 
 
 function planOf(){
@@ -660,19 +1349,19 @@ function scorePanel(s){
   const sev = p.headroom<0 ? severity(p.headroom) : "good";
 
   const bar=el("div",{class:"scorebar"},
-    el("span",{class:"step"},"budget ",el("b",{text:String(s.budget)})),
+    el("span",{class:"step"},term("budget","budget"),' ',el("b",{text:String(s.budget)})),
     el("span",{class:"arrow",text:"+"}),
-    el("span",{class:"step"},"credits ",el("b",{text:String(p.credits)})),
+    el("span",{class:"step"},term("credits","credits"),' ',el("b",{text:String(p.credits)})),
     el("span",{class:"arrow",text:"="}),
-    el("span",{class:"step"},"allowance ",el("b",{text:String(p.allowance)})),
+    el("span",{class:"step"},term("allowance","allowance"),' ',el("b",{text:String(p.allowance)})),
     el("span",{class:"arrow",
       text: p.cap===null ? "· Reach 0 — NOT PRINTABLE"
           : p.reach===null ? (p.credits>0 ? "· set Reach to collect these credits"
                                            : "· no plan declared — held to base budget")
           : `· capped by Reach ${p.reach} at ${p.cap}`}),
-    el("span",{class:"step final"},"CEILING ",el("b",{text:String(p.ceiling)})),
+    tipped(el("span",{class:"step final"},"CEILING ",el("b",{text:String(p.ceiling)})),"ceiling",{underline:false}),
     el("span",{class:"arrow",text:"·"}),
-    el("span",{class:"step"},"spends ",el("b",{text:String(p.total)}),
+    el("span",{class:"step"},term("impact","spends"),' ',el("b",{text:String(p.total)}),
       el("span",{class:`${sev}-c`,style:"font-weight:600;margin-left:8px"},
         el("span",{class:`swatch ${sev}-bg`}),
         p.headroom>=0?`${p.headroom} headroom`:`${-p.headroom} OVER`)));
@@ -728,18 +1417,18 @@ function scorePanel(s){
   const proh=el("div",{class:"proh"});
   for(const x of cfg.prohibitions)
     proh.append(el("div",{class:"gate"},
-      el("span",{class:"gid",text:x.key}),
+      tipped(el("span",{class:"gid",text:x.key}), x.key),
       el("span",{class:"msg"}, el("b",{text:x.label}), " — ", x.test)));
 
   return el("div",{class:"panel"},
     el("div",{class:"row spread"},
-      el("h3",{style:"font-size:13px",text:"The Score — what this card earns"}),
+      el("h3",{text:"The Score — what this card earns"}),
       el("span",{class:"muted",style:"font-size:11.5px",
         text:p.hasPlan?"plan declared":"no plan — capped at base budget"})),
     bar,
     el("label",{class:"fl",text:"What it pays (beyond Energy)"}), grid,
-    el("label",{class:"fl",text:"Reach"}), reachRow,
-    el("label",{class:"fl",text:"Which windows exist — each must name a real card or rule"}), wins,
+    el("label",{class:"fl"},term("reach","Reach")), reachRow,
+    el("label",{class:"fl"},"Which ",term("window","windows")," exist — each must name a real card or rule"), wins,
     el("div",{class:"muted",style:"font-size:11.5px;margin-top:10px"},
       "Every window you give back raises the ceiling by 25%. Nothing paid and no windows = today's budget, unchanged."),
     proh);
@@ -749,26 +1438,29 @@ function gateStrip(){
   const g=gatesOf(draft);
   const wrap=el("div",{class:"panel"},
     el("div",{class:"row spread",style:"margin-bottom:10px"},
-      el("h3",{style:"font-size:13px",text:"Gates"}),
+      el("h3",{text:"Gates"}),
       el("span",{class:"muted",style:"font-size:11.5px",text:"machine-checked · G2/G5/G7/G9 are your call"})));
   const pills=el("div",{class:"gatepills"});
   for(const [id,fails] of Object.entries(g)){
     const ok=fails.length===0;
-    pills.append(el("span",{class:`pill ${ok?"ok":"bad"}`,title:fails.join("; ")||"pass"},
-      el("span",{class:`glyph ${ok?"good":"critical"}-bg`,text:ok?"✓":"✕"}), id));
+    pills.append(tipped(el("span",{class:`pill ${ok?"ok":"bad"}`,
+        title:fails.join("; ")||"pass"},
+      el("span",{class:`glyph ${ok?"good":"critical"}-bg`,text:ok?"✓":"✕"}), id),
+      id, {underline:false}));
   }
   wrap.append(pills);
   const failing=Object.entries(g).filter(([,f])=>f.length);
   for(const [id,fails] of failing)
     for(const msg of fails)
       wrap.append(el("div",{class:"gate"},
-        el("span",{class:"gid",text:id}),
+        tipped(el("span",{class:"gid",text:id}), id),
         el("span",{class:"swatch critical-bg"}),
         el("span",{class:"msg",text:msg})));
   const human=el("div",{class:"humangates"});
   for(const [id,desc] of Object.entries(DB.humanGates))
     human.append(el("label",{class:"hg"},
-      el("input",{type:"checkbox"}), el("b",{text:id}), el("span",{class:"sec",text:desc})));
+      el("input",{type:"checkbox"}), tipped(el("b",{text:id}), id),
+      el("span",{class:"sec",text:desc})));
   wrap.append(human);
   return wrap;
 }
@@ -784,7 +1476,10 @@ function siblingTable(){
   const sibs=cards.filter(inRange)
     .sort((a,b)=>(a.meta.cost-b.meta.cost)||a.meta.name.localeCompare(b.meta.name));
   const tbl=el("table",{class:"sib"},
-    el("thead",{}, el("tr",{}, ...["Card","","Cost",...DB.statKeys,"Σ","Δ"].map(h=>el("th",{text:h})))));
+    el("thead",{}, el("tr",{}, ...["Card","","Cost",...DB.statKeys,"Σ","Δ"].map(h=>{
+      const key = h==="Σ" ? "sigma" : h==="Δ" ? "delta" : h;
+      return el("th",{}, glossaryFor(key) ? term(key,h) : h);
+    }))));
   const tb=el("tbody",{});
   for(const c of sibs){
     const isSelf=c===current, cs=isSelf?scoreDraft(draft):c.score;
@@ -806,7 +1501,7 @@ function siblingTable(){
   const exact=sibs.filter(c=>c.meta.cost===cost).length;
   return el("div",{class:"panel"},
     el("div",{class:"row spread",style:"margin-bottom:10px"},
-      el("h3",{style:"font-size:13px",
+      el("h3",{
         text:`Neighbours — cost ${cost===null||cost===undefined?"—":`${Math.max(0,cost-1)}–${cost+1}`}`}),
       el("span",{class:"muted",style:"font-size:11.5px",
         text:`${exact} at cost ${cost ?? "—"} · ${sibs.length-exact} adjacent`})),
@@ -833,8 +1528,8 @@ function newCardDialog(){
   const facs=(DB.factionData||[]).map(f=>f.name);
   const crews=(DB.crews||[]).map(c=>c.name);
   const draft={name:"",faction:facs[0],crew:crews[0],subtype:"Descendant",cost:3};
-  const body=el("div",{class:"panel",style:"margin:0"},
-    el("h3",{style:"font-size:14px;margin-bottom:10px",text:"New card"}),
+  const body=el("div",{class:"modal"},
+    el("h3",{text:"New card"}),
     el("label",{class:"fl",text:"Name — the format is  Name, The Epithet"}),
     el("input",{class:"efsearch",placeholder:"Benny Blanco, Titan Of The Topshelf",
       oninput:e=>{draft.name=e.target.value;}}),
@@ -895,12 +1590,14 @@ function renderModes(){
   }
   $("#cardfilters").style.display = MODE==="cards" ? "" : "none";
   $("#cardactions").style.display  = MODE==="cards" ? "" : "none";
+  $("#poolcount").textContent = `${cards.length} cards`;
 }
 function setMode(m){
   MODE=m;
   /* the rail is card context -- collapse it everywhere else so the wide views get the space */
-  $("#app").style.gridTemplateColumns = (m==="cards") ? "" : "270px 1fr 0";
+  $("#app").style.gridTemplateColumns = (m==="cards") ? "" : "var(--roster) 1fr 0";
   $("#rail").style.display = (m==="cards") ? "" : "none";
+  document.documentElement.style.setProperty("--rail", m==="cards" ? "344px" : "0px");
   renderModes(); renderList(); renderMain(); renderRail();
 }
 
@@ -973,7 +1670,7 @@ function renderLibrary(main){
   main.append(el("div",{class:"topbar"},
     el("div",{class:"row spread"},
       el("div",{},
-        el("h2",{style:"font-size:20px",text:"Library"}),
+        el("h2",{class:"screentitle",text:"Library"}),
         el("div",{class:"muted",style:"font-size:12px;margin-top:3px",
           text:"Every keyword, effect and status — what it means, who owns it, which cards use it"})),
       el("button",{class:"primary",onclick:()=>{
@@ -992,7 +1689,7 @@ function renderLibrary(main){
 
   /* ---- list ---- */
   const q=libQuery.toLowerCase();
-  const list=el("div",{class:"panel",style:"padding:0;max-height:70vh;overflow-y:auto"});
+  const list=el("div",{class:"listpane",style:"max-height:70vh"});
   const shown=rows.filter(r=>!q ||
     `${r.name} ${r[meta.defKey]||""} ${r.faction||""}`.toLowerCase().includes(q));
   const sorted=[...shown].sort((a,b)=>
@@ -1013,11 +1710,12 @@ function renderLibrary(main){
         el("div",{class:"t",text:r.name}),
         el("div",{class:"d",text:r[meta.defKey]||"— no definition written —"}),
         el("div",{class:"meta"},
-          owner?el("span",{class:"tag2 uniq",text:`unique · ${owner}`})
-               :el("span",{class:"tag2 shared",text:"shared"}),
+          owner?tipped(el("span",{class:"tag2 uniq",text:`unique · ${owner}`}),"unique",{underline:false})
+               :tipped(el("span",{class:"tag2 shared",text:"shared"}),"shared",{underline:false}),
           el("span",{class:used?"tag2":"tag2 unused",
             text:used?`${used} card${used===1?"":"s"}`:"unused"}),
-          ...neverFor(libKind,r.name).map(f=>el("span",{class:"tag2",text:`never · ${f}`}))))));
+          ...neverFor(libKind,r.name).map(f=>
+            tipped(el("span",{class:"tag2",text:`never · ${f}`}),"never",{underline:false}))))));
   }
   if(!sorted.length) list.append(el("div",{style:"padding:16px"},
     el("span",{class:"muted",text:"Nothing matches."})));
@@ -1039,7 +1737,7 @@ function renderLibrary(main){
     const near=meta.hasPoints ? rows.filter(r=>Math.abs((r.points||0)-(libSel.points||0))<=1
                                             && r.name!==libSel.name).slice(0,6) : [];
     editor=el("div",{class:"panel"},
-      el("h3",{style:"font-size:14px;margin-bottom:10px",
+      el("h3",{
         text:isNew?`New ${meta.noun}`:libSel.name}),
       el("label",{class:"fl",text:"Name"}),
       el("input",{class:"efsearch",value:libSel.name||"",
@@ -1142,13 +1840,13 @@ function renderFactions(main){
   main.append(el("div",{class:"topbar"},
     el("div",{class:"row spread"},
       el("div",{},
-        el("h2",{style:"font-size:20px"}, `${f.emoji||""} ${f.name}`),
+        el("h2",{class:"screentitle"}, `${f.emoji||""} ${f.name}`),
         el("div",{class:"muted",style:"font-size:12px;margin-top:3px",
           text:`${cardsOf(f.name).length} cards · ${f.reviewed?"reviewed":"DRAFT — unreviewed"}`})),
       el("button",{class:"primary",onclick:save},"Save faction"))));
 
   main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px;margin-bottom:8px",text:"Identity"}),
+    el("h3",{text:"Identity"}),
     el("textarea",{rows:"5",oninput:e=>{f.identity=e.target.value;}},f.identity||""),
     el("label",{class:"fl",text:"The printed weakness"}),
     el("textarea",{rows:"2",oninput:e=>{f.weakness=e.target.value;}},f.weakness||""),
@@ -1167,14 +1865,15 @@ function renderFactions(main){
       f.windows[w]={strong:"weak",weak:"blind",blind:"strong"}[cur]; renderMain(); };
     tb.append(el("tr",{},
       el("td",{text:DB.windowLabels[w]}),
-      el("td",{}, el("span",{class:`lvl ${cur}`,onclick:cycle,title:"click to cycle"},cur)),
+      el("td",{}, tipped(el("span",{class:`lvl ${cur}`,onclick:cycle,
+        title:"click to cycle"},cur), cur, {underline:false})),
       el("td",{}, covered.length<2
         ? el("span",{class:"warning-c"}, el("span",{class:"swatch warning-bg"}), covered.join(", ")||"nobody")
         : covered.join(", "))));
   }
   wg.append(tb);
   main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px;margin-bottom:8px",text:"Window profile — where they can answer a plan"}),
+    el("h3",{text:"Window profile — where they can answer a plan"}),
     wg,
     el("div",{class:"muted",style:"font-size:11.5px;margin-top:9px"},
       "Click a level to cycle strong → weak → blind. This map is what computes Reach on every card.")));
@@ -1203,7 +1902,7 @@ function renderFactions(main){
         }}, name, owner?el("span",{class:"muted",text:` · ${owner}`}):null));
     }
     main.append(el("div",{class:"panel"},
-      el("h3",{style:"font-size:13px",text:`${title} — unique / never`}),
+      el("h3",{text:`${title} — unique / never`}),
       el("div",{class:"muted",style:"font-size:11.5px;margin:4px 0 2px"},
         "blue = unique to this faction · red = never · faded = already unique to someone else"),
       wrap));
@@ -1243,7 +1942,7 @@ function jobPanel(d){
   const m = d.meta;
   if(isExemptFac(m.faction)){
     return el("div",{class:"panel"},
-      el("h3",{style:"font-size:13px",text:"Job"}),
+      el("h3",{text:"Job"}),
       el("div",{class:"muted",style:"font-size:12px;margin-top:6px"},
         "Icons hold no Job and no Formation. They are one-person armies, not crew members, "+
         "and they are deliberately outside the consistency system."));
@@ -1257,7 +1956,7 @@ function jobPanel(d){
   for(const [fam,label] of JOB_FAMILIES){
     const inFam = jobsAll().filter(j => j.family === fam);
     if(!inFam.length) continue;
-    picker.append(el("span",{class:"famlabel",text:label}));
+    picker.append(tipped(el("span",{class:"famlabel",text:label}),"family:"+fam,{underline:false}));
     for(const j of inFam){
       const ok  = jobAllowed(j, m.faction);
       const bits=["chip"];
@@ -1271,7 +1970,7 @@ function jobPanel(d){
     }
   }
 
-  const body=[el("h3",{style:"font-size:13px",text:"Job — what this card does for its crew"}),
+  const body=[el("h3",{text:"Job — what this card does for its crew"}),
               el("div",{class:"muted",style:"font-size:11.5px;margin-top:3px"},
                 "Not the same as a keyword. A keyword is a Role: one of the tools. The Job is the position."),
               picker];
@@ -1328,7 +2027,7 @@ function formationPanel(c, members){
       onclick:()=>{ c.formation=x.key;
                     c.coordination = x.coordination || c.coordination; renderMain(); }}, x.name));
 
-  const body=[el("h3",{style:"font-size:13px",text:"Formation — the five-person structure"}),
+  const body=[el("h3",{text:"Formation — the five-person structure"}),
               el("div",{class:"muted",style:"font-size:11.5px;margin-top:3px"},
                 "Lore leads → the plan follows the lore → the Formation follows the plan. "+
                 "Four required Jobs, one free slot."),
@@ -1389,13 +2088,13 @@ function renderCrews(main){
   main.append(el("div",{class:"topbar"},
     el("div",{class:"row spread"},
       el("div",{},
-        el("h2",{style:"font-size:20px",text:c.name}),
+        el("h2",{class:"screentitle",text:c.name}),
         el("div",{class:"muted",style:"font-size:12px;margin-top:3px",
           text:`${members.length} cards across ${new Set(members.map(m=>m.meta.faction)).size} factions · ${c.reviewed?"reviewed":"DRAFT"}`})),
       el("button",{class:"primary",onclick:save},"Save crew"))));
 
   main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px",text:"The plan — how does this crew win a game?"}),
+    el("h3",{text:"The plan — how does this crew win a game?"}),
     el("textarea",{rows:"3",oninput:e=>{c.plan=e.target.value;}},c.plan||""),
     el("label",{class:"fl",text:"Lore basis — why the plan follows from who they are"}),
     el("textarea",{rows:"3",oninput:e=>{c.lore_basis=e.target.value;}},c.lore_basis||""),
@@ -1403,9 +2102,9 @@ function renderCrews(main){
     el("textarea",{rows:"1",oninput:e=>{c.signature=e.target.value;}},c.signature||""),
     el("label",{class:"fl",text:"Coordination"}),
     el("div",{class:"chips"},
-      ...["coordinated","chaotic"].map(k=>el("button",{class:"chip","aria-pressed":c.coordination===k,
+      ...["coordinated","chaotic"].map(k=>tipped(el("button",{class:"chip","aria-pressed":c.coordination===k,
         title:k==="chaotic"?"exempt from the single-plan rule, but chaos must be mechanically real":"",
-        onclick:()=>{c.coordination=k; renderMain();}},k))),
+        onclick:()=>{c.coordination=k; renderMain();}},k), k, {underline:false}))),
     el("label",{class:"win",style:"display:flex;gap:8px;margin-top:12px;cursor:pointer"},
       el("input",{type:"checkbox",checked:!!c.reviewed,onchange:e=>{c.reviewed=e.target.checked;}}),
       el("span",{},"I have reviewed this crew's plan"))));
@@ -1431,7 +2130,7 @@ function renderCrews(main){
         oninput:e=>{entry.road=e.target.value; renderMain();}},entry.road||"")));
   }
   main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px",text:"Roads — every card must reach the plan a different way"}),
+    el("h3",{text:"Roads — every card must reach the plan a different way"}),
     el("div",{class:"muted",style:"font-size:11.5px;margin:4px 0 8px"},
       "If you can't write a distinct road for a card, that card is a duplicate."),
     rows));
@@ -1441,7 +2140,7 @@ function renderCrews(main){
 function renderMatrix(main){
   const facs=(DB.factionData||[]).map(f=>f.name);
   const crewNames=[...new Set(cards.map(c=>c.meta.crew||"Unassigned"))].sort();
-  main.append(el("div",{class:"topbar"},el("h2",{style:"font-size:20px",text:"Crew × Faction"}),
+  main.append(el("div",{class:"topbar"},el("h2",{class:"screentitle",text:"Crew × Faction"}),
     el("div",{class:"muted",style:"font-size:12px",text:"click a card to open it · hatched = empty"})));
   const t=el("table",{class:"matrix"});
   t.append(el("thead",{},el("tr",{}, el("th",{class:"rowh",text:"Crew"}),
@@ -1482,7 +2181,7 @@ function renderMatrix(main){
 
 /* ------------------------------- HEALTH ---------------------------------- */
 function renderHealth(main){
-  main.append(el("div",{class:"topbar"},el("h2",{style:"font-size:20px",text:"Game health"})));
+  main.append(el("div",{class:"topbar"},el("h2",{class:"screentitle",text:"Game health"})));
   const scorable=cards.filter(c=>c.score.scorable);
   /* base side only -- nearly every card fails the ascended-side check today (OQ-04), so the
      raw headroom number is 25/25 and tells you nothing actionable. */
@@ -1514,7 +2213,7 @@ function renderHealth(main){
   }
   wc.append(wb);
   main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px;margin-bottom:8px",text:"Window coverage — fewer than two strong is a gap"}),wc));
+    el("h3",{text:"Window coverage — fewer than two strong is a gap"}),wc));
 
   /* job coverage -- which positions nobody in the pool plays. This is the design backlog. */
   const filled=new Map();
@@ -1541,7 +2240,7 @@ function renderHealth(main){
   jt.append(jb);
   const parked=jobsAll().filter(j=>j.status==="unbuilt");
   main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px;margin-bottom:8px",
+    el("h3",{
       text:"Job coverage — which positions nobody plays"}),jt,
     parked.length?el("div",{class:"muted",style:"font-size:11.5px;margin-top:10px"},
       el("b",{text:"Not yet expressible: "}),
@@ -1565,7 +2264,7 @@ function renderHealth(main){
   }
   cc.append(cb);
   main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px;margin-bottom:8px",text:"Cost curve by faction"}),cc));
+    el("h3",{text:"Cost curve by faction"}),cc));
 
   /* budget share */
   const bs=el("div",{class:"grid"});
@@ -1579,15 +2278,17 @@ function renderHealth(main){
       el("div",{class:"row spread",style:"font-size:12px;margin-bottom:4px"},
         el("span",{},f.name),
         el("span",{class:"muted",text:`stats ${Math.round(st/tot*100)}% · effects ${Math.round(ef/tot*100)}% · keywords ${Math.round(kw/tot*100)}%`})),
+      /* a tonal ramp, not three hues: raw numbers are dim, ideas brighten */
       el("div",{class:"bar"},
-        el("i",{style:`width:${st/tot*100}%;background:var(--baseline)`}),
-        el("i",{style:`width:${ef/tot*100}%;background:var(--accent)`}),
-        el("i",{style:`width:${kw/tot*100}%;background:var(--good)`}))));
+        el("i",{style:`width:${st/tot*100}%;background:var(--edge)`,title:"stats"}),
+        el("i",{style:`width:${ef/tot*100}%;background:var(--pencil)`,title:"effects"}),
+        el("i",{style:`width:${kw/tot*100}%;background:var(--key)`,title:"keywords"}))));
   }
   main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px;margin-bottom:9px",text:"Where each faction spends its points"}),bs,
+    el("h3",{text:"Where each faction spends its points"}),bs,
     el("div",{class:"muted",style:"font-size:11.5px;margin-top:9px"},
-      "A faction that is mostly grey is a faction made of numbers rather than ideas.")));
+      "The bar runs dim to bright: stats, then effects, then keywords. A faction whose bar "+
+      "never brightens is a faction made of numbers rather than ideas.")));
 
   /* deck feasibility */
   const need={Descendant:24,Tactic:8,Attachment:3,Ascendant:5};
@@ -1603,14 +2304,14 @@ function renderHealth(main){
   }
   df.append(dfb);
   main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px;margin-bottom:8px",text:"Can a legal deck be built from this pool?"}),df));
+    el("h3",{text:"Can a legal deck be built from this pool?"}),df));
 
   /* ---- playtest log: the only data the documents cannot produce ---- */
   const draft={when:"",players:"",winner:"",cards:"",felt_bad:"",notes:""};
   const field=(k,ph,rows=1)=>el("div",{},
     el("label",{class:"fl",text:k.replace("_"," ")}),
     el("textarea",{rows:String(rows),placeholder:ph,oninput:e=>{draft[k]=e.target.value;}}));
-  const log=el("div",{class:"panel",style:"padding:0"});
+  const log=el("div",{class:"listpane",style:"margin-top:var(--s3)"});
   for(const g of [...(DB.playtests||[])].reverse()){
     log.append(el("div",{class:"finding warn"},
       el("span",{class:"code",text:"#"+g.id}),
@@ -1622,7 +2323,7 @@ function renderHealth(main){
   }
   main.append(el("div",{class:"panel"},
     el("div",{class:"row spread",style:"margin-bottom:6px"},
-      el("h3",{style:"font-size:13px",text:`Playtest log · ${(DB.playtests||[]).length} games`}),
+      el("h3",{text:`Playtest log · ${(DB.playtests||[]).length} games`}),
       el("span",{class:"muted",style:"font-size:11.5px",
         text:"\"what felt bad\" is the field that matters — nothing else can tell you it"})),
     el("div",{class:"grid2"},
@@ -1644,7 +2345,7 @@ function renderHealth(main){
   /* ---- snapshots ---- */
   let label="";
   main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px",text:"Snapshots"}),
+    el("h3",{text:"Snapshots"}),
     el("div",{class:"muted",style:"font-size:11.5px;margin:4px 0 8px"},
       "Tag the pool before a playtest so you can tell what changed afterwards. Playtest feedback is worthless if you can't remember which version you played."),
     el("div",{class:"row",style:"gap:8px"},
@@ -1665,19 +2366,20 @@ function renderProblems(main){
   const codes=[...new Set(all.map(f=>f.code))].sort();
   main.append(el("div",{class:"topbar"},
     el("div",{class:"row spread"},
-      el("div",{},el("h2",{style:"font-size:20px",text:"Problems"}),
+      el("div",{},el("h2",{class:"screentitle",text:"Problems"}),
         el("div",{class:"muted",style:"font-size:12px;margin-top:3px",
           text:`${all.filter(f=>f.severity==="error").length} blocking · ${all.filter(f=>f.severity!=="error").length} warnings — ranked worst first`})),
       el("button",{class:"ghost",onclick:async()=>{await refreshFindings(); renderMain(); toast("re-checked");}},"Re-check"))));
   const chips=el("div",{class:"chips",style:"margin-bottom:12px"});
   chips.append(el("button",{class:"chip","aria-pressed":!probFilter,onclick:()=>{probFilter="";renderMain();}},"all"));
-  for(const c of codes) chips.append(el("button",{class:"chip","aria-pressed":probFilter===c,
-    onclick:()=>{probFilter=c;renderMain();}}, c, el("span",{class:"pts",text:String(all.filter(f=>f.code===c).length)})));
+  for(const c of codes) chips.append(tipped(el("button",{class:"chip","aria-pressed":probFilter===c,
+    onclick:()=>{probFilter=c;renderMain();}}, c,
+    el("span",{class:"pts",text:String(all.filter(f=>f.code===c).length)})), c, {underline:false}));
   main.append(chips);
-  const list=el("div",{class:"panel",style:"padding:0"});
+  const list=el("div",{class:"listpane"});
   for(const f of all.filter(f=>!probFilter||f.code===probFilter)){
     list.append(el("div",{class:`finding ${f.severity==="error"?"err":"warn"}`},
-      el("span",{class:"code",text:f.code}),
+      tipped(el("span",{class:"code",text:f.code}), f.code, {underline:false}),
       el("div",{class:"body"},
         el("div",{}, el("span",{class:"sub",text:f.subject}), ": ", f.message),
         f.fix?el("div",{class:"fx",text:"fix: "+f.fix}):null,
@@ -1701,70 +2403,52 @@ function renderMain(){
   if(!current){ main.append(el("div",{class:"muted",style:"padding:40px 0",text:"Select a card."})); return; }
   const m=draft.meta, s=scoreDraft(draft);
 
-  main.append(el("div",{class:"topbar"},
+  main.append(el("div",{class:"topbar cardhead"},
     el("div",{class:"row spread"},
-      el("div",{},
-        el("h2",{style:"font-size:20px",text:m.name}),
-        el("div",{class:"row",style:"gap:10px;margin-top:4px"},
-          el("span",{class:"fchip"},
-            el("span",{class:"dot",style:`background:var(${FACTION_VAR[m.faction]||"--baseline"})`}),
-            m.faction||"No faction"),
-          el("span",{class:"muted",text:m.crew||"No crew"}),
-          el("span",{class:"muted",text:m.subtype||"—"}),
-          el("span",{class:"muted",text:draft.relPath}))),
+      el("div",{style:"min-width:0"},
+        el("h2",{text:m.name}),
+        el("div",{class:"meta"},
+          factionChip(m.faction),
+          crewChip(m.crew),
+          glossaryFor(m.subtype) ? term(m.subtype) : el("span",{},m.subtype||"—"),
+          el("span",{class:"path",text:draft.relPath}))),
       el("div",{class:"row",style:"gap:6px"},
-        el("select",{class:"efsearch",style:"margin:0;padding:4px 7px;font-size:12px",
-          "aria-label":"card status",
+        el("select",{"aria-label":"card status",
           onchange:e=>{ m.status=e.target.value; touch(); }},
           ...["draft","ported","reviewed","playtested","final","retired"].map(v=>
-            el("option",{value:v,selected:(m.status||"draft")===v},v)))))));
+            el("option",{value:v,selected:(m.status||"draft")===v,
+              title:(GLOSSARY[v]||["",""])[1]},v)))))));
 
-  /* hero + meters */
-  if(s.scorable){
-    const sev=severity(s.baseDelta), asev=ceilingSeverity(s.ascendedDelta);
-    const sign=s.baseDelta===0?"":(s.baseDelta<0?"+":"−");
-    main.append(el("div",{class:"panel"},
-      el("div",{class:"hero"},
-        el("div",{},
-          el("div",{class:"herolabel",text:"Base side vs budget"}),
-          el("div",{class:"heronum",text:`${sign}${Math.abs(s.baseDelta)}`}),
-          el("div",{class:`verdict sev-${sev}`},
-            el("span",{class:`glyph ${sev}-bg`,text:GLYPH[sev]}),
-            s.baseDelta===0?"Exactly on budget":
-              `${Math.abs(s.baseDelta)} ${s.baseDelta<0?"over":"under"} — ${VERDICT_WORD[sev]}`)),
-        el("div",{style:"flex:1;min-width:260px"},
-          meter("Base side", s.baseSpent, s.budget, sev),
-          meter("Base + level-up", s.baseSpent+s.ascendedSpent, s.ascendedBudget, asev,
-                `ceiling ×${DB.constants.ascendedMultiplier}`))),
-      el("div",{class:"breakdown"},
-        el("span",{}, "stats ", el("b",{text:String(s.statsTotal)})),
-        el("span",{}, "base keywords ", el("b",{text:String(s.baseKeywordPoints)})),
-        el("span",{}, "base effects ", el("b",{text:String(s.baseEffectPoints)})),
-        el("span",{}, "level-up ", el("b",{text:String(s.ascendedSpent)})),
-        el("span",{class:"muted",text:`budget = (cost ${m.cost} × ${DB.constants.costMultiplier}) + ${DB.constants.baseAllowance}${(m.subtype||"").toLowerCase()==="ascendant"?` + ${DB.constants.ascendantBonus} Ascendant`:""} = ${s.budget}`}))));
-  } else {
-    main.append(el("div",{class:"stub"},
-      el("b",{text:"Stub card. "}), s.reason,
-      " — set a cost and all four stats below to start scoring it."));
-  }
+  main.append(proofPanel(s));
 
-  /* numbers */
-  const statBox=el("div",{class:"grid stats"},
-    stepper("Cost", m.cost, v=>{m.cost=v; touch();}, 0),
-    ...DB.statKeys.map(k=>stepper(k, m.stats?.[k], v=>{m.stats=m.stats||{}; m.stats[k]=v; touch();})));
-  if(s.scorable) main.append(scorePanel(s));
+  /* Order follows the job: the dials you turn first, then the two verdicts that say
+     whether the card can be printed, then its content, then its context. Cost & stats
+     used to sit fifth, below three read-only panels -- it is the control you reach for
+     the moment the proof says the number is wrong. */
+  main.append(el("div",{class:"panel"},
+    el("h3",{text:"Cost & stats"}),
+    el("div",{class:"grid stats",style:"margin-top:var(--s3)"},
+      stepper("Cost", m.cost, v=>{m.cost=v; touch();}, 0),
+      ...DB.statKeys.map(k=>stepper(k, m.stats?.[k],
+        v=>{m.stats=m.stats||{}; m.stats[k]=v; touch();})))));
+
   main.append(gateStrip());
-  main.append(jobPanel(draft));
-  main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px;margin-bottom:10px",text:"Cost & stats"}), statBox));
-  main.append(siblingTable());
+  if(s.scorable) main.append(scorePanel(s));
 
-  /* base side */
+  /* The printed words live in the proof now, beside the face and the budget. What is left
+     here is the priced mechanics -- the things that actually move the meters. */
   main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px",text:"Base side"}),
-    el("label",{class:"fl",text:`Keywords — ${m.faction||"?"} only (gate G4)`}), keywordChips("base"),
-    el("label",{class:"fl",text:"Effect types"}), effectPicker("base"),
-    textarea("Rules text", draft.rulesText, "rulesText", 5)));
+    el("h3",{text:"Base side — priced mechanics"}),
+    el("label",{class:"fl"},"Keywords — ",m.faction||"?"," only (",term("G4"),")"), keywordChips("base"),
+    el("label",{class:"fl",text:"Effect types"}), effectPicker("base")));
+
+  main.append(el("div",{class:"panel"},
+    el("h3",{text:"Level-up side — priced mechanics"}),
+    el("label",{class:"fl",text:"Keywords gained"}), keywordChips("ascended"),
+    el("label",{class:"fl",text:"Effect types"}), effectPicker("ascended")));
+
+  main.append(jobPanel(draft));
+  main.append(siblingTable());
 
   /* playtests involving this card */
   const games=(DB.playtests||[]).filter(g=>
@@ -1777,45 +2461,11 @@ function renderMain(){
         el("span",{class:"msg"}, g.when||"undated",
           g.felt_bad?el("span",{class:"warning-c",text:"  · felt bad: "+g.felt_bad}):null)));
     main.append(el("div",{class:"panel"},
-      el("h3",{style:"font-size:13px;margin-bottom:8px",
-        text:`Playtests involving this card · ${games.length}`}), log));
+      el("h3",{text:`Playtests involving this card · ${games.length}`}), log));
   }
-
-  /* level-up */
-  main.append(el("div",{class:"panel"},
-    el("h3",{style:"font-size:13px",text:"Level-up side"}),
-    el("label",{class:"fl",text:"Keywords gained"}), keywordChips("ascended"),
-    el("label",{class:"fl",text:"Effect types"}), effectPicker("ascended"),
-    textarea("Level-up condition", draft.levelupCondition, "levelupCondition", 3),
-    textarea("Ascended rules text", draft.ascendedText, "ascendedText", 5)));
 }
 
 /* ---------------- rail ---------------------------------------------------------------- */
-function artPanel(){
-  const art=draft.art||{};
-  const sec=el("div",{class:"railsec"},
-    el("div",{class:"row spread",style:"margin-bottom:9px"},
-      el("h3",{style:"margin:0",text:"Artwork"}),
-      el("span",{class:"muted",style:"font-size:11px",text:"click to enlarge"})));
-  const grid=el("div",{class:"artgrid"});
-  for(const [side,label] of [["base","Base"],["ascended","Level-up"]]){
-    const a=art[side]||{};
-    if(a.url){
-      grid.append(el("div",{class:"artcell"},
-        el("img",{src:a.url,alt:`${draft.meta.name} — ${label}`,loading:"lazy",
-          onclick:()=>lightbox(a.url, `${draft.meta.name} — ${label} · ${a.path}`)}),
-        el("div",{class:"cap",text:label})));
-    } else {
-      grid.append(el("div",{class:"artcell empty"},
-        el("div",{}, el("b",{text:label}),
-          el("div",{style:"margin-top:5px"},
-            a.ref?`No file matches "${a.ref}"`:"No art reference set"))));
-    }
-  }
-  sec.append(grid);
-  return sec;
-}
-
 function lightbox(url,caption){
   const box=$("#lightbox");
   box.replaceChildren(el("div",{class:"lbcap",text:caption}),
@@ -1823,16 +2473,14 @@ function lightbox(url,caption){
   box.hidden=false;
 }
 
-/* The artwork only changes when you change card, so it renders from select() and is
-   left alone by touch() -- otherwise every keystroke would rebuild a multi-megabyte img. */
-function renderArt(){
-  const host=$("#railart"); host.replaceChildren();
-  if(current) host.append(artPanel());
-}
+/* The artwork only changes when you change card, so the proof card is built from select()
+   and left alone by touch() -- otherwise every keystroke would rebuild a multi-megabyte img.
+   syncProof() updates the name, cost and stats printed on it in place. */
+function renderArt(){ buildProof(); }
 
 function renderRail(){
   const rail=$("#raildyn"); rail.replaceChildren();
-  if(MODE!=="cards"){ $("#railart").replaceChildren(); return; }
+  if(MODE!=="cards"){ return; }
   if(!current) return;
   const m=draft.meta;
 
@@ -1842,7 +2490,8 @@ function renderRail(){
     for(const w of DB.windowKeys){
       const lvl=brief.windows[w]||"blind";
       wins.append(el("div",{class:"row",style:"gap:7px;font-size:11.5px;padding:2px 0"},
-        el("span",{class:`lvl ${lvl}`,style:"min-width:52px;text-align:center",text:lvl}),
+        tipped(el("span",{class:`lvl ${lvl}`,style:"min-width:52px;text-align:center",text:lvl}),
+          lvl, {underline:false}),
         el("span",{class:"sec",text:DB.windowLabels[w]})));
     }
   }
@@ -1857,7 +2506,7 @@ function renderRail(){
       el("div",{class:"weakness",text:brief.weakness}),
       el("div",{class:"muted",style:"font-size:11.5px;margin-top:8px",
         text:"Gameplay D1 and lore D4 both score 5 only if the card is exposed to this weakness, not just the strength."}),
-      el("h3",{style:"margin-top:14px",text:"Where they can answer a plan"}), wins,
+      el("h3",{style:"margin-top:18px",text:"Where they can answer a plan"}), wins,
       el("div",{class:"muted",style:"font-size:11.5px;margin-top:6px",
         text:"This is the map that computes Reach. Edit it on the Factions screen."})
       ):el("div",{class:"muted"},
@@ -1893,7 +2542,7 @@ function renderRail(){
   const filled = DB.lorePacketFields.filter(f=>(draft.lore[f]||"").trim()).length;
   const lore=el("div",{class:"railsec"},
     el("div",{class:"row spread"},
-      el("h3",{style:"margin:0",text:"Lore packet"}),
+      el("h3",{text:"Lore packet"}),
       el("span",{class:"muted",style:"font-size:11px",text:`${filled}/${DB.lorePacketFields.length}`})),
     el("div",{class:"loremeter"},
       ...DB.lorePacketFields.map(f=>el("i",{class:(draft.lore[f]||"").trim()?"on":""}))),
@@ -2002,6 +2651,7 @@ async function save(){
   });
   addEventListener("beforeunload",e=>{ if(dirty){ e.preventDefault(); e.returnValue=""; } });
 
+  initTips();
   renderModes();
   renderList();
   if(cards.length) select(cards[0]);

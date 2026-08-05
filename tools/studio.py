@@ -21,7 +21,7 @@ import sys
 import threading
 import webbrowser
 from functools import partial
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import quote, unquote
 
@@ -38,6 +38,7 @@ PLAYTEST_LOG = card_io.REPO_ROOT / "playtests.yaml"
 SNAPSHOT_DIR = card_io.REPO_ROOT / ".snapshots"
 
 STUDIO_HTML = Path(__file__).resolve().parent / "studio.html"
+FONT_DIR = Path(__file__).resolve().parent / "fonts"
 MAX_BODY_BYTES = 1_000_000
 
 
@@ -107,6 +108,28 @@ def write_table(filename: str, key: str, rows: list) -> None:
     scoring.plan_config.cache_clear()
 
 
+def rule_docs() -> dict:
+    """code -> what that rule checks, read straight off the rule functions.
+
+    Every rule is named for the code it emits (f4_over_ceiling -> F4), so the Studio's
+    tooltips are the code's own docstrings. Write the explanation once, in rules.py, and
+    it can never drift from what the checker actually does.
+    """
+    docs = {}
+    for rule in rules.HARD + rules.SOFT:
+        text = " ".join((rule.__doc__ or "").split())
+        if not text:
+            continue
+        # leading name parts that look like codes -- f6_f7_card_gates emits both F6 and F7
+        for part in rule.__name__.split("_"):
+            if not re.fullmatch(r"[fw]\d+", part):
+                break
+            docs[part.upper()] = text
+    docs.setdefault("GAP", "A hole in the pool: something the design needs that no card fills yet.")
+    docs.setdefault("RULE", "A validation rule crashed. This is a bug in tools/rules.py.")
+    return docs
+
+
 def findings_payload() -> list[dict]:
     rules.load_world.cache_clear()
     return [f.as_dict() for f in rules.worklist(rules.run_all())]
@@ -130,6 +153,7 @@ def bootstrap() -> dict:
         "windowKeys": list(rules.WINDOW_KEYS),
         "windowLabels": rules.WINDOW_LABELS,
         "findings": findings_payload(),
+        "ruleDocs": rule_docs(),
         "playtests": playtests(),
         "usage": library_usage(),
         "keywords": card_io.load_table("keywords.yaml", "keywords"),
@@ -373,10 +397,25 @@ def run_generate() -> list[str]:
 
 class StudioHandler(BaseHTTPRequestHandler):
     server_version = "CardStudio/1.0"
+    # Chrome opens speculative connections and then sends nothing on some of them. Without a
+    # timeout those sockets hold a worker thread open until the browser gives up.
+    timeout = 30
 
     def log_message(self, fmt, *args):  # quieter than the default access log
-        if "api" in (args[0] if args else ""):
-            sys.stderr.write(f"  {args[0]}\n")
+        # args[0] is the request line for an access log, but an HTTPStatus for an error log --
+        # assuming it was always a string crashed the handler on any request the base class
+        # rejected, which is exactly what a browser's preconnect probe produces.
+        first = str(args[0]) if args else ""
+        if "api" in first:
+            sys.stderr.write(f"  {first}\n")
+
+    def handle_one_request(self) -> None:
+        # Navigating away mid-response drops the socket. That is normal browser behaviour,
+        # not a server fault, so it should not spray a traceback across the console.
+        try:
+            super().handle_one_request()
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError, TimeoutError):
+            self.close_connection = True
 
     def _send(self, status: int, body: bytes, content_type: str) -> None:
         self.send_response(status)
@@ -397,6 +436,8 @@ class StudioHandler(BaseHTTPRequestHandler):
             self._send(200, STUDIO_HTML.read_bytes(), "text/html; charset=utf-8")
         elif self.path.startswith("/art/"):
             self._send_art(unquote(self.path[len("/art/"):]))
+        elif self.path.startswith("/fonts/"):
+            self._send_font(unquote(self.path[len("/fonts/"):]))
         elif self.path == "/api/check":
             self._send_json(200, {"findings": findings_payload()})
         elif self.path == "/api/bootstrap":
@@ -406,6 +447,21 @@ class StudioHandler(BaseHTTPRequestHandler):
                 self._send_json(500, {"error": f"{type(exc).__name__}: {exc}"})
         else:
             self._send(404, b"not found", "text/plain")
+
+    def _send_font(self, relative: str) -> None:
+        """The 20 Moves faces, self-hosted. The design system loads them from Google Fonts;
+        a local workbench should not need the internet to look like itself."""
+        target = (FONT_DIR / relative).resolve()
+        if not target.is_relative_to(FONT_DIR.resolve()) or not target.is_file():
+            self._send(404, b"no such font", "text/plain")
+            return
+        body = target.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "font/woff2")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "private, max-age=86400")
+        self.end_headers()
+        self.wfile.write(body)
 
     def _send_art(self, relative: str) -> None:
         target = (card_io.ART_DIR / relative).resolve()
@@ -466,7 +522,12 @@ def main() -> int:
         return 1
 
     url = f"http://127.0.0.1:{args.port}/"
-    server = HTTPServer(("127.0.0.1", args.port), partial(StudioHandler))
+    # Threaded, because a single-threaded server serialises every connection: one browser
+    # preconnect that never sends a request blocks the page load behind it, which is the
+    # "spins forever and never paints" failure. A card screen also pulls two multi-megabyte
+    # images, and those should not queue behind each other either.
+    server = ThreadingHTTPServer(("127.0.0.1", args.port), partial(StudioHandler))
+    server.daemon_threads = True
     print(f"Card Studio — {len(cards)} cards loaded")
     print(f"  {url}")
     print("  Edits save straight to cards/**/*.md. Ctrl-C to stop.\n")
