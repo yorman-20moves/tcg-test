@@ -21,6 +21,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import rules  # noqa: E402
 
+# The report draws box rules with U+2500. Python picks the console codepage for stdout on
+# Windows, which is cp1252 here, so the first section header killed the process before it
+# printed a single finding -- on the one command the contract calls the one that matters.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 SEVERITY_MARK = {"error": "✗", "warning": "!", "gap": "+"}
 
 
