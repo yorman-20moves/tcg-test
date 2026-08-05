@@ -19,3 +19,4 @@ venv/
 # Scratch
 *.tmp
 /tmp/
+_to_delete/
