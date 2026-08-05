@@ -1058,7 +1058,11 @@ function renderList(){
     for(const it of items){
       const n = MODE==="factions" ? cardsOf(it.name).length : cardsOf(null,it.name).length;
       rows.append(el("button",{class:"cardrow","aria-current":sel&&sel.key===it.key,
-        onclick:()=>{ if(MODE==="factions") selFaction=it; else selCrew=it; renderList(); renderMain(); }},
+        /* Same shape as clicking a card row: #main is about to show a different faction or
+           crew's detail entirely, so it starts at the top rather than at wherever the one
+           you just left was scrolled to. */
+        onclick:()=>{ if(MODE==="factions") selFaction=it; else selCrew=it; renderList(); renderMain();
+          $("#main").scrollTop=0; }},
         el("span",{class:"fbar",style:`background:var(${FACTION_VAR[it.name]||"--baseline"})`}),
         el("span",{class:"nm",text:it.name}),
         it.reviewed?null:el("span",{class:"dot warning",style:"background:var(--warning)",title:"unreviewed draft"}),
@@ -1638,6 +1642,11 @@ function setMode(m){
   $("#rail").style.display = (m==="cards") ? "" : "none";
   document.documentElement.style.setProperty("--rail", m==="cards" ? "344px" : "0px");
   renderModes(); renderList(); renderMain(); renderRail();
+  /* Same reasoning as select(): a mode switch puts an unrelated screen in #main (and, coming
+     back to Cards, an unrelated card in #rail), not a redraw of the one you were just reading.
+     Carrying the old scroll position over would land you partway down a screen you have not
+     looked at yet, which is the bug this whole file exists to not have. */
+  [$("#main"),$("#rail")].filter(Boolean).forEach(p=>p.scrollTop=0);
 }
 
 async function refreshFindings(){
@@ -2660,6 +2669,12 @@ function select(c,{force=false}={}){
   draft.meta.ascended.keywords??=[]; draft.meta.ascended.effects??=[];
   dirty=false; $("#savebar").hidden=true;
   renderArt(); renderMain(); renderRail(); renderList();
+  /* select() opens a different card -- it is not a redraw of this one, the way an edited field
+     or a ticked window is. preservingFocus's scroll memory exists for redraws of the same
+     thing; carrying it across to a different card would just be handing the new card whatever
+     offset the old one happened to be scrolled to, which describes nothing about the new card.
+     So both panes start at the top, same as opening the tool fresh. */
+  [$("#main"),$("#rail")].filter(Boolean).forEach(p=>p.scrollTop=0);
 }
 function toast(msg,ms=2600){const t=$("#toast");t.textContent=msg;t.hidden=false;
   clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,ms);}
