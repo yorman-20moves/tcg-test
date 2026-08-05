@@ -784,19 +784,26 @@ const esc = s => String(s??"");
    different object than the old one -- an editable field inside a re-rendered panel needs a key
    or it will not be restored. */
 function preservingFocus(render){
+  /* Scroll is saved unconditionally, before anything asks about focus. It used to be saved
+     only when the caret sat in a keyed text field, so every checkbox, chip and <select> --
+     none of which carry a key -- fell straight through to a bare render(). replaceChildren()
+     then collapsed the panel to zero height, the browser clamped scrollTop to 0, and ticking
+     a window at the bottom of the page threw you back to the top of it. */
+  const panes=[$("#main"),$("#rail")].filter(Boolean);
+  const tops=panes.map(p=>p.scrollTop);
   const live=document.activeElement;
   const key=live&&live.dataset?live.dataset.focus:null;
-  if(!key) return render();
-  const scroller=live.closest("#main,#rail");
-  const scrolled=scroller?scroller.scrollTop:0;
   /* type=number throws on selectionStart rather than returning null, so both ends are read
      and re-applied defensively */
   let head=null, tail=null;
   try{ head=live.selectionStart; tail=live.selectionEnd; }catch{}
+
   render();
+
+  panes.forEach((p,i)=>{ p.scrollTop=tops[i]; });
+  if(!key) return;
   const back=document.querySelector(`[data-focus="${CSS.escape(key)}"]`);
   if(!back || back===live) return;             /* nothing rebuilt it -- the caret never moved */
-  if(scroller) scroller.scrollTop=scrolled;    /* the teardown collapsed the panel to zero height */
   back.focus({preventScroll:true});
   if(head!=null && back.setSelectionRange){ try{ back.setSelectionRange(head,tail); }catch{} }
 }
@@ -1259,14 +1266,15 @@ function stepper(label, value, onChange, min=0){
   return el("div",{class:"stepper"},
     tipped(el("div",{class:"lb",text:label}), label, {underline:false}),
     el("div",{class:"ctl"},
-      el("button",{class:"sbtn",text:"−","aria-label":`decrease ${label}`,onclick:()=>bump(-1)}),
+      el("button",{class:"sbtn",text:"−","aria-label":`decrease ${label}`,"data-focus":"step-dn:"+label,onclick:()=>bump(-1)}),
       input,
-      el("button",{class:"sbtn",text:"+","aria-label":`increase ${label}`,onclick:()=>bump(1)})));
+      el("button",{class:"sbtn",text:"+","aria-label":`increase ${label}`,"data-focus":"step-up:"+label,onclick:()=>bump(1)})));
 }
 
 function effectPicker(side){
   const chosen=draft.meta[side].effects;
-  const search=el("input",{class:"efsearch",placeholder:`Filter ${DB.effects.length} effect types…`});
+  const search=el("input",{class:"efsearch",placeholder:`Filter ${DB.effects.length} effect types…`,
+    "data-focus":"efsearch:"+side});
   const list=el("div",{class:"eflist"});
   const selected=el("div",{class:"sel"});
   const drawSelected=()=>{
@@ -1284,7 +1292,8 @@ function effectPicker(side){
     list.replaceChildren(...matching.map(e=>{
       const on=chosen.includes(e.name);
       return el("label",{class:"efrow",style:"align-items:flex-start"},
-        el("input",{type:"checkbox",checked:on,style:"margin-top:3px",onchange:ev=>{
+        el("input",{type:"checkbox",checked:on,style:"margin-top:3px",
+          "data-focus":"ef:"+side+":"+e.name,onchange:ev=>{
           if(ev.target.checked){ if(!chosen.includes(e.name)) chosen.push(e.name); }
           else chosen.splice(chosen.indexOf(e.name),1);
           touch();
@@ -1307,7 +1316,7 @@ function keywordChips(side){
   const mine=DB.keywords.filter(k=>k.faction===draft.meta.faction);
   const chips=el("div",{class:"chips"}, ...mine.map(k=>{
     const on=chosen.includes(k.name);
-    return el("button",{class:"chip","aria-pressed":on,onclick:()=>{
+    return el("button",{class:"chip","aria-pressed":on,"data-focus":"kw:"+side+":"+k.name,onclick:()=>{
       on?chosen.splice(chosen.indexOf(k.name),1):chosen.push(k.name); touch();}},
       k.name, el("span",{class:"pts",text:(k.points>0?"+":"")+k.points}));
   }), mine.length?null:el("span",{class:"muted",text:"No keywords defined for this faction"}));
@@ -1400,14 +1409,16 @@ function scorePanel(s){
       el("div",{class:"lb",text:c.label,title:c.anchor||""}),
       el("div",{class:"rw"},
         el("div",{class:"val"},
-          el("button",{class:"sbtn",text:"−","aria-label":`less ${c.key}`,onclick:()=>set(q-1)}),
+          el("button",{class:"sbtn",text:"−","aria-label":`less ${c.key}`,
+            "data-focus":"credit-dn:"+c.key,onclick:()=>set(q-1)}),
           el("input",{type:"number",min:"0",value:String(q),"aria-label":c.label,
             "data-focus":"credit:"+c.key,
             oninput:e=>set(Math.max(0,Number(e.target.value)||0))}),
-          el("button",{class:"sbtn",text:"+","aria-label":`more ${c.key}`,onclick:()=>set(q+1)})),
+          el("button",{class:"sbtn",text:"+","aria-label":`more ${c.key}`,
+            "data-focus":"credit-up:"+c.key,onclick:()=>set(q+1)})),
         el("span",{class:"pts",text:`${c.points>=0?"+":""}${c.points} ea`})),
       q?el("div",{class:"tests"}, ...Object.entries(cfg.cost_tests||{}).map(([test,opts])=>
-        el("select",{"aria-label":`${c.key} ${test}`,onchange:e=>{
+        el("select",{"aria-label":`${c.key} ${test}`,"data-focus":"test:"+c.key+":"+test,onchange:e=>{
           plan.tests=plan.tests||{}; plan.tests[c.key]=plan.tests[c.key]||{};
           if(e.target.value) plan.tests[c.key][test]=e.target.value;
           else delete plan.tests[c.key][test];
@@ -1424,6 +1435,7 @@ function scorePanel(s){
     const on=p.reach===n;
     reachRow.append(el("button",{class:"chip","aria-pressed":on,
       title:n===0?"nobody can answer it — not printable":`cap = base x ${(cfg.reach_caps||{})[n]}`,
+      "data-focus":"reach:"+n,
       onclick:()=>{ plan.reach=n; touch(); }}, String(n)));
   }
   reachRow.append(el("span",{class:"muted",style:"font-size:11.5px"},
@@ -1433,7 +1445,7 @@ function scorePanel(s){
   for(const w of cfg.windows){
     const on=plan.windows.includes(w.key);
     wins.append(el("label",{class:`win ${on?"on":""}`},
-      el("input",{type:"checkbox",checked:on,onchange:ev=>{
+      el("input",{type:"checkbox",checked:on,"data-focus":"win:"+w.key,onchange:ev=>{
         if(ev.target.checked){ if(!plan.windows.includes(w.key)) plan.windows.push(w.key); }
         else plan.windows.splice(plan.windows.indexOf(w.key),1);
         touch();
@@ -2442,7 +2454,7 @@ function renderMainNow(){
           glossaryFor(m.subtype) ? term(m.subtype) : el("span",{},m.subtype||"—"),
           el("span",{class:"path",text:draft.relPath}))),
       el("div",{class:"row",style:"gap:6px"},
-        el("select",{"aria-label":"card status",
+        el("select",{"aria-label":"card status","data-focus":"status",
           onchange:e=>{ m.status=e.target.value; touch(); }},
           ...["draft","ported","reviewed","playtested","final","retired"].map(v=>
             el("option",{value:v,selected:(m.status||"draft")===v,
