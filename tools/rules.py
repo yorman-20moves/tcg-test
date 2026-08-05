@@ -203,6 +203,7 @@ def f2_f3_toolkit_violations(world: World) -> list[Finding]:
 
 
 def f4_over_ceiling(world: World) -> list[Finding]:
+    """A card spends more than its Ceiling allows (gate G1). Draft cards are exempt."""
     findings = []
     for card in world.cards:
         if card.meta.get("status") == "draft":
@@ -236,6 +237,7 @@ def f5_reach_overclaim(world: World) -> list[Finding]:
 
 
 def f6_f7_card_gates(world: World) -> list[Finding]:
+    """F6 is gate G3, every ability declares its type. F7 is gate G6, deterministic resolution."""
     findings = []
     for card in world.cards:
         if card.meta.get("status") == "draft":
@@ -269,6 +271,7 @@ UNDEFINED_WATCHLIST = ("sacrifice", "hexproof", "untargetable", "spell shield",
 
 
 def f8_undefined_terms(world: World) -> list[Finding]:
+    """Card text uses a rules term defined nowhere in the rulebook or data/ (gate G2)."""
     known = defined_terms()
     findings = []
     for card in world.cards:
@@ -284,6 +287,7 @@ def f8_undefined_terms(world: World) -> list[Finding]:
 
 
 def f9_broken_references(world: World) -> list[Finding]:
+    """A card points at a faction, crew, keyword or effect that does not exist."""
     known_kw = {k["name"] for k in world.keywords}
     known_ef = {e["name"] for e in world.effects}
     known_crews = {c["name"] for c in world.crews}
@@ -521,6 +525,7 @@ def computed_reach(world: World, card) -> int | None:
 # ------------------------------------------------------------------ warnings
 
 def w1_window_coverage(world: World) -> list[Finding]:
+    """Fewer than two factions are strong in a window, so cards answerable only there are near-unanswerable."""
     findings = []
     for window in WINDOW_KEYS:
         strong = [f["name"] for f in world.factions if (f.get("windows") or {}).get(window) == "strong"]
@@ -562,6 +567,7 @@ def w2_enabler_chains(world: World) -> list[Finding]:
 
 
 def w3_crew_diversity(world: World) -> list[Finding]:
+    """Two cards in a crew take the same road to the crew plan, so one of them is a duplicate."""
     findings = []
     for crew in world.crews:
         members = [c for c in world.cards if c.meta.get("crew") == crew["name"]]
@@ -591,6 +597,7 @@ def w3_crew_diversity(world: World) -> list[Finding]:
 
 
 def w4_crew_plan_missing(world: World) -> list[Finding]:
+    """A crew has no written plan, or its plan has never been reviewed."""
     findings = []
     for crew in world.crews:
         plan = (crew.get("plan") or "").strip()
@@ -659,6 +666,7 @@ def w6_scaling_text(world: World) -> list[Finding]:
 
 
 def w7_ceiling_quota(world: World) -> list[Finding]:
+    """Too many cards sit above twice their base budget. If every card is a heist, nothing is."""
     quota = scoring.plan_config().get("ceiling_quota", 0.10)
     big = []
     for card in world.cards:
@@ -675,6 +683,7 @@ def w7_ceiling_quota(world: World) -> list[Finding]:
 
 
 def w8_dead_entries(world: World) -> list[Finding]:
+    """A keyword or effect exists in data/ but no card uses it."""
     used = set()
     for card in world.cards:
         used |= {n for _, n, _ in card_tools(card)}
