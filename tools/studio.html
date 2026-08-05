@@ -135,6 +135,13 @@ a{color:var(--accent)}
 }
 .chip:hover{border-color:var(--accent)}
 .chip[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}
+.famlabel{
+  align-self:center;font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 2px 0 10px;padding-left:10px;
+  border-left:1px solid var(--gridline);line-height:1.9}
+.chips>.famlabel:first-child{border-left:0;padding-left:0;margin-left:0}
+.chip.faded{opacity:.42}
+.chip.faded[aria-pressed="true"]{opacity:1}
 .chip .pts{font-variant-numeric:tabular-nums;color:var(--ink-3);font-size:11px}
 .chip[aria-pressed="true"] .pts{color:var(--ink-2)}
 
@@ -1203,6 +1210,167 @@ function renderFactions(main){
   }
 }
 
+/* --------------------------------- JOBS ----------------------------------- */
+/* A Job is what a Character does for its crew. A Role (keyword) is one of the tools it does
+   it with. The rulebook already spends "Role" on faction-exclusive keywords, so these are
+   deliberately different words for deliberately different things. */
+
+const jobsAll     = () => DB.jobs || [];
+const jobByKey    = k => jobsAll().find(j => j.key === k) || null;
+const factionKey  = name => ((DB.factionData||[]).find(f => f.name === name) || {}).key || null;
+const isExemptFac = name => !!((DB.factionData||[]).find(f => f.name === name) || {}).exempt;
+const JOB_FAMILIES=[["front","Front"],["damage","Damage"],["support","Support"],
+                    ["specialist","Specialist"]];
+
+/* Can this faction hold this Job? null `factions` means any. */
+function jobAllowed(job, facName){
+  if(!job || !job.factions || !job.factions.length) return true;
+  const k = factionKey(facName);
+  return !k || job.factions.includes(k);
+}
+
+/* Does the card carry any of the Job's signature tools? Guidance, never law. */
+function jobSignatureHit(job, meta){
+  const sig = job && job.signature || {};
+  const want = new Set([...(sig.keywords_any||[]), ...(sig.effects_any||[])]);
+  if(!want.size) return null;                       // nothing mechanical to check
+  const held = [ ...(meta.base?.keywords||[]), ...(meta.base?.effects||[]),
+                 ...(meta.ascended?.keywords||[]), ...(meta.ascended?.effects||[]) ];
+  return held.some(h => want.has(h));
+}
+
+function jobPanel(d){
+  const m = d.meta;
+  if(isExemptFac(m.faction)){
+    return el("div",{class:"panel"},
+      el("h3",{style:"font-size:13px",text:"Job"}),
+      el("div",{class:"muted",style:"font-size:12px;margin-top:6px"},
+        "Icons hold no Job and no Formation. They are one-person armies, not crew members, "+
+        "and they are deliberately outside the consistency system."));
+  }
+  const job = jobByKey(m.job);
+  const hit = job ? jobSignatureHit(job, m) : null;
+
+  const picker = el("div",{class:"chips",style:"margin-top:6px"});
+  picker.append(el("button",{class:"chip","aria-pressed":!m.job,
+    onclick:()=>{ m.job=null; touch(); renderMain(); }},"— none —"));
+  for(const [fam,label] of JOB_FAMILIES){
+    const inFam = jobsAll().filter(j => j.family === fam);
+    if(!inFam.length) continue;
+    picker.append(el("span",{class:"famlabel",text:label}));
+    for(const j of inFam){
+      const ok  = jobAllowed(j, m.faction);
+      const bits=["chip"];
+      if(!ok) bits.push("faded");
+      if(j.status==="unbuilt") bits.push("faded");
+      picker.append(el("button",{class:bits.join(" "),"aria-pressed":m.job===j.key,
+        title: (!ok ? `${m.faction} may not hold this Job. ${j.faction_note||""}`
+                    : j.status==="unbuilt" ? `No mechanics exist for this Job yet. ${j.unbuilt_reason||""}`
+                    : j.identity||""),
+        onclick:()=>{ m.job=j.key; touch(); renderMain(); }}, j.name));
+    }
+  }
+
+  const body=[el("h3",{style:"font-size:13px",text:"Job — what this card does for its crew"}),
+              el("div",{class:"muted",style:"font-size:11.5px;margin-top:3px"},
+                "Not the same as a keyword. A keyword is a Role: one of the tools. The Job is the position."),
+              picker];
+
+  if(job){
+    /* legality is a hard error — say so loudly and say why */
+    if(!jobAllowed(job, m.faction)){
+      body.push(el("div",{class:"stub"},
+        el("span",{class:"glyph critical-bg",text:GLYPH.critical}),
+        el("b",{text:` ${m.faction} cannot hold ${job.name}. `}),
+        job.faction_note || `Restricted to ${job.factions.join(", ")}.`));
+    }
+    /* signature fit is guidance — a nudge, not a wall */
+    if(hit === false){
+      const sig=job.signature||{};
+      const want=[...(sig.keywords_any||[]), ...(sig.effects_any||[])];
+      body.push(el("div",{class:"stub"},
+        el("span",{class:"glyph warning-bg",text:GLYPH.warning}),
+        el("b",{text:` Doesn't look like a ${job.name} yet. `}),
+        `A ${job.name} usually shows one of: ${want.slice(0,6).join(", ")}`+
+        (want.length>6?"…":"")));
+    }
+    const line=(k,v)=> v ? el("div",{style:"margin-top:6px"},
+      el("span",{class:"muted",style:"font-size:11px",text:k+" "}),
+      el("span",{style:"font-size:12.5px",text:String(v).trim()})) : null;
+    body.push(el("div",{style:"margin-top:10px;padding-top:10px;border-top:1px solid var(--gridline)"},
+      line("The job", job.job),
+      line("Beats", job.beats),
+      line("Loses to", job.loses_to),
+      line("The line", job.line),
+      job.note ? line("Note", job.note) : null));
+  }
+  return el("div",{class:"panel"}, ...body.filter(Boolean));
+}
+
+/* ------------------------------ FORMATIONS -------------------------------- */
+/* A Formation names four required Jobs and leaves one slot free. Four slots are
+   near-mandatory; the fifth is where the crew says something about itself. */
+
+function formationPanel(c, members){
+  const forms = DB.formations || [];
+  const f = forms.find(x => x.key === c.formation) || null;
+  const eligible = members.filter(m => !isExemptFac(m.meta.faction));
+  const held = new Map();                            // job key -> [card names]
+  for(const m of eligible)
+    if(m.meta.job) held.set(m.meta.job, [...(held.get(m.meta.job)||[]), m.meta.name]);
+
+  const picker = el("div",{class:"chips",style:"margin-top:6px"});
+  picker.append(el("button",{class:"chip","aria-pressed":!c.formation,
+    onclick:()=>{ c.formation=null; renderMain(); }},"— not declared —"));
+  for(const x of forms)
+    picker.append(el("button",{class:"chip"+(x.coordination==="chaotic"?" faded":""),
+      "aria-pressed":c.formation===x.key, title:x.plan,
+      onclick:()=>{ c.formation=x.key;
+                    c.coordination = x.coordination || c.coordination; renderMain(); }}, x.name));
+
+  const body=[el("h3",{style:"font-size:13px",text:"Formation — the five-person structure"}),
+              el("div",{class:"muted",style:"font-size:11.5px;margin-top:3px"},
+                "Lore leads → the plan follows the lore → the Formation follows the plan. "+
+                "Four required Jobs, one free slot."),
+              picker];
+
+  if(f){
+    body.push(el("div",{style:"margin-top:12px;font-size:12.5px",text:f.plan.trim()}));
+
+    if(f.rule === "no_internal_enablers"){
+      body.push(el("div",{class:"stub"},
+        el("b",{text:"This is not an exemption from validation — it is a different rule. "}),
+        (f.rule_detail||"").trim()));
+      body.push(el("div",{class:"muted",style:"font-size:11.5px;margin-top:8px",
+        text:(f.compensation||"").trim()}));
+    } else {
+      const rows = el("div",{class:"grid",style:"margin-top:10px"});
+      for(const key of f.required_jobs){
+        const job = jobByKey(key) || {name:key};
+        const who = held.get(key) || [];
+        const ok  = who.length > 0;
+        rows.append(el("div",{class:"row",style:"gap:8px;align-items:baseline"},
+          el("span",{class:`glyph ${ok?"good":"warning"}-bg`,text:ok?GLYPH.good:GLYPH.warning}),
+          el("b",{style:"font-size:12.5px",text:job.name}),
+          el("span",{class:"muted",style:"font-size:12px",
+            text: ok ? who.join(", ") : "nobody in this crew does this job"})));
+      }
+      /* the free slot, and whatever is sitting in it */
+      const extra = [...held.keys()].filter(k => !f.required_jobs.includes(k));
+      rows.append(el("div",{class:"row",style:"gap:8px;align-items:baseline;margin-top:6px;padding-top:8px;border-top:1px solid var(--gridline)"},
+        el("span",{class:"glyph",style:"background:var(--baseline)",text:"·"}),
+        el("b",{style:"font-size:12.5px",text:"Free slot"}),
+        el("span",{class:"muted",style:"font-size:12px",
+          text: extra.length ? extra.map(k=>(jobByKey(k)||{name:k}).name).join(", ")
+                             : (f.free_slot||"").trim()})));
+      body.push(rows);
+      body.push(el("div",{class:"muted",style:"font-size:11.5px;margin-top:10px",
+        text:`Loses to: ${(f.loses_to||"").trim()}`}));
+    }
+  }
+  return el("div",{class:"panel"}, ...body.filter(Boolean));
+}
+
 /* -------------------------------- CREWS ---------------------------------- */
 let selCrew=null;
 function renderCrews(main){
@@ -1241,6 +1409,8 @@ function renderCrews(main){
     el("label",{class:"win",style:"display:flex;gap:8px;margin-top:12px;cursor:pointer"},
       el("input",{type:"checkbox",checked:!!c.reviewed,onchange:e=>{c.reviewed=e.target.checked;}}),
       el("span",{},"I have reviewed this crew's plan"))));
+
+  main.append(formationPanel(c, members));
 
   /* roads */
   const expr = c.expressions = c.expressions || [];
@@ -1345,6 +1515,38 @@ function renderHealth(main){
   wc.append(wb);
   main.append(el("div",{class:"panel"},
     el("h3",{style:"font-size:13px;margin-bottom:8px",text:"Window coverage — fewer than two strong is a gap"}),wc));
+
+  /* job coverage -- which positions nobody in the pool plays. This is the design backlog. */
+  const filled=new Map();
+  for(const c of cards)
+    if(c.meta.job && !isExemptFac(c.meta.faction))
+      filled.set(c.meta.job,[...(filled.get(c.meta.job)||[]),c.meta.name]);
+  const jt=el("table",{class:"wingrid"},el("thead",{},el("tr",{},
+    el("th",{text:"Family"}),el("th",{text:"Filled"}),el("th",{text:"Empty — each one is a card waiting to be designed"}))));
+  const jb=el("tbody",{});
+  for(const [fam,label] of JOB_FAMILIES){
+    const inFam=jobsAll().filter(j=>j.family===fam && j.status==="built");
+    const yes=inFam.filter(j=>filled.has(j.key));
+    const no =inFam.filter(j=>!filled.has(j.key));
+    const tr=el("tr",{});
+    tr.append(el("td",{text:label}));
+    tr.append(el("td",{},
+      el("span",{class:no.length?"":"good-c"},
+        el("span",{class:`swatch ${no.length?(yes.length?"warning-bg":"critical-bg"):"good-bg"}`}),
+        `${yes.length}/${inFam.length}`)));
+    tr.append(el("td",{class:"muted",style:"font-size:12px",
+      text: no.length ? no.map(j=>j.name).join(", ") : "—"}));
+    jb.append(tr);
+  }
+  jt.append(jb);
+  const parked=jobsAll().filter(j=>j.status==="unbuilt");
+  main.append(el("div",{class:"panel"},
+    el("h3",{style:"font-size:13px;margin-bottom:8px",
+      text:"Job coverage — which positions nobody plays"}),jt,
+    parked.length?el("div",{class:"muted",style:"font-size:11.5px;margin-top:10px"},
+      el("b",{text:"Not yet expressible: "}),
+      parked.map(j=>j.name).join(", "),
+      " — these need a RULES change before a card can be designed, so they are listed, never flagged."):null));
 
   /* cost curve per faction */
   const costs=[...new Set(scorable.map(c=>c.meta.cost))].sort((a,b)=>a-b);
@@ -1552,6 +1754,7 @@ function renderMain(){
     ...DB.statKeys.map(k=>stepper(k, m.stats?.[k], v=>{m.stats=m.stats||{}; m.stats[k]=v; touch();})));
   if(s.scorable) main.append(scorePanel(s));
   main.append(gateStrip());
+  main.append(jobPanel(draft));
   main.append(el("div",{class:"panel"},
     el("h3",{style:"font-size:13px;margin-bottom:10px",text:"Cost & stats"}), statBox));
   main.append(siblingTable());

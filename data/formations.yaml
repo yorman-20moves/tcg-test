@@ -1,0 +1,134 @@
+# Formations -- the five-person fighting structure of a crew.
+#
+# A crew is five Ascendants. A Formation says which Jobs those five slots must cover, so the
+# team structure follows from the crew's game plan, and the game plan follows from the lore.
+#
+#   lore  ->  plan (data/crews.yaml)  ->  Formation (this file)  ->  Jobs (data/jobs.yaml)
+#
+# THE FIFTH SLOT. Four slots are near-mandatory and the fifth is a strategic declaration about
+# how the crew intends to win. So every Formation names FOUR required Jobs and leaves one free.
+# The free slot is where a crew says something about itself that the plan alone doesn't.
+#
+# Icons hold no Formation. They are not a crew (factions.yaml: exempt).
+
+formations:
+
+  - key: the-engine
+    name: The Engine
+    coordination: coordinated
+    plan: Build a machine over several Rounds, then detonate it.
+    required_jobs: [setter, quartermaster, warden, wrecker]
+    free_slot: Anything that buys time.
+    loses_to: Cutoff, and pressure applied before the machine assembles.
+
+  - key: the-court
+    name: The Court
+    coordination: coordinated
+    plan: A hierarchy. The top of the structure makes everyone below it better.
+    required_jobs: [vanguard, backer, enforcer, warden]
+    free_slot: Usually a second Enforcer -- the structure wants a floor, not another gimmick.
+    loses_to: Mass Removal, and killing the head.
+
+  - key: the-shakedown
+    name: The Shakedown
+    coordination: coordinated
+    plan: Take what they have until they cannot act, then collect.
+    required_jobs: [quartermaster, silencer, ghost, grabber]
+    free_slot: A Spy or a Snitch -- information is how you know what is worth taking.
+    loses_to: Crews that do not need resources to function.
+
+  - key: the-long-night
+    name: The Long Night
+    coordination: coordinated
+    plan: Everybody leaves worse than they came in, including you.
+    required_jobs: [grinder, fixer, wall, headcase]
+    free_slot: An Enforcer, for the Rounds where attrition is not fast enough.
+    loses_to: Burst, and a clock short enough that the long game never arrives.
+
+  - key: the-ambush
+    name: The Ambush
+    coordination: coordinated
+    plan: End it before it starts.
+    required_jobs: [ghost, executioner, grabber, snitch]
+    free_slot: A Cutoff, to answer the one card that would have survived.
+    loses_to: A wide board, and a Cleaner.
+
+  - key: the-brawl
+    name: The Brawl
+    coordination: coordinated
+    plan: Walk at them and keep walking.
+    required_jobs: [vanguard, enforcer, grinder, warden]
+    free_slot: A Fixer, because the plan is to still be standing.
+    loses_to: Burner damage, Pacifier, Prowler.
+
+  - key: the-siege
+    name: The Siege
+    coordination: coordinated
+    plan: >-
+      Put one enormous shot on the table and spend everything else keeping it alive long
+      enough to fire.
+    required_jobs: [artillery, warden, wall, fixer]
+    free_slot: >-
+      A Cleaner, if the meta is full of Stun -- otherwise a Burner, so the crew still has a
+      clock while the gun is aiming.
+    loses_to: >-
+      Grabbers (Stun, Fear, Silence and Bounce all clear Aim outright), Recruiters (a Token
+      chump-blocks the shot), and any race short enough that two idle Rounds lose the game.
+    note: >-
+      Added 2026-08-05 with the Range keyword. This Formation is the proof that the mechanic
+      did its job: before Range, nothing in the game was valuable, fragile and slow at the same
+      time, so the Front family had nobody to protect and Formations were thematic rather than
+      structural.
+
+  - key: every-man-for-himself
+    name: Every Man For Himself
+    coordination: chaotic
+    plan: Five people advancing five separate plans in the same fight.
+    required_jobs: []
+    free_slot: All five.
+    loses_to: Anything with a plan, on the Rounds where a plan is what matters.
+
+    # ----------------------------------------------------------------------
+    # This is NOT an exemption from validation. It is its own validation rule.
+    #
+    # "Uncoordinated" is a mechanical claim, and a mechanical claim is checkable. The rule
+    # below is enforced with the SAME enabler graph that caught Dre feeding Moammar -- the
+    # tool built to find unwanted combos is exactly the tool that proves this crew has none.
+    # ----------------------------------------------------------------------
+    rule: no_internal_enablers
+    rule_detail: >-
+      No card in this crew may declare a `plan.requires` state that another card in the SAME
+      crew declares in `plan.produces`. Zero enabler chains inside the crew. Every card must
+      be independently viable -- if a card only works once a crewmate has set something up,
+      the crew is coordinated and this is the wrong Formation.
+    also_forbidden: >-
+      Cards that reference their own crew by name, or that buff or protect allied members of
+      it. "All allied <crew>" text is a coordination effect by definition.
+    compensation: >-
+      These cards can never combo with each other, which means they permanently forgo the
+      biggest source of power in the game. They are allowed a correspondingly higher
+      individual rate -- a chaotic crew is five good cards, not five weak ones. The exemption
+      has to buy something or nobody will ever choose it.
+    note: >-
+      NOT Pwners. Yorman: "So far, I don't think we have the chaotic crew yet, but we will be
+      designing one soon. The chaotic crew is the crew where each one is meant to advance a
+      plan of their own, not working together." (2026-08-05) Unassigned until that crew exists.
+
+# ---------------------------------------------------------------------------
+# CREW ASSIGNMENTS -- ON HOLD.
+#
+# Yorman, 2026-08-05: "I don't know if they are right yet, I need to spend more time thinking
+# about it. Let's hold that."
+#
+# The rule is that lore leads and mechanics follow, and every assignment below was read off
+# the cards that already exist -- which is that rule running backwards. They stay commented
+# out, and `crews.yaml` carries no `formation:` key, until the lore decides.
+#
+#   latin-kings  ->  the-court        Ranked Crowns; "La Familia" buffs all allied Latin Kings
+#   mobb-134     ->  the-engine       Commandments; Dre tutors the Bible and pulls the trigger
+#   sheas        ->  the-long-night   Alvino's drinks damage both sides
+#   pimp-juice   ->  the-shakedown    Corazon gives the first hit free and charges for the rest
+#   pwned        ->  ???              NOT chaotic. Needs a real plan like everyone else.
+#   fury-park    ->  ???              One card, no plan. Needs a plan before a Formation means
+#                                     anything.
+# ---------------------------------------------------------------------------

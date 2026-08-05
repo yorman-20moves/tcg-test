@@ -2,6 +2,21 @@
 # their points sum into the card's spend. Source of truth. tools/balance.py reads this file.
 
 effects:
+- name: Additional Action
+  points: 7
+  description: >-
+    Take one additional Phase 2 action immediately, before Initiative passes. Capped by the
+    rules at two consecutive actions -- surplus is lost.
+- name: Arena Rule Edit (Major)
+  points: 5
+  description: >-
+    An Arena forbids or forces an entire category of action, symmetrically for both players
+    (e.g. "Characters cannot be healed").
+- name: Arena Rule Edit (Minor)
+  points: 2
+  description: >-
+    An Arena changes a global cost or draw by 1, symmetrically for both players (e.g. "Combat
+    Waves cost 1 additional Energy").
 - name: Card Draw 1
   points: 3
   description: Gain raw numerical card advantage (1 Card).
@@ -137,6 +152,15 @@ effects:
 - name: Status Immunity
   points: 3
   description: 'Passive ability: This Character cannot receive Status Effects.'
+- name: Token Generation 1
+  points: 2
+  description: Create one 1 PA / 1 PH Token of your faction and crew.
+- name: Token Generation 2
+  points: 4
+  description: Create two 1 PA / 1 PH Tokens of your faction and crew.
+- name: Token Generation 3
+  points: 6
+  description: Create three 1 PA / 1 PH Tokens of your faction and crew.
 - name: Taxing 1
   points: 2
   description: Increase the Energy cost of the opponent's actions by 1.

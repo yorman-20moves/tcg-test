@@ -57,12 +57,26 @@ class World:
     cards: list = field(default_factory=list)
     keywords: list = field(default_factory=list)
     effects: list = field(default_factory=list)
+    jobs: list = field(default_factory=list)
+    formations: list = field(default_factory=list)
 
     def faction(self, name: str) -> dict | None:
         return next((f for f in self.factions if f["name"] == name), None)
 
     def crew(self, name: str) -> dict | None:
         return next((c for c in self.crews if c["name"] == name), None)
+
+    def job(self, key: str) -> dict | None:
+        return next((j for j in self.jobs if j["key"] == key), None)
+
+    def formation(self, key: str) -> dict | None:
+        return next((f for f in self.formations if f["key"] == key), None)
+
+    def is_exempt(self, faction_name: str) -> bool:
+        """Icons are outside the system by design. Coherence checks would report intent
+        as a defect, so every Job/Formation/toolkit rule skips them."""
+        faction = self.faction(faction_name or "")
+        return bool(faction and faction.get("exempt"))
 
 
 def _table(filename: str, key: str) -> list:
@@ -84,6 +98,8 @@ def load_world() -> World:
         cards=[c for c in card_io.load_all() if c.meta.get("status") != RETIRED],
         keywords=_table("keywords.yaml", "keywords"),
         effects=_table("effects.yaml", "effects"),
+        jobs=_table("jobs.yaml", "jobs"),
+        formations=_table("formations.yaml", "formations"),
     )
 
 
@@ -298,6 +314,186 @@ def f9_broken_references(world: World) -> list[Finding]:
                         f"plan.{field_name} names '{state}', which is not in data/game-states.yaml",
                         where=card.rel_path))
     return findings
+
+
+# ------------------------------------------------------------------ jobs & formations
+#
+# A Job is what a Character does for its crew; a Role (keyword) is one of the tools it does it
+# with. These rules check that the claim and the mechanics agree, and that a crew's five slots
+# actually cover the Formation it declared.
+#
+# Every rule here skips exempt factions (Icons). See World.is_exempt.
+
+def crew_members(world: World, crew: dict) -> list:
+    return [c for c in world.cards if c.meta.get("crew") == crew["name"]]
+
+
+def f11_job_legality(world: World) -> list[Finding]:
+    """A card's declared Job must exist, and its faction must be allowed to hold it."""
+    findings = []
+    known = {j["key"] for j in world.jobs}
+    for card in world.cards:
+        job_key = card.meta.get("job")
+        if not job_key or world.is_exempt(card.faction):
+            continue
+        if job_key not in known:
+            findings.append(Finding(
+                "F11", "error", card.name,
+                f"declares job '{job_key}', which is not in data/jobs.yaml",
+                where=card.rel_path,
+                fix="Use a key from data/jobs.yaml, or add the Job there first."))
+            continue
+        job = world.job(job_key)
+        allowed = job.get("factions")
+        if allowed and card.faction:
+            faction = world.faction(card.faction)
+            if faction and faction["key"] not in allowed:
+                findings.append(Finding(
+                    "F11", "error", card.name,
+                    f"is {card.faction} but '{job['name']}' is restricted to "
+                    f"{', '.join(allowed)}. "
+                    + (job.get("faction_note") or "").strip(),
+                    where=card.rel_path,
+                    fix=f"Either change the Job, or widen `factions:` on {job_key} in "
+                        f"data/jobs.yaml — but only if the faction's printed lore allows it."))
+    return findings
+
+
+def f12_chaotic_crew_enablers(world: World) -> list[Finding]:
+    """A chaotic crew's defining claim is mechanical, so it is checkable.
+
+    Reuses the same producer/requirer graph as W2 — the tool built to FIND unwanted combos is
+    exactly the tool that proves a chaotic crew has none.
+    """
+    findings = []
+    for crew in world.crews:
+        if crew.get("coordination") != "chaotic":
+            continue
+        members = crew_members(world, crew)
+        produced: dict[str, list] = {}
+        for card in members:
+            for state in (card.meta.get("plan") or {}).get("produces") or []:
+                produced.setdefault(state, []).append(card)
+        for card in members:
+            for state in (card.meta.get("plan") or {}).get("requires") or []:
+                for other in produced.get(state, []):
+                    if other.name == card.name:
+                        continue
+                    findings.append(Finding(
+                        "F12", "error", crew["name"],
+                        f"declares itself chaotic, but {card.name} requires '{state}' and "
+                        f"crewmate {other.name} produces it. That is an enabler chain, which "
+                        f"is coordination.",
+                        where=card.rel_path,
+                        fix="Either break the chain, or drop `coordination: chaotic` — a crew "
+                            "cannot claim the higher individual rate AND combo internally."))
+    return findings
+
+
+def w12_job_signature(world: World) -> list[Finding]:
+    """A card claiming a Job should look like one. Guidance, never law — hence a warning."""
+    findings = []
+    for card in world.cards:
+        job_key = card.meta.get("job")
+        if not job_key or world.is_exempt(card.faction):
+            continue
+        job = world.job(job_key)
+        if not job:
+            continue                                   # F11 already reported it
+        signature = job.get("signature") or {}
+        wanted_kw = set(signature.get("keywords_any") or [])
+        wanted_ef = set(signature.get("effects_any") or [])
+        if not wanted_kw and not wanted_ef:
+            continue                                   # nothing mechanical to check against
+        held = {name for kind, name, _ in card_tools(card)}
+        if held & (wanted_kw | wanted_ef):
+            continue
+        article = "An" if job["name"][0].upper() in "AEIOU" else "A"
+        findings.append(Finding(
+            "W12", "warning", card.name,
+            f"claims the Job '{job['name']}' but has none of its signature. "
+            f"{article} {job['name']} usually shows one of: "
+            f"{', '.join(sorted(wanted_kw | wanted_ef)[:6])}"
+            f"{'…' if len(wanted_kw | wanted_ef) > 6 else ''}",
+            where=card.rel_path,
+            fix=f"Either give it a tool that does the Job — {job.get('job', '').strip()} — "
+                f"or pick the Job it is actually doing."))
+    return findings
+
+
+def w13_formation_coverage(world: World) -> list[Finding]:
+    """A crew declared a Formation. Do its five cards actually cover the required Jobs?"""
+    findings = []
+    for crew in world.crews:
+        formation_key = crew.get("formation")
+        if not formation_key:
+            continue
+        formation = world.formation(formation_key)
+        if not formation:
+            findings.append(Finding(
+                "W13", "warning", crew["name"],
+                f"declares formation '{formation_key}', which is not in data/formations.yaml",
+                where="data/crews.yaml"))
+            continue
+        members = [c for c in crew_members(world, crew) if not world.is_exempt(c.faction)]
+        held = {c.meta.get("job") for c in members if c.meta.get("job")}
+        missing = [j for j in formation["required_jobs"] if j not in held]
+        if missing:
+            names = [(world.job(m) or {}).get("name", m) for m in missing]
+            findings.append(Finding(
+                "W13", "warning", crew["name"],
+                f"declares {formation['name']} but has no "
+                f"{', no '.join(names)} among its {len(members)} cards.",
+                where="data/crews.yaml",
+                fix=f"Design a {names[0]}, or declare a Formation the crew actually fields. "
+                    f"The plan is: {formation['plan'].strip()}"))
+    return findings
+
+
+def w14_job_duplication(world: World) -> list[Finding]:
+    """Two cards doing the same Job in one crew — the swap test, made mechanical.
+
+    A Formation has four required Jobs and one free slot, so exactly one duplicate is legal
+    (the free slot may repeat a required Job). Two duplicates means a card has no seat.
+    """
+    findings = []
+    for crew in world.crews:
+        members = [c for c in crew_members(world, crew) if not world.is_exempt(c.faction)]
+        seen: dict[str, list] = {}
+        for card in members:
+            if card.meta.get("job"):
+                seen.setdefault(card.meta["job"], []).append(card.name)
+        formation = world.formation(crew.get("formation") or "")
+        allowance = 1 if formation else 1           # the free slot
+        for job_key, names in seen.items():
+            if len(names) > 1 + allowance:
+                job = world.job(job_key) or {}
+                findings.append(Finding(
+                    "W14", "warning", crew["name"],
+                    f"{len(names)} cards all do the Job '{job.get('name', job_key)}': "
+                    f"{', '.join(names)}. A Formation has one free slot, not two.",
+                    where="data/crews.yaml",
+                    fix="Give one of them a different Job and redesign it to match — a Job is "
+                        "a testable version of the crew's 'different road' rule."))
+    return findings
+
+
+def w15_jobs_undeclared(world: World) -> list[Finding]:
+    """One finding for the whole pool, not one per card.
+
+    A linter that fires 30 times for the same missing field teaches you to ignore the linter.
+    """
+    missing = [c.name for c in world.cards
+               if not c.meta.get("job") and not world.is_exempt(c.faction)]
+    if not missing:
+        return []
+    return [Finding(
+        "W15", "warning", "the card pool",
+        f"{len(missing)} of {len(world.cards)} cards declare no Job: "
+        f"{', '.join(missing[:5])}{'…' if len(missing) > 5 else ''}",
+        where="cards/",
+        fix="Set `job:` in the frontmatter, or pick it on the Studio's Cards screen. Until a "
+            "card has a Job, Formation coverage cannot see it.")]
 
 
 # ------------------------------------------------------------------ reach
@@ -604,10 +800,12 @@ def w10_faction_gaps(world: World) -> list[Finding]:
 # ------------------------------------------------------------------ runner
 
 HARD = [f1_unique_conflicts, f10_keyword_ownership, f2_f3_toolkit_violations, f4_over_ceiling, f5_reach_overclaim,
-        f6_f7_card_gates, f8_undefined_terms, f9_broken_references]
+        f6_f7_card_gates, f8_undefined_terms, f9_broken_references,
+        f11_job_legality, f12_chaotic_crew_enablers]
 SOFT = [w1_window_coverage, w2_enabler_chains, w3_crew_diversity, w4_crew_plan_missing,
         w5_twins, w6_scaling_text, w7_ceiling_quota, w8_dead_entries, w9_lore_gates,
-        w10_faction_gaps, w11_no_flavour]
+        w10_faction_gaps, w11_no_flavour,
+        w12_job_signature, w13_formation_coverage, w14_job_duplication, w15_jobs_undeclared]
 
 
 def run_all(world: World | None = None) -> list[Finding]:
@@ -668,6 +866,42 @@ def gaps(world: World | None = None) -> list[Finding]:
                            f"{', '.join(unused[:6])}{'…' if len(unused) > 6 else ''}",
                            where="data/game-states.yaml",
                            fix="Either design cards that use them, or trim the vocabulary."))
+
+    # Which Jobs does nobody in the whole pool do? That is the design backlog, and it is the
+    # single most useful thing the Job layer produces.
+    filled = {c.meta.get("job") for c in world.cards if c.meta.get("job")}
+    empty_built = [j for j in world.jobs if j["status"] == "built" and j["key"] not in filled]
+    if empty_built:
+        by_family: dict[str, list] = {}
+        for job in empty_built:
+            by_family.setdefault(job["family"], []).append(job["name"])
+        summary = "; ".join(f"{fam}: {', '.join(sorted(names))}"
+                            for fam, names in sorted(by_family.items()))
+        out.append(Finding("GAP", "gap", "unfilled Jobs",
+                           f"{len(empty_built)} Jobs the rules CAN express have no card doing "
+                           f"them — {summary}",
+                           where="data/jobs.yaml",
+                           fix="Each one is a card waiting to be designed. Start with a Job "
+                               "its Formation requires."))
+
+    unbuilt = [j for j in world.jobs if j["status"] == "unbuilt"]
+    if unbuilt:
+        out.append(Finding("GAP", "gap", "Jobs with no mechanics",
+                           f"{len(unbuilt)} Jobs are real positions the rules still cannot "
+                           f"express: {', '.join(j['name'] for j in unbuilt)}",
+                           where="data/jobs.yaml",
+                           fix="These need a RULES change before a card can be designed. They "
+                               "stay listed on purpose — never as an error."))
+
+    unclaimed = [f["name"] for f in world.formations
+                 if not any(c.get("formation") == f["key"] for c in world.crews)]
+    if unclaimed:
+        out.append(Finding("GAP", "gap", "Formations",
+                           f"{len(unclaimed)} Formations are declared by no crew: "
+                           f"{', '.join(unclaimed)}",
+                           where="data/formations.yaml",
+                           fix="Assignments are on hold until the lore decides. Lore leads, "
+                               "plan follows, Formation follows the plan."))
 
     influence = [c for c in world.cards
                  if "influence" in f"{c.rules_text}\n{c.ascended_text}".lower()]

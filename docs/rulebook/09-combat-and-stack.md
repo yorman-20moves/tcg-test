@@ -32,6 +32,38 @@ this speed. Standard abilities can only be used during your normal Phase 2 actio
 If multiple Combat Tactics or Fast Abilities are triggered, they resolve in **reverse order**.
 The last card played resolves first.
 
+## Aiming (the Range keyword)
+
+Most Characters trade every Round. A Character with **Range N** can instead spend Rounds
+**Aiming**, converting patience into a single enormous strike.
+
+**Taking aim.** At the **End Step**, if a Character with Range N is on the Board and did not
+attack this Round, place an **Aim** counter on it. It can never hold more than **N − 1** Aim
+counters. Aiming costs no Energy and no action — the cost is the attack you didn't make.
+
+**The shot.** When a Character with Aim counters attacks, it deals its **printed PA multiplied
+by (1 + its Aim counters)**. Remove all Aim counters once the Combat Wave resolves, whether or
+not the attack connected.
+
+**The multiplier applies to printed PA only.** Buffs, Attachments, Permanent Buff effects and
+any other modifier are added *after* the multiplication, never before. A Character with a
+printed 4 PA, a +3 Attachment and two Aim counters deals **(4 × 3) + 3 = 15**, not 21.
+
+**Breaking the aim.** Remove all Aim counters immediately if the Character becomes **Stunned**,
+**Feared** or **Silenced**, is **Bounced**, or otherwise leaves the Board.
+
+**Damage does not break aim.** A Character can be shot at all game and still take its shot.
+Interrupting a Range Character means shutting it down, not chipping at it — which is why
+Aiming is answered by the Grabber's toolkit and not by chip damage.
+
+> **Why this is a Round of your life, not a free bonus.** Two Rounds of Aiming forgoes two
+> attacks to triple one. The totals are the same. What you buy is the **lump** — a number
+> larger than any single defender's PH, delivered in one clash, at a moment you choose.
+> What you sell is two Rounds of being useless and fully telegraphed. A Character that Aims
+> needs somebody to keep it alive; that is the entire reason the Front family exists.
+
+---
+
 ## Step 4 — Simultaneous Resolution
 
 Combat damage is dealt simultaneously across all individual 1-on-1 clashes. Both the attacking
@@ -50,5 +82,5 @@ Life Points directly.
 
 ## Related
 
-- [Keywords](12-keywords.md) — Protector, Juggernaut, Combo-Striker, Executioner, Prowler, Tracker
+- [Keywords](12-keywords.md) — Protector, Juggernaut, Combo-Striker, Executioner, Prowler, Tracker, Range, Breaker, Collector
 - [Glossary](13-glossary.md) — Countering

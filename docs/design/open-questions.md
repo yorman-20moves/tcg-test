@@ -141,14 +141,18 @@ people who aren't sitting at the table.
 
 ---
 
-## OQ-07 · Arenas are referenced but undefined — `OPEN` — **severity: medium**
+## OQ-07 · Arenas are referenced but undefined — `DECIDED` — **severity: medium**
 
-Arenas are named in §4 (Command System) and have an art folder. They have **no rules**:
-how many can be active, whether both players can have one, whether they're owned or shared,
-how they leave play, whether they're Attachments.
+**Resolved 2026-08-05.** See [D-007](decisions.md). An Arena edits the RULES, symmetrically for
+both players; one per player; destroyable as an object. Rules in
+[§5 Card Types](../rulebook/05-card-types.md#arena). Priced as `Arena Rule Edit (Minor|Major)`.
+This also gives the **Landlord** Job something to do.
 
-Arenas are the obvious home for the *place* half of the worldbuilding — the bar, the park, the
-block. Lore rubric **WG2** and dimension **D7** both want them to exist.
+*Original:* Arenas were named in §4 (Command System) and had an art folder but no rules — how
+many can be active, whether both players can have one, whether they're owned or shared, how
+they leave play, whether they're Attachments. Arenas are the obvious home for the *place* half
+of the worldbuilding — the bar, the park, the block. Lore rubric **WG2** and dimension **D7**
+both want them to exist.
 
 ---
 

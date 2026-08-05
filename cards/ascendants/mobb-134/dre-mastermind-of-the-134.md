@@ -5,6 +5,7 @@ card_type: Character
 subtype: Ascendant
 faction: Overthinkers
 crew: Mobb 134
+job: setter
 cost: 5
 stats:
   PA: 3
@@ -33,7 +34,7 @@ plan:
 
 # Dre, Mastermind of the 134
 
-**Overthinkers** · Mobb 134 · Ascendant
+**Overthinkers** · Mobb 134 · Ascendant · *setter*
 
 ## Base Side
 

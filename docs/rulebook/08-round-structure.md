@@ -38,6 +38,26 @@ An action is exactly ONE of:
 **Passing:** if you have no action, declare a **Pass**. Your opponent may continue taking single
 actions until they also Pass. When both players Pass consecutively, the phase ends.
 
+### Additional Actions
+
+Some effects grant a player an **additional action**. This is the most powerful thing a card
+can do, because the alternating single action is the game's fundamental unit — it is what every
+cost, every telegraph and every interaction window is measured in.
+
+1. An additional action is taken **immediately**, before Initiative passes to the opponent.
+2. **A player may never take more than two consecutive actions in a Phase**, no matter how many
+   additional actions they are granted. Surplus additional actions are **lost**, not banked.
+3. Granting an additional action to a specific Character grants it to that Character only. If
+   that Character cannot act, the action is lost.
+
+> **Why the hard cap.** Rule 2 is not a balance dial, it is a structural guarantee. It makes an
+> unbounded action chain **impossible by the rules** rather than merely expensive, which is a
+> far stronger version of prohibition **P3**. Two consecutive actions is a real, swingy,
+> game-deciding thing. Three is a different game.
+>
+> Note the failure mode this creates on purpose: pointing an additional action at the wrong
+> Character is strictly worse than not having it. That is a decision, not just power.
+
 ---
 
 ## Phase 3: The End Step

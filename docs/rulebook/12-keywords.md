@@ -17,6 +17,7 @@ Point values are the budget cost charged by `tools/scoring.py`.
 | **Executioner** | 2 | Instantly Murders any defending Character with permanent PH damage, bypassing math. |
 | **Protector** | 2 | Can intercept one attack intended for Life Points or another Character. |
 | **Juggernaut** | 3 | Excess PA damage beyond defender's PH spills over to Life Points. |
+| **Breaker** | 4 | When this Character attacks, it deals its PA plus half the defender's PRINTED PH, rounded down. The bigger the body, the worse it is to stand in front of this. |
 | **Combo-Striker** | 4 | Attacks resolve in two strikes. The first deals damage without simultaneous retaliation. |
 
 ---
@@ -27,8 +28,10 @@ Point values are the budget cost charged by `tools/scoring.py`.
 |---|---:|---|
 | **Instigator** | 2 | Opponent must target this unit before Life Points or others. |
 | **Interrogator** | 2 | On successful strike, opponent must reveal their Hand. |
+| **Range 2** | 2 | May Aim. Each Round it does not attack, gains an Aim counter (max 1). Its attack deals printed PA x (1 + Aim counters). Stun/Fear/Silence/Bounce clears aim; damage does not. |
 | **Tracker** | 2 | Can target/intercept Prowlers, bypassing stealth. |
 | **Troll** | 2 | Bypasses PA to attack MH directly. |
+| **Range 3** | 4 | May Aim. Each Round it does not attack, gains an Aim counter (max 2). Its attack deals printed PA x (1 + Aim counters). Stun/Fear/Silence/Bounce clears aim; damage does not. |
 
 ---
 
@@ -37,6 +40,7 @@ Point values are the budget cost charged by `tools/scoring.py`.
 | Keyword | Pts | Effect |
 |---|---:|---|
 | **Infiltrator** | -2 | Summoned to opponent's board for them to use, providing passive benefits to you. |
+| **Collector** | 3 | Whenever an enemy Character attacks any target other than this one, that attacker takes 1 permanent PH damage. Taxation, not compulsion -- they may go around, they just pay for it. |
 | **Hustler +1** | 3 | Generates 1 temporary Energy on hit. |
 | **Prowler** | 3 | Stealth unit. Cannot be intercepted/targeted (unless Tracker); can hit Life Points directly. |
 | **Extortionist** | 5 | When hitting Life Points, opponent discards a card. |

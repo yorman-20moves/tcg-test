@@ -2,8 +2,14 @@
 # docs/design/canon.md's crew table is generated from this file.
 #
 # plan:          one sentence -- how does this crew win a game?
-# coordination:  coordinated | chaotic. A chaotic crew is exempt from the single-plan rule,
-#                but must be mechanically chaotic, not just flavoured that way.
+# coordination:  coordinated | chaotic. A chaotic crew is not EXEMPT from validation, it is
+#                validated differently: no card in it may require a board state another card
+#                in the same crew produces (data/formations.yaml, `no_internal_enablers`).
+#                NO CREW IS CHAOTIC YET. The chaotic crew is still to be designed -- five
+#                people each advancing a plan of their own.
+# formation:     which Formation the crew declares (data/formations.yaml). DELIBERATELY UNSET
+#                on every crew: the lore decides this, and reading it off existing cards is
+#                that rule running backwards. On hold at Yorman's request, 2026-08-05.
 # expressions:   the diversity rule with teeth. Every card must take a DIFFERENT road to the
 #                same destination. Two cards sharing a road is a warning (W3).
 #
@@ -72,17 +78,19 @@ crews:
                         # rename with tools/rename.py -- it updates every reference at once.
     reviewed: false
     plan: >-
-      UNDECIDED -- are these the uncoordinated crew? Their cards suggest chaos: dice rolls, item
-      boxes, glitches, and "You Know This Is Just A Game, Right?"
+      UNWRITTEN. Their cards are full of randomness -- dice rolls, item boxes, glitches -- but
+      randomness is a TEXTURE, not a plan. What are they trying to do with it?
     lore_basis: >-
       Gamers. Caleb rolls a d6 to teabag. Ruvi has an Item Box and a Glitch. Julito is a
       Harbinger of the Demon. Lenny is the Kawaii Connoisseur.
-    coordination: chaotic
+    coordination: coordinated
     signature: Randomness, glitches, breaking the fourth wall
     expressions: []
     note: >-
-      If chaotic is right, the chaos must be mechanically real -- including for their own player.
-      That is Yorman's call, not a derivation.
+      NOT the chaotic crew. Yorman, 2026-08-05: "I don't view Pwners that way. So far, I don't
+      think we have the chaotic crew yet, but we will be designing one soon." Corrected from
+      `chaotic` on that basis. Pwners need a real game plan like every other crew; being
+      random is how they do it, not what they are doing.
 
   - key: fury-park
     name: Fury Park

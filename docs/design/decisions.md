@@ -17,6 +17,175 @@ marked `DECIDED`.
 
 ---
 
+## D-009 · Jobs and Formations — the crew's fighting structure becomes data — 2026-08-05
+
+**Decides:** new
+
+**Decision:** Every Character declares one **Job** — what it does for its crew — from
+[`data/jobs.yaml`](../../data/jobs.yaml) (28 Jobs in four families). Every crew declares one
+**Formation** from [`data/formations.yaml`](../../data/formations.yaml) (8), which names four
+required Jobs and leaves the fifth slot free.
+
+**Because:** "Role" was already spent — the rulebook says *"Keywords are specific Roles that a
+Character plays on the Board."* A Job is the position; a Role is one of the tools. The source
+catalogue Yorman supplied argues that "role" is really six independent axes, but four of those
+already existed here under other names (keywords are delivery, the Investment Engine is
+resource economy, The Score's credits are the power pattern, the three victories are the
+pillars). Only Team Job was genuinely new, so only Team Job was added — adding all six would
+have double-counted.
+
+**Rejected:** treating a chaotic crew as *exempt* from validation. "Uncoordinated" is a
+mechanical claim and therefore checkable, so `Every Man For Himself` is its own rule
+(`no_internal_enablers`, F12) enforced with the same producer/requirer graph that caught Dre
+feeding Moammar. The exemption also has to buy something — a chaotic crew permanently forgoes
+comboing, so its cards get a higher individual rate — or nobody would ever choose it.
+
+**Affects:** `data/jobs.yaml`, `data/formations.yaml` (new), `card_io.new_card()` (`job:` in
+the schema), rules F11/F12 and W12–W15, the Studio's Cards, Crews and Health screens.
+**Crew Formation assignments are deliberately unset** — lore leads, the plan follows the lore,
+the Formation follows the plan, and reading assignments off existing cards is that rule running
+backwards. On hold at Yorman's request.
+
+**Revisit if:** 28 Jobs turns out to be too fine-grained to assign consistently. The tell would
+be cards whose Job feels arbitrary. Note that Formations only ever *require* 12 of the 28, so
+the long tail is descriptive rather than load-bearing.
+
+---
+
+## D-008 · The action economy is bounded by rule, not by price — 2026-08-05
+
+**Decides:** new
+
+**Decision:** `Additional Action` (7 points, Assholes-unique) grants one extra Phase 2 action,
+taken immediately. **A player may never take more than two consecutive actions in a Phase**,
+regardless of how many are granted; surplus is lost.
+
+**Because:** the alternating single action is the game's fundamental unit — every cost, every
+telegraph and every interaction window is denominated in it, and The Score literally charges
++2 credits per opponent action surrendered. So a card that hands *you* an action attacks the
+central currency. The hard cap makes an unbounded action chain **impossible by the rules**
+rather than merely expensive, which is a far stronger guarantee than prohibition P3 on a page.
+
+**Pricing, defended against two existing entries:** Card Draw 1 = 3 buys a *card*, not the
+action to use it. Multiple Attacks = 5 buys an extra *attack*, which is a strict subset of an
+action. An arbitrary action must therefore exceed 5; Energy Gen 2 = 6 and an action is worth
+more than 2 Energy. **7.**
+
+**Rejected:** parking this on the Icons, which was the original proposal. Icons are exempt
+from the system and are being designed last — parking the most valuable unbuilt mechanic there
+means it never ships. It went to the Assholes, whose printed toolkit is already Energy Gen,
+Hustler and Taxing: the tempo faction gets the ultimate tempo card.
+
+**Affects:** [§8 Round Structure](../rulebook/08-round-structure.md#additional-actions),
+`data/effects.yaml`, `data/factions.yaml`, the **Boss** Job.
+
+---
+
+## D-007 · Four mechanics built at once, rules layer first — 2026-08-05
+
+**Decides:** OQ-07 · partially OQ-05
+
+**Decision:** Range, Tokens, Arenas and Additional Actions all land together, and the
+**rulebook changes land before any pricing**.
+
+**Because:** Yorman's constraint was explicit — *"I don't want to tweak and adjust and
+introduce something in the end that will require us to playtest everything all over again."*
+That has a precise implication: build in order of how deep in the stack a change sits. A
+rulebook change invalidates card tuning; a card never invalidates the rulebook. So rules →
+data/pricing → validation → tool → cards, and the existing 31 cards get re-scored **once**, at
+the end, rather than continuously while the foundation is still moving.
+
+### Range N — *Overthinkers*, 2 points (Range 2) / 4 points (Range 3)
+
+A Character that does not attack gains an **Aim** counter at the End Step; its next attack
+deals **printed PA × (1 + Aim counters)**.
+
+**Because** range as other games mean it — distance, kiting, positioning — does not exist here,
+so it had to be re-expressed in a currency this game has. It is expressed as **time**, which is
+the currency the whole balance system is already denominated in: Range 3 *is*
+`telegraph_rounds: 2`, a plan credit that already existed and was barely used. It also generates
+its own counterplay, so it earns its own multiplier through machinery already built. And it
+creates the first card in the game that is valuable, fragile and slow at once — which is what
+finally gives the Front family a reason to exist and makes Formations structural rather than
+thematic.
+
+**Rejected — "range means no return damage":** that is first strike, not range. It makes a card
+*safer* than everyone else, which is backwards: what makes range interesting is that the ranged
+card is fragile and needs protecting. Worth printing on its own merits, under another name.
+
+**Rejected — flying:** a binary access axis that already exists as Prowler/Tracker. It would
+mean two evasion keywords and two counter-keywords for one design idea, with no new decision
+for the player, and nobody in this world flies.
+
+**Three guardrails, all load-bearing.** The multiplier applies to **printed** PA only, or
+buff-then-multiply becomes the only deck anyone builds (P4). Aim counters are **visible on the
+board**, because a telegraph nobody can see is not a telegraph and earns no credits. Stun,
+Fear, Silence and Bounce clear aim; **damage does not**, or chip damage trivially answers a
+two-Round investment and nobody prints the card.
+
+**Pricing:** Range 2 is worse than Combo-Striker (4) in every way except lump size → **2**.
+Range 3 delivers the only number in the game that can exceed a large PH in a single clash
+without Hard Removal (5), and it is fully telegraphed and interruptible, unlike Multiple
+Attacks (5) → **4**.
+
+### Tokens — shared, 2 points per body
+
+A Character created by an effect, not a card. **Removed from the Game** when it leaves the
+Board rather than sent to the Graveyard.
+
+**Because** Mass Removal has been priced at 8 — the most expensive effect in the game — with
+nothing to use it on, since every Character costs a card and Energy. Without a swarm corner the
+numbers triangle (swarm → single-target → mass removal → swarm) has no third side and Mass
+Removal is an overpriced "kill their two guys."
+
+**The removed-from-Game rule is the P3 guardrail**, and it is why Recursion can never turn free
+bodies into a loop. **Pricing:** a Token chump-blocks once (Prevent 1 Attack = 1) and threatens
+(Direct Damage 1 = 1) → **2**. **Not available to Assholes** — solo operators; a crew of
+hustlers is not a swarm of bodies.
+
+### Arenas — shared, 2 / 5 points *(closes OQ-07)*
+
+One per player, played as a Phase 2 action into the Tactic Zone, destroyable as an object.
+**Arena text is symmetric** — it may never say "your Characters."
+
+**Because** there is no map here, so an Arena cannot edit space. It edits the **rules**. And a
+one-sided rule edit is a passive lock with no off-switch (**P2**), while a symmetric one is a
+puzzle: the Arena is good because *your* deck was built to like the rule and theirs was not.
+The asymmetry has to come from deckbuilding, not from the card — which also means an Arena is
+never a dead draw and never uninteractive.
+
+**Pricing:** Taxing 1 = 2 one-sided; a symmetric tax is worth less to you but you build around
+it → Minor **2**. A global permanent category ban sits above Status Application (Major) = 4 →
+**5**.
+
+### Breaker — *Warmongers*, 4 points
+
+Attacks deal PA plus half the defender's **printed** PH.
+
+**Because** PH is the defensive stat and nothing inverted it, so stacking PH was strictly
+correct forever. **Pricing:** Executioner (2) instantly murders but only a *damaged* defender —
+conditional. Juggernaut (3) converts overkill but only against a small body. Breaker is
+unconditional and scales with the thing it punishes → **4**.
+
+### Collector — *Assholes*, 3 points
+
+Enemies who attack anything *other* than this Character take 1 permanent PH damage.
+
+**Because** Instigator is compulsion — *you must target me* — and taxation is the better tool: it
+leaves the opponent a real choice with two costed answers instead of a forced move. Guilt-Tripper
+was already a taxation rider; this generalises it. **Pricing:** Instigator (2) compels but is
+rigid; Guilt-Tripper (2) is narrower, triggers only on being hit, and deals MA. Collector is
+wider, deals **permanent PH**, and therefore feeds Executioner → **3**.
+
+**Affects:** rulebook §2, §5, §8, §9, §13; `data/keywords.yaml`, `data/effects.yaml`,
+`data/factions.yaml`. Verified: `card_io` still round-trips all 31 cards byte-identically, and
+blocking-error count is unchanged at 34 (all pre-existing).
+
+**Revisit if:** Range's break-even damage maths turns out to make Artillery unplayable rather
+than merely fragile. The knob to turn is the multiplier, not the guardrails.
+
+---
+
 ## D-006 · The Studio, and the features writing the README exposed — 2026-08-03
 
 **Decides:** implements docs/design/studio-plan.md, all five phases

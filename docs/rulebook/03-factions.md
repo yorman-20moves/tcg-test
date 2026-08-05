@@ -19,7 +19,7 @@ To the Warmongers, the world is forged in violence and paid for in blood. They d
 
 | | |
 |---|---|
-| **Unique to them** | Berserker · Combo-Striker · Executioner · Juggernaut · Protector · Multiple Attacks · Permanent Buff 4 · Permanent Buff 5 |
+| **Unique to them** | Berserker · Breaker · Combo-Striker · Executioner · Juggernaut · Protector · Multiple Attacks · Permanent Buff 4 · Permanent Buff 5 |
 | **Never** | Counterspell · Searching (Tutors) · Card Draw 1 · Card Draw 2 · Card Draw 3 · Card Draw 4 · Card Draw 5 · Hand Destruction 1 · Hand Destruction 2 · Hand Destruction 3 · Hand Destruction 4 · Hand Destruction 5 · Untargetable · Spell Shield · Recursion · Resource Denial |
 
 *Anything not listed is shared.*
@@ -46,7 +46,7 @@ The Overthinkers view the battlefield as a chessboard, and everyone else is just
 
 | | |
 |---|---|
-| **Unique to them** | Instigator · Interrogator · Tracker · Troll · Counterspell · Searching (Tutors) · Card Draw 1 · Card Draw 2 · Card Draw 3 · Card Draw 4 · Card Draw 5 · Untargetable · Spell Shield · Prevent 1 Attack · Prevent Multiple Attacks · Mass Removal (Wipes) |
+| **Unique to them** | Instigator · Interrogator · Range 2 · Range 3 · Tracker · Troll · Token Generation 3 · Counterspell · Searching (Tutors) · Card Draw 1 · Card Draw 2 · Card Draw 3 · Card Draw 4 · Card Draw 5 · Untargetable · Spell Shield · Prevent 1 Attack · Prevent Multiple Attacks · Mass Removal (Wipes) |
 | **Never** | Multiple Attacks · Permanent Buff 4 · Permanent Buff 5 · Recursion · Cleanse (Major) |
 
 *Anything not listed is shared.*
@@ -75,8 +75,8 @@ Why play fair when playing dirty pays so much better? The Assholes don't care ab
 
 | | |
 |---|---|
-| **Unique to them** | Extortionist · Hustler +1 · Hustler +2 · Hustler +3 · Hustler +4 · Hustler +5 · Infiltrator · Prowler · Hand Destruction 1 · Hand Destruction 2 · Hand Destruction 3 · Hand Destruction 4 · Hand Destruction 5 · Energy Gen 1 · Energy Gen 2 · Energy Gen 3 · Energy Gen 4 · Energy Gen 5 · Energy Gen from Keyword · Taxing 1 · Taxing 2 · Taxing 3 · Taxing 4 · Taxing 5 · Resource Denial · Opponent energy generation |
-| **Never** | Counterspell · Cleanse (Minor) · Cleanse (Major) · Recursion · Multiple Attacks · Permanent Buff 4 · Permanent Buff 5 |
+| **Unique to them** | Collector · Extortionist · Hustler +1 · Hustler +2 · Hustler +3 · Hustler +4 · Hustler +5 · Infiltrator · Prowler · Additional Action · Hand Destruction 1 · Hand Destruction 2 · Hand Destruction 3 · Hand Destruction 4 · Hand Destruction 5 · Energy Gen 1 · Energy Gen 2 · Energy Gen 3 · Energy Gen 4 · Energy Gen 5 · Energy Gen from Keyword · Taxing 1 · Taxing 2 · Taxing 3 · Taxing 4 · Taxing 5 · Resource Denial · Opponent energy generation |
+| **Never** | Counterspell · Token Generation 1 · Token Generation 2 · Token Generation 3 · Cleanse (Minor) · Cleanse (Major) · Recursion · Multiple Attacks · Permanent Buff 4 · Permanent Buff 5 |
 
 *Anything not listed is shared.*
 

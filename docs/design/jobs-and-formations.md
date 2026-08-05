@@ -3,9 +3,34 @@
 The catalogue is written for 5v5 real-time games and 5-person tabletop parties. This game is
 neither. This document is the translation: what carries over, what has to be rebuilt in your
 mechanics, what to cut, and — most usefully — **the roles the catalogue names that your game
-currently has no way to express.**
+had no way to express.**
 
-Nothing here is built yet. This is the design decision first.
+> **STATUS — 2026-08-05.** Decided and built. Yorman confirmed "Job" as the word, kept the
+> unbuilt Jobs in the main catalogue with a `status` flag, and chose to build **all five gaps
+> at once** rather than one at a time: *"I want all of it on the board and then we tweak and
+> adjust little by little until it's perfect. But I don't want to tweak and adjust and
+> introduce something in the end that will require us to playtest everything all over again."*
+>
+> Three corrections since the first draft, all his:
+>
+> **Icons are out.** They are not a crew and not a faction like the others — each is a
+> rule-breaker and a one-person army, they represent the designers' mothers, and they are being
+> designed **last**. They are now flagged `exempt` in `factions.yaml` and skipped by every Job,
+> Formation and toolkit check. The Congregation Formation is deleted with them, the **Legend**
+> Job is parked, and Influence is not treated as a live win condition. The **Boss** moved from
+> Icons to Assholes for the same reason — parking the most valuable unbuilt mechanic in the
+> faction designed last means it never ships.
+>
+> **Pwners are not the chaotic crew.** *"So far I don't think we have the chaotic crew yet, but
+> we will be designing one soon. The chaotic crew is the crew where each one is meant to advance
+> a plan of their own, not working together."* Pwners are back to `coordinated` and need a real
+> plan like everyone else. See Part Four for what that reframe bought.
+>
+> **Range now exists.** See Part Three ⑥.
+>
+> Two counts in the original draft were wrong and are corrected here: the catalogue below was
+> described as 21 Jobs and was actually **26**; building the gaps took it to **28**.
+> Crew Formation assignments are **on hold** at his request — the lore leads.
 
 ---
 
@@ -48,16 +73,18 @@ it. The Icons are your entire social pillar, sitting empty.
 
 So the only genuinely new axis is Job. Everything else is a light tag or already exists.
 
-## 3. Range doesn't exist here, and that collapses half the catalogue
+## 3. Range didn't exist here — and building it was the biggest single change
 
-This is the biggest translation problem and it's worth being blunt about.
+This was the biggest translation problem, and the answer turned out to be the most valuable
+mechanic in the whole exercise. **Range now exists, expressed as time.** See Part Three ⑥ for
+the design and Part Four for the Formation it created.
 
-Most of the catalogue's damage distinctions — Marksman vs Juggernaut vs Skirmisher vs Sniper —
+The problem, stated as it was before: most of the catalogue's damage distinctions — Marksman vs Juggernaut vs Skirmisher vs Sniper —
 are about **range and mobility**. Your game has neither. Every attack is a Combat Wave clash at
 the same notional distance. There's no kiting, no positioning, no dodging, no aim.
 
-So those archetypes don't collapse into fewer jobs by accident — **they collapse because the
-axis that separated them doesn't exist in your game.** What actually distinguishes a damage card
+So those archetypes didn't collapse into fewer jobs by accident — **they collapsed because the
+axis that separated them didn't exist in your game.** What actually distinguishes a damage card
 here is:
 
 - Does it attack **PH or MH**? *(PA vs Troll — your second, unused damage axis)*
@@ -66,6 +93,8 @@ here is:
 - Does it damage **without declaring a Combat Wave**? *(Direct Damage effects)*
 - Does it hit **everything at once**? *(Mass Removal)*
 - Does it **grow the longer it survives**? *(Berserker, stacking)*
+- Does it **spend Rounds aiming**? *(Range — new, 2026-08-05)*
+- Does it **punish being big**? *(Breaker — new, 2026-08-05)*
 
 The Jobs below are organised by *those* axes. That's the adaptation, not a translation.
 
@@ -73,11 +102,13 @@ The Jobs below are organised by *those* axes. That's the adaptation, not a trans
 
 # Part Two — The Job catalogue
 
-Twenty-one Jobs in four families. Each carries a **signature** written in your own vocabulary,
-so a card can be checked against the Job it claims.
+**Twenty-eight Jobs in four families**, now living in [`data/jobs.yaml`](../../data/jobs.yaml).
+Each carries a **signature** written in your own vocabulary, so a card can be checked against
+the Job it claims — the Studio warns when a card claims a Job it doesn't mechanically look like.
 
-Jobs marked **⚠ NO MECHANICS YET** are the valuable ones — the catalogue names a real position
-your game currently cannot fill. Those are in Part Three.
+Jobs marked **⚠ NO MECHANICS YET** were the valuable ones — the catalogue named a real position
+your game could not fill. **All but one are now built.** The exception is the Legend, which
+needs Influence to exist first (OQ-02) and whose only home would have been the Icons.
 
 ---
 
@@ -113,12 +144,18 @@ no job.
 - **Loses to** — Prowler, Troll (goes at MH instead), Direct Damage, Bounce.
 - **The line** — a Wall's power is a **duration**; a Vanguard's is a **moment**.
 
-### F4 · Collector — **⚠ NO MECHANICS YET**
+### F4 · Collector — **BUILT 2026-08-05** · *Assholes*
 - **Identity** — doesn't stop you attacking your target; makes it the worst available choice.
 - **Job** — attach a price to every attack that isn't aimed at it.
-- **Why it's a gap** — Instigator is **compulsion** (you *must* target me). The catalogue's
-  sharpest single idea is that **taxation** is the better version: let them through and charge a
-  fee. You have no marks, no threat, no retaliation riders. See Part Three.
+- **Signature** — the **Collector** keyword: *whenever an enemy Character attacks any target
+  other than this one, that attacker takes 1 permanent PH damage.*
+- **Beats** — wide boards, anyone who wants to attack every Round, Vanguards.
+- **Loses to** — a patient opponent who simply stops attacking, Silenced, Hard Removal.
+- **The line** — Instigator is **compulsion** (you *must* target me). Collector is **taxation**
+  (go around, and pay for it). Taxation is the better tool because it leaves the opponent a real
+  choice with two costed answers instead of a forced move.
+- **Note** — pairs viciously with **Executioner**: everything on their board quietly accumulates
+  permanent damage, and permanent damage is what an Executioner hunts.
 
 ---
 
@@ -164,13 +201,28 @@ no job.
 - **Note** — this is the Job that turns MA/MH from dead weight into a second axis (OQ-05). One
   keyword currently supports it. If you want the mental game to exist, this Job is where it lives.
 
-### D5 · Artillery
+### D5 · Artillery — **REBUILT 2026-08-05** · *Overthinkers*
+- **Identity** — spends Rounds aiming, then deletes something.
+- **Job** — convert patience into a single strike larger than any defender's PH, at a moment
+  of your choosing.
+- **Signature** — **Range 2** or **Range 3** · high PA · low PH.
+- **Beats** — big single blockers, anyone who has to hold still, opponents at burst range.
+- **Loses to** — Stun, Fear, Silence and Bounce (all clear Aim outright), Tokens used as chump
+  blocks, and any clock fast enough that two idle Rounds lose the game.
+- **The line** — the only Job that is genuinely **helpless while doing its job.** That isn't a
+  flaw; it's the reason the entire Front family has employment.
+- **Note** — before Range, this Job meant "direct damage" and shared a box with what is now the
+  Burner. Range gave it real mechanics and the two separated.
+
+### D5b · Burner — *name not settled*
 - **Identity** — damage without ever declaring a Combat Wave.
 - **Job** — grind Life Points and Characters down from outside combat entirely.
 - **Signature** — Direct Damage 1–5 · low PA · Trigger and Passive abilities rather than attacks.
 - **Beats** — Pacifier, Protector, Wall — **everything built to answer combat.**
 - **Loses to** — healing, Cleanse, and a clock (it's slow).
 - **The line** — the only damage Job **immune to the entire Front family.** That's why it exists.
+- **⚠ Name needs your ear.** Split off from Artillery when Range landed. "Burner" carries the
+  TCG sense (burn = non-combat damage) and the street sense at once, but it's a placeholder.
 
 ### D6 · Wrecker
 - **Identity** — deletes boards, not Characters.
@@ -258,10 +310,17 @@ pairing-dependent family, and it's the one the crew Formation exists to protect.
 - **The line** — the exact mirror of the Grabber. The most swingy Job here: match-winning or dead
   weight with no change in how you play it.
 
-### S8 · Boss — **⚠ NO MECHANICS YET**
+### S8 · Boss — **BUILT 2026-08-05** · *Assholes*
 - **Identity** — gives your best card another action.
 - **Job** — manipulate the Phase 2 action economy directly.
-- **Why it's a gap** — and why it's the **single most valuable thing on this list.** See Part Three.
+- **Signature** — the **Additional Action** effect, 7 points.
+- **Beats** — anything that assumed it had one more action than it does, which is every plan.
+- **Loses to** — its own printed failure mode (pointing the action at the wrong Character is
+  strictly worse than not having it), Silenced, and being killed on the setup Round.
+- **The line** — the alternating single action is the game's fundamental unit. This Job attacks
+  the currency itself.
+- **Note** — **bounded by rule, not by price**: a player may never take more than two
+  consecutive actions, so an unbounded chain is impossible rather than merely expensive.
 
 ---
 
@@ -310,24 +369,43 @@ pairing-dependent family, and it's the one the crew Formation exists to protect.
 - **Signature** — **Martyr** · Guilt-Tripper · Influence generation · often 0 PA.
 - **Beats** — anyone playing only the Beatdown game.
 - **Loses to** — a fast clock, and — currently — **the fact that no card grants Influence** (OQ-02).
-- **Note** — this Job is your entire social pillar. It exists on paper and nowhere else.
+- **⚠ STILL UNBUILT — the only one.** Influence is a printed win condition with zero printed
+  support, and the only faction that could carry it is the Icons, who are exempt and being
+  designed last. Doubly parked. The Health screen reports it as backlog, never as an error.
 
-### X6 · Landlord — **⚠ NO MECHANICS YET**
+### X6 · Landlord — **BUILT 2026-08-05** · *any faction*
 - **Identity** — edits the rules of the table.
-- **Job** — change what's allowed for both players.
-- **Why it's a gap** — this is what **Arenas** were always going to be. See Part Three.
+- **Job** — change what's legal for both players, then build a crew that likes the new rule.
+- **Signature** — **Arena Rule Edit (Minor)** 2 pts · **(Major)** 5 pts.
+- **Beats** — any crew whose plan depends on the rule being edited.
+- **Loses to** — a crew that doesn't care about that rule. Entirely context-dependent: S-tier in
+  one matchup, blank in another. Also Attachment removal, since an Arena is an object.
+- **Note** — Arena text is **symmetric by rule**. A one-sided rule edit is a passive lock with
+  no off-switch (P2); a symmetric one is a puzzle. Closes OQ-07.
 
-### X7 · Recruiter — **⚠ NO MECHANICS YET**
+### X7 · Recruiter — **BUILT 2026-08-05** · *not Assholes*
 - **Identity** — fields more bodies than it has cards.
 - **Job** — flood the board with cheap Characters that demand answers.
-- **Why it's a gap** — no token or summon mechanic exists. See Part Three.
+- **Signature** — **Token Generation 1/2/3**, 2 points per 1 PA / 1 PH body.
+- **Beats** — single-target removal, Executioner, and **Artillery** (a Token chump-blocks the
+  big shot — which is the counter-web doing its job unprompted).
+- **Loses to** — Mass Removal, any wide-punishing effect.
+- **Note** — not available to Assholes. Solo operators; a crew of hustlers is not a swarm.
+
+### X8 · Breaker — **BUILT 2026-08-05** · *Warmongers*
+- **Identity** — punishes being big. *(Filed under Damage in `jobs.yaml`.)*
+- **Job** — make a large PH a liability instead of a pure upgrade.
+- **Signature** — the **Breaker** keyword: PA plus half the defender's **printed** PH.
+- **Loses to** — wide boards of small bodies, Prowler, evasion.
+- **The line** — without this Job, stacking PH is strictly correct forever.
 
 ---
 
-# Part Three — What the catalogue proves you're missing
+# Part Three — What the catalogue proved you were missing
 
-The most useful thing an outside framework does is name a position your system can't fill. Five
-of those, ranked by how much they'd change the game.
+The most useful thing an outside framework does is name a position your system can't fill. Six
+of those. **All six are now built** — the sections below are kept as written, because the
+reasoning for a mechanic is worth more than the mechanic, plus a note on what shipped.
 
 ## ① The Boss — an extra Phase 2 action *(the big one)*
 
@@ -408,6 +486,42 @@ or one that ignores PH entirely. **Troll already does a version of this** by goi
 — so the cheapest fix isn't a new mechanic, it's *building out the Headcase Job* until high-PH
 Characters have a real reason to fear something.
 
+## ⑥ Range — the one you found, and the biggest of the six
+
+This wasn't in the catalogue. It came out of the catalogue *failing* to translate: half its
+damage archetypes are separated by range and mobility, and you had neither. You proposed three
+ways to build it, and the third is the one that fits.
+
+**Range N.** A Character that doesn't attack gains an **Aim** counter at the End Step. Its next
+attack deals **printed PA × (1 + Aim counters)**. Range 2 costs 2 points; Range 3 costs 4.
+
+**Why this one and not the other two.** *Attacking without taking a return hit* is first strike,
+not range — it makes a card **safer** than everyone else, which is backwards, because what makes
+range interesting is that the ranged card is fragile and needs protecting. Print it under another
+name. *Flying* is a binary access axis you already have as Prowler/Tracker; adding it means two
+evasion keywords and two counter-keywords for one design idea, with no new decision for the
+player, and nobody in this world flies.
+
+**Why the third one is better than it looks.** It expresses range as **time**, which is the
+currency your balance system is already denominated in — Range 3 literally *is*
+`telegraph_rounds: 2`, a plan credit you built and barely used. It generates its own counterplay
+(two Rounds where the opponent can Stun, Bounce, Fear or kill it), so it **earns its own
+multiplier through machinery already in place**. And it creates the first card in the game that
+is valuable, fragile and slow at the same time — which is what finally gives the Front family
+something to protect.
+
+**The honest maths.** Two Rounds of Aiming forgoes two attacks to triple one. The totals are
+identical. What you buy is the **lump** — a number bigger than any single defender's PH,
+delivered in one clash, when you choose. What you sell is two Rounds of being useless and fully
+telegraphed. Range is not a damage increase; it's a damage **reshaping**, which is much easier
+to balance and much more honest.
+
+**Three guardrails, all load-bearing.** The multiplier applies to **printed** PA only — otherwise
+buff-then-multiply is the only deck anyone builds. Aim counters sit **visible on the board**,
+because a telegraph nobody can see isn't a telegraph and earns no credits. Stun, Fear, Silence
+and Bounce clear aim; **damage does not**, or chip damage trivially answers a two-Round
+investment and the card never gets printed.
+
 ---
 
 # Part Four — Formations: the 5-person crew structure
@@ -430,8 +544,8 @@ the crew says something about itself.
 
 ## Eight Formations
 
-Adapted from the catalogue's comp archetypes, rebuilt around your mechanics. Proposed crew
-assignments are drafts — the lore is yours.
+In [`data/formations.yaml`](../../data/formations.yaml). The Congregation is gone with the Icons;
+**The Siege** replaced it once Range existed.
 
 | Formation | The plan | Required Jobs | Free slot | Loses to |
 |---|---|---|---|---|
@@ -440,67 +554,119 @@ assignments are drafts — the lore is yours.
 | **The Shakedown** | Take what they have until they can't act | Quartermaster · Silencer · Ghost · Grabber | Spy or Snitch | crews that don't need resources |
 | **The Long Night** | Everyone leaves worse, including you | Grinder · Fixer · Wall · Headcase | Enforcer | burst, a fast clock |
 | **The Ambush** | End it before it starts | Ghost · Executioner · Grabber · Snitch | Cutoff | a wide board, Cleaner |
-| **The Congregation** | Win on Influence, never on damage | Legend · Fixer · Wall · Cleaner | Backer | a fast Beatdown clock |
-| **The Brawl** | Walk at them and keep walking | Vanguard · Enforcer · Grinder · Warden | Fixer | Artillery, Pacifier, Prowler |
-| **No Formation** | *Deliberately uncoordinated* | none — but must be **mechanically** chaotic | all five | anything with a plan |
+| **The Brawl** | Walk at them and keep walking | Vanguard · Enforcer · Grinder · Warden | Fixer | Burner damage, Pacifier, Prowler |
+| **The Siege** | Put one enormous shot on the table and spend everything else keeping it alive | Artillery · Warden · Wall · Fixer | Cleaner, or a Burner for a clock while the gun aims | Grabbers, Recruiters, any short race |
+| **Every Man For Himself** | Five people advancing five separate plans | *none — see below* | all five | anything with a plan |
 
-**No Formation is the real exception you asked for.** A crew whose lore is that they don't
-coordinate declares this. It's exempt from Job coverage — but then the chaos has to be
-mechanically true, including for its own player. That's the price of the exemption, and PWNED is
-the obvious candidate.
+**The Siege is the proof that Range did its job.** Before it, nothing in the game was valuable,
+fragile and slow at the same time, so the Front family had nobody to protect and a Formation was
+a name rather than a structure. Now there's a Formation whose entire premise is *keep the gun
+alive*, and every slot in it follows from that.
 
-## Proposed crew Formations — drafts
+## Every Man For Himself — the chaotic crew, reframed
 
-| Crew | Formation | Why |
+The first draft called this **No Formation** and made it an *exemption* from Job coverage. That
+was wrong, and your correction is what fixed it.
+
+> *"The chaotic crew is the crew where each one is meant to advance a plan of their own, not
+> working together."*
+
+That is a **mechanical claim**, and a mechanical claim is checkable. So it isn't an exemption
+from validation — it's its own validation rule:
+
+> **No card in this crew may require a board state that another card in the same crew produces.
+> Zero enabler chains inside the crew.** Also forbidden: cards that reference their own crew by
+> name, or that buff or protect allied members of it — "all allied *&lt;crew&gt;*" is a
+> coordination effect by definition.
+
+The elegant part: this is enforced with **the exact same producer/requirer graph that caught Dre
+feeding Moammar**. The tool built to find unwanted combos is precisely the tool that proves this
+crew has none. It's rule **F12**, and it's a hard error.
+
+**And the exemption has to buy something.** These cards permanently forgo comboing with each
+other, which is the single biggest source of power in the game. So each one is allowed a higher
+individual rate — a chaotic crew is five *good* cards, not five weak ones. Without that, nobody
+would ever choose it and the Formation would be decorative.
+
+**Not Pwners.** They're back to `coordinated`. Their randomness is a **texture, not a plan** —
+how they do it, not what they're doing — and they need a real game plan like every other crew.
+Every Man For Himself is unassigned until the chaotic crew gets designed.
+
+## Crew Formations — ON HOLD
+
+> *"I don't know if they are right yet, I need to spend more time thinking about it."*
+
+Correct call, and it's the rule working. Lore leads → the plan follows the lore → the Formation
+follows the plan. Every assignment I drafted was read off the cards that already exist, which is
+that rule running **backwards**. No crew carries a `formation:` key; the drafts sit commented out
+in `formations.yaml` as a starting point for when you come back to it.
+
+The two I'd defend hardest are Mobb 134 → The Engine and Latin Kings → The Court, because those
+are already mechanically true on the printed cards rather than inferred. Fury Park needs a plan
+before a Formation means anything at all.
+
+---
+
+# Part Five — What the tool now checks
+
+All of it is built. `python tools/check.py` runs these with everything else, and the Studio
+shows them live.
+
+| Rule | What it catches | Severity |
 |---|---|---|
-| **Mobb 134** | The Engine | Commandments, Dre tutoring the Bible, a delayed mass payoff. Already true. |
-| **Latin Kings** | The Court | Ranked Crowns, "La Familia" buffing all allied Latin Kings. Already true. |
-| **Pimp Juice** | The Shakedown | Corazon feeding Energy to collect on it, Dilo, the Convincer. |
-| **Shea's** | The Long Night | Alvino's drinks damage both sides. The bar wears everyone down. |
-| **Pwners** | No Formation | Dice rolls, glitches, item boxes. **Your call — this is the exemption.** |
-| **Fury Park** | *unwritten* | One card. Needs a plan before it needs a Formation. |
-| **Icons** | The Congregation | The only Formation that wins on Influence. It's why they exist. |
+| **F11** Job legality | A card declares a Job that doesn't exist, or one its faction may not hold | **error** |
+| **F12** Chaotic enablers | A crew claims `chaotic` but one card requires what a crewmate produces | **error** |
+| **W12** Job signature | A card claims a Job but carries none of its signature tools | warning |
+| **W13** Formation coverage | A crew's five cards don't cover the Jobs its Formation requires | warning |
+| **W14** Job duplication | More cards share a Job than the one free slot allows | warning |
+| **W15** Jobs undeclared | Cards with no Job at all — **one finding for the whole pool**, not one per card | warning |
+| **GAP** Job coverage | Which Jobs nobody in the pool plays. The design backlog. | gap |
+| **GAP** Unbuilt Jobs | Jobs the rules still can't express. Listed, never flagged. | gap |
+
+Notes on why they're shaped that way:
+
+**Legality is an error, signature is a warning.** An Assholes **Warden** contradicts printed
+lore — *"they don't block"* is the same sentence that puts Counterspell on their `never` list —
+so that's a hard stop. Whether a card *looks* like a Warden is judgement, so that's a nudge. The
+Studio shows the two differently: a red block for the first, an amber note for the second.
+
+**W15 reports once, not thirty times.** A linter that fires for every card missing the same field
+teaches you to ignore the linter. That lesson came from W9 firing four times per card.
+
+**Job coverage is the most useful output.** Today the Health screen reports Front **0/4**, Damage
+**1/9**, Support **0/8**, Specialist **1/6** — every empty cell is a card waiting to be designed,
+and it's a far more actionable backlog than "you need 24 Descendants."
+
+**Faction ↔ Job legality is what stops Jobs becoming a second identity system.** It's the faction
+toolkit rule applied one level up, and it's derived from the toolkits rather than declared
+separately, so the two can't drift apart.
+
+**Icons are skipped by every rule here**, via `exempt: true` in `factions.yaml`. Coherence checks
+would report their design intent as a defect.
+
+**Not yet built: the counter-web.** The catalogue's triangles translate — Ghost beats Wall, Wall
+beats Vanguard, Vanguard beats Ghost — and once enough cards carry Jobs the Health screen could
+show whether the pool has a functioning counter-web or whether some Job has no answer anywhere.
+It needs cards first; with two Jobs assigned it would render an empty graph.
 
 ---
 
-# Part Five — What this lets the tool check
+# Where this stands
 
-Once Jobs and Formations are data, the consistency engine gets a whole new class of rule. These
-are the checks worth having.
+**Built:** the rulebook layer (Range, Tokens, Arenas, Additional Actions), the pricing layer
+(4 keywords, 6 effects, faction assignments), `jobs.yaml` and `formations.yaml`, six validation
+rules, and the Studio surfaces for all of it.
 
-**Job ↔ mechanics fit.** Each Job has a signature. A card claiming **Warden** with no Protector,
-no protective effect and 6 PA isn't a Warden. *(A warning — signatures are guidance, not law.)*
+**Deliberately not done:** crew Formation assignments (on hold — the lore leads), and the
+re-scoring pass over the existing 31 cards. That last one is by design: the rules and pricing
+had to stop moving first, which was your own constraint.
 
-**Formation coverage.** A crew declares a Formation; do its five cards actually cover the
-required Jobs? Right now Mobb 134 would report *no Warden, no Quartermaster* — which is a real
-finding about a real crew.
+**Open, and yours:**
 
-**Job duplication.** Two cards with the same Job in one crew, where the Formation doesn't allow
-it. This is the catalogue's swap test made mechanical, and it's a sharper version of the "road"
-diversity rule you already have — **a Job is a testable road.**
-
-**Job coverage across the pool.** Which Jobs does no card anywhere fill? That's the design
-backlog, and today it would report: *Collector, Boss, Landlord, Recruiter — no cards exist.*
-
-**Faction ↔ Job legality.** Some Jobs shouldn't be available to some factions. An Assholes
-**Warden** contradicts their printed lore — *"they don't block."* An Icons **Executioner**
-contradicts theirs. This is the faction toolkit rule applied one level up, and it's the check
-that stops Jobs from becoming a second, contradictory identity system.
-
-**The counter-web.** The catalogue's triangles translate. Ghost beats Wall; Wall beats Vanguard;
-Vanguard beats Ghost. Once Jobs are data the Health screen can show whether the pool has a
-functioning counter-web — or whether one Job has no answer anywhere.
-
----
-
-# What I'd want you to decide before I build
-
-1. **Job as the word** — confirmed, or something else? "Role" is taken by keywords.
-2. **Twenty-one Jobs, or fewer?** I'd cut nothing, but the four with no mechanics could sit in a
-   separate "not yet built" list rather than the main catalogue.
-3. **Which of the five gaps are you actually going to build?** The Boss is the one I'd push
-   hardest for — it's expressible today, it's unique to turn-based games, and it's the biggest
-   piece of design space you're not using.
-4. **Pwners as No Formation** — your call. It's the only crew where the exemption fits.
-5. **Are the proposed Formations right?** They're read off the cards you already have, not
-   decided. The lore leads.
+1. **The Burner's name.** Split off from Artillery when Range landed. Placeholder.
+2. **28 Jobs is a lot of taxonomy for a 31-card pool.** The risk is that assignment becomes
+   arbitrary. The mitigation is that Formations only ever *require* 12 of the 28, so the long
+   tail is descriptive rather than load-bearing — but it's worth watching for cards whose Job
+   feels like a coin flip.
+3. **Two Jobs are seeded** as a demonstration — Dre as Setter, Moammar as Enforcer. Every other
+   card is unassigned. Both are changeable in one click.

@@ -124,6 +124,8 @@ def bootstrap() -> dict:
         "cards": [card_payload(c) for c in card_io.load_all()],
         "factionData": world.factions,
         "crews": world.crews,
+        "jobs": world.jobs,
+        "formations": world.formations,
         "states": world.states,
         "windowKeys": list(rules.WINDOW_KEYS),
         "windowLabels": rules.WINDOW_LABELS,

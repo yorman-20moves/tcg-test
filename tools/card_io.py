@@ -147,6 +147,8 @@ def render(card: Card) -> str:
     if meta.get("crew"):
         subtitle += f" · {meta['crew']}"
     subtitle += f" · {meta.get('subtype') or 'Card'}"
+    if meta.get("job"):
+        subtitle += f" · *{meta['job']}*"
     lines += [subtitle, "", "## Base Side", ""]
 
     if meta.get("cost") is not None and card.has_full_stats:
@@ -208,7 +210,7 @@ def new_card(name: str, faction: str, crew: str | None, subtype: str = "Descenda
         path=path,
         meta={"name": name, "slug": slug, "card_type": "Character" if subtype in
               ("Ascendant", "Descendant") else subtype,
-              "subtype": subtype, "faction": faction, "crew": crew, "cost": cost,
+              "subtype": subtype, "faction": faction, "crew": crew, "job": None, "cost": cost,
               "stats": {k: None for k in STAT_KEYS},
               "base": {"keywords": [], "effects": []},
               "ascended": {"keywords": [], "effects": []},

@@ -29,6 +29,11 @@
 **Ownership rule:** cards always go to their **original owner's** Graveyard, regardless of who
 controlled them when they were destroyed or sacrificed.
 
+**Tokens are not cards.** A Token has no zone outside the Board. It does not count toward the
+40-card minimum or the 3-copy limit, it is never in a deck, and when it leaves the Board it is
+removed from the Game rather than entering a Graveyard. See
+[Card Types §Token](05-card-types.md#token).
+
 ## Related
 
 - [The Economy](07-economy.md) — how the Resource Row becomes Energy

@@ -1,0 +1,31 @@
+README: scenario-driven guide, plus the features writing it exposed
+
+The README is organised around what a designer actually wants to do, not around
+what the tools happen to be: design a card, fix one over budget, make something
+crazy, change a faction toolkit, define a crew plan, add a keyword, rename
+something, retire a card, log a playtest, decide what to work on, undo a mistake,
+work with an AI. Plus a reference for every command, rule code and term.
+
+Writing each scenario exposed something the tool could not do. Built:
+
+- Create a card. There was no way to make a new one, only edit existing ones.
+- Clone a card. Copies mechanics; deliberately does NOT copy the Lore Packet,
+  which is about a specific real person and must never be inherited.
+- Retire a card (status: retired). Keeps the file and its Design Notes, drops it
+  from validation and the counts. Better than deleting.
+- tools/rename.py. Renaming a keyword or effect by hand breaks every reference
+  silently -- the card keeps the old name, the engine scores it zero, nothing
+  says so. Now one command updates data, cards and docs together.
+- Search by content. The card list searched names only; it now covers effects,
+  keywords and rules text, so a search for counterspell finds every card using it.
+- check.py --gaps. The engine reported what was WRONG but never what was
+  MISSING, which is the real question when deciding what to design next.
+- Playtests surface on the card page, so a card that keeps appearing in the
+  felt-bad field is visible where you would act on it.
+- Status lifecycle control in the card header.
+
+Also fixed by the engine's own F9 rule: cards said crew Pwners while crews.yaml
+said PWNED. Blocking errors 39 -> 34.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01J4Jsf9vfF5STTRva8NVFoE

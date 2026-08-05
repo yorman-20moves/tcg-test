@@ -1,0 +1,587 @@
+# Jobs -- what a Character does for its crew.
+#
+# NOT the same thing as a Role. The rulebook already spends "Role" on faction-exclusive
+# keywords ("Keywords are specific Roles that a Character plays on the Board"). A Job is what
+# you do; a Role is one of the tools you do it with. Two Wardens in different factions do the
+# same Job with different tools.
+#
+# Every Character declares exactly one `job:` in its frontmatter.
+#
+# signature:  what a card claiming this Job should mechanically look like. Guidance, not law --
+#             a card matching NONE of its Job's signature raises a WARNING, never an error.
+#             keywords_any / effects_any -- matching one is enough.
+#             stats -- soft hints checked against the pool median, not absolute numbers.
+# factions:   which factions may hold this Job. null = any. Restricted only where a
+#             faction-exclusive keyword is the ONLY way to express the Job.
+# status:     built   -- the mechanics exist today
+#             unbuilt -- the Job is real but nothing in the rules can express it yet.
+#                        These stay in the main catalogue on purpose: the Health screen
+#                        reports them as the design backlog, never as errors.
+#
+# Icons are EXEMPT from every Job check (see factions.yaml). They are one-person armies with
+# no crew and no Formation, and they are being designed last.
+
+jobs:
+
+  # ==========================================================================
+  # FRONT -- cards whose output is space, not damage.
+  #
+  # The universal test: if the opponent ignores me I win; if they deal with me my crew wins.
+  # A Front card that can be safely ignored AND safely killed has no Job.
+  # ==========================================================================
+
+  - key: vanguard
+    name: Vanguard
+    family: front
+    status: built
+    factions: null
+    identity: Decides WHEN the Combat Wave happens.
+    job: Make declaring a Combat Wave profitable on a Round your opponent didn't want one.
+    signature:
+      keywords_any: [Juggernaut, Combo-Striker]
+      effects_any: [Multiple Attacks]
+      stats: {PA: high, PH: high}
+    beats: Boards that want to build. Opponents holding cards for later.
+    loses_to: Pacifier, Prevent Attack, Protector walls, Feared, Stunned.
+    line: A Vanguard STARTS fights. A Ghost AVOIDS them.
+    note: >-
+      A Combat Wave is once per Round per player, so a Vanguard's Round is the crew's tempo
+      clock. This is the one archetype the source catalogue mapped over with nothing lost.
+
+  - key: warden
+    name: Warden
+    family: front
+    status: built
+    factions: [warmongers, overthinkers]
+    identity: A bodyguard. Stands between the threat and whoever cannot survive it.
+    job: Deny access to one Character. Punish the opponent's Combat Wave rather than declare one.
+    signature:
+      keywords_any: [Protector]
+      effects_any: [Prevent 1 Attack, Prevent Multiple Attacks, Protection (Immunity)]
+      stats: {PH: high, PA: low}
+    beats: Single-target removal, Executioner lines, anything needing a clean hit.
+    loses_to: Prowler (goes around the hitbox), Mass Removal, Silenced, being ignored.
+    line: A Warden protects with a BODY. A Backer protects with EFFECTS cast from safety.
+    faction_note: >-
+      Not available to Assholes -- "they don't block" is printed in their identity, and it is
+      the same sentence that puts Counterspell on their never list.
+
+  - key: wall
+    name: Wall
+    family: front
+    status: built
+    factions: [warmongers, overthinkers]
+    identity: Must be dealt with. Occupies rather than attacks.
+    job: Force the opponent to spend actions and cards on you instead of on their plan.
+    signature:
+      keywords_any: [Instigator]
+      effects_any: [Prevent Multiple Attacks, Protection (Immunity)]
+      stats: {PH: very_high, PA: very_low}
+    beats: Combat-Wave plans, engines that need a quiet Round.
+    loses_to: Prowler, Troll (goes at MH instead), Direct Damage, Bounce.
+    line: A Wall's power is a DURATION. A Vanguard's is a MOMENT.
+
+  - key: collector
+    name: Collector
+    family: front
+    status: built
+    factions: [assholes]
+    identity: Doesn't stop you attacking your target; makes it the worst available choice.
+    job: Attach a price to every attack that isn't aimed at it.
+    signature:
+      keywords_any: [Collector, Guilt-Tripper]
+      effects_any: []
+      stats: {PH: high}
+    beats: Wide boards, anyone who wants to attack every Round, Vanguards.
+    loses_to: A patient opponent who simply stops attacking, Silenced, Hard Removal.
+    line: >-
+      Instigator is COMPULSION -- you must target me. Collector is TAXATION -- go around, and
+      pay for it. Taxation is the better tool because it leaves the opponent a real choice.
+    note: >-
+      Built 2026-08-05. Pairs viciously with Executioner: everything on their board quietly
+      accumulates permanent damage, and permanent damage is what an Executioner hunts.
+
+  # ==========================================================================
+  # DAMAGE -- cards hired to convert time into dead Characters or Life Points.
+  #
+  # Range and mobility do not exist in this game, so the source catalogue's Marksman /
+  # Skirmisher / Sniper / Diver / Flanker distinctions collapse. What actually separates a
+  # damage card here is: which health bar it empties, whether it can be blocked, whether it
+  # kills in one hit, whether it needs combat at all, and whether it grows.
+  # ==========================================================================
+
+  - key: enforcer
+    name: Enforcer
+    family: damage
+    status: built
+    factions: null
+    identity: Wins straight clashes and keeps winning them.
+    job: Reliable Combat Wave damage every Round. The floor the crew is built on.
+    signature:
+      keywords_any: []
+      # Every size of Permanent Buff, not just the small ones. The Enforcer's identity is
+      # "no gimmick, just wins clashes", and a buff of any size is the purest form of that.
+      # Excluding 3/4/5 was an arbitrary line in the first draft.
+      effects_any:
+        [Multiple Attacks, Permanent Buff 1, Permanent Buff 2, Permanent Buff 3,
+         Permanent Buff 4, Permanent Buff 5]
+      stats: {PA: high, PH: high}
+    beats: Anything that has to trade with it on board.
+    loses_to: Protector, Prevent Attack, Stun, Fear, and specialists in their own context.
+    line: >-
+      The Enforcer has NO gimmick, and that is the point. It is variance reduction -- the card
+      that never has an off Round. Uniquely valuable in a crew of specialists.
+
+  - key: executioner
+    name: Executioner
+    family: damage
+    status: built
+    factions: [warmongers]
+    identity: Finishes what somebody else started.
+    job: Convert damaged Characters into dead ones. Doesn't open, closes.
+    signature:
+      keywords_any: [Executioner]
+      effects_any: [Hard Removal]
+      stats: {PA: high}
+    beats: Anything already hurt. Boards that traded last Round.
+    loses_to: A fresh board (nothing to finish), Protection (Immunity), healing.
+    line: An Enforcer wins a fight. An Executioner PRICES BEING IN ONE AT ALL.
+    note: >-
+      An unusually good fit for this game. Damage is permanent, so a damaged Character stays
+      damaged across Rounds and an Executioner threatens everything that has ever been hit.
+      Very few card games can express that.
+
+  - key: ghost
+    name: Ghost
+    family: damage
+    status: built
+    factions: [assholes, overthinkers]
+    identity: The board isn't in the way.
+    job: Bypass blockers entirely and put damage on Life Points.
+    signature:
+      keywords_any: [Prowler, Extortionist]
+      effects_any: [Untargetable]
+      stats: {PA: medium, PH: low}
+    beats: Warden and Wall (goes around both), slow builds, anyone at low Life Points.
+    loses_to: Tracker (the printed hard counter), Mass Removal, Direct Damage.
+    line: >-
+      This one Job absorbs four of the source catalogue's archetypes -- Flanker, Sniper, Diver
+      Assassin, Stealth Ambusher -- because all four are separated by range and concealment,
+      and this game has neither. Here they are one thing: CANNOT BE BLOCKED.
+
+  - key: headcase
+    name: Headcase
+    family: damage
+    status: built
+    factions: [overthinkers]
+    identity: Hits the mind, not the body.
+    job: Attack MH instead of PH, going around every defence built for physical damage.
+    signature:
+      keywords_any: [Troll]
+      effects_any: [Status Application (Minor), Status Application (Major)]
+      stats: {MA: high}
+    beats: Anything with a big PH and a small MH -- which today is most Warmongers.
+    loses_to: High MH, Status Immunity, Cleanse.
+    line: The only Job defined by WHICH HEALTH BAR IT EMPTIES.
+    note: >-
+      This is the Job that turns MA/MH from dead weight into a second axis (OQ-05). If the
+      mental game is going to exist, it lives here. Also the cheapest available answer to
+      stacked PH -- see the Breaker.
+
+  - key: artillery
+    name: Artillery
+    family: damage
+    status: built
+    factions: [overthinkers]
+    identity: Spends Rounds aiming, then deletes something.
+    job: >-
+      Convert patience into a single strike larger than any defender's PH, at a moment of
+      your choosing.
+    signature:
+      keywords_any: ["Range 2", "Range 3"]
+      effects_any: []
+      stats: {PA: high, PH: low}
+    beats: Big single blockers, anyone who has to hold still, opponents at burst range.
+    loses_to: >-
+      Stun, Fear, Silence and Bounce (all clear Aim outright), Tokens used as chump blocks,
+      and any clock fast enough that two idle Rounds lose the game.
+    line: >-
+      Artillery is the only Job that is genuinely helpless while doing its job. That is not a
+      flaw -- it is the reason the entire Front family has employment.
+    note: >-
+      Built 2026-08-05 with the Range keyword. This Job is what makes Formations structural
+      rather than thematic: a crew fielding Artillery must field somebody to keep it alive.
+
+  - key: burner
+    name: Burner
+    family: damage
+    status: built
+    factions: null
+    identity: Damage without ever declaring a Combat Wave.
+    job: Grind Life Points and Characters down from outside combat entirely.
+    signature:
+      keywords_any: []
+      effects_any:
+        [Direct Damage/Heal 1, Direct Damage/Heal 2, Direct Damage/Heal 3,
+         Direct Damage/Heal 4, Direct Damage/Heal 5]
+      stats: {PA: low}
+    beats: Pacifier, Protector, Wall -- EVERYTHING built to answer combat.
+    loses_to: Healing, Cleanse, and a clock (it is slow).
+    line: The only damage Job immune to the entire Front family. That is why it exists.
+    naming_note: >-
+      NAME NOT SETTLED. Split off from Artillery once Range gave Artillery real mechanics.
+      "Burner" carries both the TCG sense (burn = non-combat damage) and the street sense.
+      Yorman's ear on this one.
+
+  - key: breaker
+    name: Breaker
+    family: damage
+    status: built
+    factions: [warmongers]
+    identity: Punishes being big.
+    job: Make a large PH a liability instead of a pure upgrade.
+    signature:
+      keywords_any: [Breaker]
+      effects_any: []
+      stats: {PA: medium}
+    beats: Walls, Wardens, Grinders, anything that won a stat-stacking arms race.
+    loses_to: Wide boards of small bodies, Prowler, evasion.
+    line: >-
+      Without this Job, stacking PH is strictly correct forever. The Breaker is the only
+      reason a defensive stat has a ceiling.
+    note: >-
+      Built 2026-08-05. The cheaper half of this answer already existed -- Troll goes at MH
+      and ignores PH entirely -- so Headcase and Breaker are two roads to the same job of
+      taxing big bodies.
+
+  - key: wrecker
+    name: Wrecker
+    family: damage
+    status: built
+    factions: [overthinkers]
+    identity: Deletes boards, not Characters.
+    job: Punish a wide board; reset the game.
+    signature:
+      keywords_any: []
+      effects_any: [Mass Removal (Wipes)]
+      stats: {}
+    beats: Wide boards, Token strategies, anyone who over-committed.
+    loses_to: One big Character (damage wasted), holding cards in hand, Protection.
+    line: >-
+      Value scales INVERSELY with the opponent's card quality. Strongest against many weak,
+      weakest against one strong.
+    note: >-
+      Mass Removal was overpriced at 8 for as long as nothing could field a wide board. Tokens
+      (2026-08-05) close the numbers triangle -- swarm beats single-target, single-target
+      loses to swarm, Mass Removal beats swarm -- and this Job finally has prey.
+
+  - key: grinder
+    name: Grinder
+    family: damage
+    status: built
+    factions: [warmongers]
+    identity: Gets worse for you every Round it survives.
+    job: Win the long game. Grow while the fight lasts.
+    signature:
+      keywords_any: [Berserker]
+      effects_any: [Permanent Buff 1, Permanent Buff 2, Permanent Buff 3]
+      stats: {PH: high}
+    beats: Attrition plans, boards that cannot kill it quickly.
+    loses_to: Hard Removal, Bounce, Stun, and any Round it is not allowed to act.
+    line: The Grinder's power is a CURVE. The Enforcer's is a FLAT LINE.
+
+  # ==========================================================================
+  # SUPPORT -- cards whose output passes through other cards.
+  #
+  # A Support card's numbers are meaningless alone. The same card is excellent next to a Ghost
+  # and worthless next to another Support. This is the most pairing-dependent family, and it
+  # is the family the Formation layer exists to protect.
+  # ==========================================================================
+
+  - key: backer
+    name: Backer
+    family: support
+    status: built
+    factions: null
+    identity: Makes one Character into two.
+    job: Buff, shield and protect an ally so they survive to do their job.
+    signature:
+      keywords_any: []
+      effects_any:
+        [Permanent Buff 1, Permanent Buff 2, Permanent Buff 3, Protection (Immunity),
+         Spell Shield]
+      stats: {PA: low}
+    beats: Single-target removal, Executioner, chip damage.
+    loses_to: >-
+      Mass Removal, Silenced, and BAD PAIRINGS -- a Backer next to nothing worth backing is a
+      blank card.
+
+  - key: grabber
+    name: Grabber
+    family: support
+    status: built
+    factions: null
+    identity: One button ends a Character's Round.
+    job: Take the opponent's best card out of the game long enough to win the exchange.
+    signature:
+      keywords_any: []
+      effects_any:
+        [Soft Removal (Stun), Soft Removal (Bounce), Status Application (Minor),
+         Status Application (Major)]
+      stats: {}
+    beats: Anything that needs to act. Vanguards, Grinders, engines -- and Artillery.
+    loses_to: Status Immunity, Cleanse, wide boards (it only stops one thing).
+    note: >-
+      Promoted in importance by Range. Stun, Fear, Silence and Bounce all clear Aim counters
+      outright, which makes the Grabber the printed answer to Artillery.
+
+  - key: fixer
+    name: Fixer
+    family: support
+    status: built
+    factions: [warmongers, overthinkers, icons]
+    identity: Refuses to let anyone die slowly.
+    job: Heal permanent damage; make attrition unwinnable for the opponent.
+    signature:
+      keywords_any: [Nurturer]
+      effects_any:
+        [Direct Damage/Heal 1, Direct Damage/Heal 2, Direct Damage/Heal 3, Cleanse (Minor),
+         Cleanse (Major)]
+      stats: {}
+    beats: Burners, chip damage, Grinders, long games.
+    loses_to: >-
+      Burst that outpaces it, Wounded and Shattered (which forbid healing outright -- the
+      printed anti-heal), Executioner.
+    note: >-
+      Healing only restores what the opponent already paid to remove. A Fixer is strong here
+      specifically BECAUSE damage is permanent, so undoing it undoes a real investment.
+
+  - key: bailout
+    name: Bailout
+    family: support
+    status: built
+    factions: null
+    identity: Does nothing for four Rounds and then wins the game.
+    job: Undo a kill that already happened. One enormous, rationed button.
+    signature:
+      keywords_any: []
+      effects_any: [Protection (Immunity), Recursion, Counterspell]
+      stats: {}
+    beats: Executioner lines, Wrecker, all-in Combat Waves.
+    loses_to: Attrition (nothing to save from), and being BAITED into spending it early.
+    line: A Backer's mitigation is CONTINUOUS. A Bailout's is ONE MOMENT.
+
+  - key: quartermaster
+    name: Quartermaster
+    family: support
+    status: built
+    factions: [assholes, icons]
+    identity: Pays for everyone else's plan.
+    job: Generate Energy and cards so the crew can act above its cost.
+    signature:
+      keywords_any: [Sponsor, "Hustler +1", "Hustler +2", "Hustler +3", "Hustler +4", "Hustler +5"]
+      effects_any:
+        [Energy Gen 1, Energy Gen 2, Energy Gen 3, Energy Gen 4, Energy Gen 5,
+         Energy Gen from Keyword, Card Draw 1, Card Draw 2, Card Draw 3]
+      stats: {}
+    beats: Anything slower than you. Expensive plans that would otherwise never assemble.
+    loses_to: Resource Denial, Taxing, Hand Destruction, and pressure that kills it early.
+    note: >-
+      This replaces the source catalogue's Tempo Support. There is no movement to grant, so in
+      this game TEMPO IS ENERGY. The Investment Engine makes it a first-class Job.
+
+  - key: silencer
+    name: Silencer
+    family: support
+    status: built
+    factions: null
+    identity: Turns off the opponent's best card rather than killing it.
+    job: Apply Silenced, anti-heal and Resource Denial so their plan stops functioning.
+    signature:
+      keywords_any: []
+      effects_any:
+        [Status Application (Major), Status Application (Minor), Resource Denial,
+         Taxing 1, Taxing 2, Taxing 3, Taxing 4, Taxing 5]
+      stats: {}
+    beats: Fixers, Backers, engines, anything with printed abilities.
+    loses_to: A crew with no abilities to turn off -- against which it is a BLANK CARD.
+    line: >-
+      Defined entirely by what it negates, so its value is a pure function of the opponent's
+      crew rather than of its own numbers.
+
+  - key: cleaner
+    name: Cleaner
+    family: support
+    status: built
+    factions: [warmongers, overthinkers, icons]
+    identity: Undoes the opponent's best play after it lands.
+    job: Remove statuses; restore a locked-down Character to functional.
+    signature:
+      keywords_any: []
+      effects_any: [Cleanse (Minor), Cleanse (Major), Status Immunity]
+      stats: {}
+    beats: Grabbers, Silencers, status-stacking, Shattered/Wounded setups.
+    loses_to: Straight damage with no status attached -- 0% useful in that matchup.
+    line: >-
+      The exact mirror of the Grabber, and the most swingy Job in the catalogue:
+      match-winning or dead weight, with no change in how you play it.
+
+  - key: boss
+    name: Boss
+    family: support
+    status: built
+    factions: [assholes]
+    identity: Gives your best card another action.
+    job: Manipulate the Phase 2 action economy directly.
+    signature:
+      keywords_any: []
+      effects_any: [Additional Action]
+      stats: {}
+    beats: >-
+      Anything that assumed it had one more action than it does. Every plan measured in
+      tempo -- which is every plan.
+    loses_to: >-
+      Its own printed failure mode: pointing the action at the wrong Character is strictly
+      worse than not having it. Also Silenced, and being killed on the setup Round.
+    line: >-
+      The alternating single action is the game's fundamental unit -- every cost, every
+      telegraph, every interaction window is denominated in it. This Job attacks the currency
+      itself.
+    note: >-
+      Built 2026-08-05. Bounded by RULE, not by price: a player may never take more than two
+      consecutive actions, so an unbounded action chain is impossible rather than merely
+      expensive. That is a far stronger P3 than a prohibition on a page.
+      Originally proposed as an Icons ability -- moved to Assholes, because parking the most
+      valuable unbuilt mechanic in the faction being designed last means it never ships.
+
+  # ==========================================================================
+  # SPECIALIST -- cards whose contribution is information, denial or presence.
+  # ==========================================================================
+
+  - key: spy
+    name: Spy
+    family: specialist
+    status: built
+    factions: [assholes]
+    identity: Works for you from their side of the table.
+    job: Sit on the opponent's Board providing value just by existing there.
+    signature:
+      keywords_any: [Infiltrator]
+      effects_any: []
+      stats: {PA: low, PH: low}
+    beats: Opponents who cannot or will not remove their own Character.
+    loses_to: The opponent sacrificing it, Mass Removal.
+    note: >-
+      Infiltrator is the strangest keyword in the game and the only one priced NEGATIVE. The
+      source catalogue calls this "attention laundering." Worth re-reading OQ-11 with that lens.
+
+  - key: snitch
+    name: Snitch
+    family: specialist
+    status: built
+    factions: [overthinkers]
+    identity: Converts knowledge into advantage.
+    job: Reveal the opponent's hand and plans so the crew can act with certainty.
+    signature:
+      keywords_any: [Interrogator]
+      effects_any: [Hand Destruction 1, Hand Destruction 2, Searching (Tutors)]
+      stats: {}
+    beats: Held answers, Bailouts, anything relying on surprise.
+    loses_to: An opponent playing everything face-up anyway.
+    line: >-
+      INFORMATION YOU CANNOT ACT ON IS WORTH NOTHING. A Snitch in a crew with no follow-up is
+      a wasted slot -- which makes this the Job most dependent on its Formation.
+
+  - key: cutoff
+    name: Cutoff
+    family: specialist
+    status: built
+    factions: [overthinkers]
+    identity: Doesn't beat the plan, cancels it.
+    job: Counter cards and abilities in the Reaction Window; kill the caster before it resolves.
+    signature:
+      keywords_any: []
+      effects_any: [Counterspell, Spell Shield]
+      stats: {}
+    beats: One-big-card plans, level-up payoffs, Bailouts.
+    loses_to: Many small threats (nothing worth countering), and being baited.
+    note: >-
+      The Command System makes this Job unusually strong: every Tactic needs a living caster,
+      so killing the caster in response cancels the card entirely. That is a Cutoff mechanic
+      baked into the rules, and no card currently exploits it.
+
+  - key: setter
+    name: Setter
+    family: specialist
+    status: built
+    factions: null
+    identity: Wins Rounds it set up three Rounds ago.
+    job: Place Attachments and permanents in advance; convert planning into inevitability.
+    signature:
+      keywords_any: []
+      effects_any: [Searching (Tutors), Status Application (Major)]
+      stats: {}
+    beats: Slow opponents, predictable plans.
+    loses_to: >-
+      Attachment removal -- and an Attachment dies with its Character, so a Setter's whole
+      investment is bolted to bodies.
+    note: Dre is the purest Setter in the game.
+
+  - key: landlord
+    name: Landlord
+    family: specialist
+    status: built
+    factions: null
+    identity: Edits the rules of the table.
+    job: Change what is legal for both players, then build a crew that likes the new rule.
+    signature:
+      keywords_any: []
+      effects_any: [Arena Rule Edit (Minor), Arena Rule Edit (Major)]
+      stats: {}
+    beats: Any crew whose plan depends on the rule being edited.
+    loses_to: >-
+      A crew that does not care about that rule -- entirely context-dependent, S-tier in one
+      matchup and blank in another. Also Attachment removal, since an Arena is an object.
+    line: >-
+      There is no map in this game, so an Arena cannot edit space. It edits the RULES. That is
+      the whole translation.
+    note: >-
+      Built 2026-08-05, resolving OQ-07. Arena text is symmetric by rule: a one-sided rule
+      edit is a passive lock with no off-switch (P2), while a symmetric one is a puzzle. The
+      asymmetry has to come from deckbuilding, not from the card.
+
+  - key: recruiter
+    name: Recruiter
+    family: specialist
+    status: built
+    factions: [warmongers, overthinkers, icons]
+    identity: Fields more bodies than it has cards.
+    job: Flood the board with cheap Characters that demand answers.
+    signature:
+      keywords_any: []
+      effects_any: [Token Generation 1, Token Generation 2, Token Generation 3]
+      stats: {}
+    beats: Single-target removal, Executioner, Artillery (a Token chump-blocks the big shot).
+    loses_to: Mass Removal, any wide-punishing effect.
+    line: The corner of the numbers triangle that was missing. Without it, Mass Removal has no prey.
+    faction_note: >-
+      Not available to Assholes. They are solo operators -- Prowlers, Infiltrators, hustlers.
+      A crew of hustlers is not a swarm of bodies.
+
+  - key: legend
+    name: Legend
+    family: specialist
+    status: unbuilt
+    factions: [icons]
+    identity: Doesn't need to kill you.
+    job: Accumulate Influence toward the third victory.
+    signature:
+      keywords_any: [Martyr, Guilt-Tripper]
+      effects_any: []
+      stats: {PA: very_low}
+    beats: Anyone playing only the Beatdown game.
+    loses_to: A fast clock, and -- currently -- the fact that NO CARD GRANTS INFLUENCE (OQ-02).
+    unbuilt_reason: >-
+      Influence is a printed win condition with zero printed support, and the only faction
+      that could carry it is Icons, who are exempt and being designed last. Doubly parked.
+      Reported by the Health screen as backlog, never as an error.

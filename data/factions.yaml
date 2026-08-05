@@ -32,7 +32,7 @@ factions:
       But when a problem cannot be solved with fists, and their unbreakable bodies finally begin
       to fail, what will they have left?
     unique:
-      keywords: [Berserker, Combo-Striker, Executioner, Juggernaut, Protector]
+      keywords: [Berserker, Breaker, Combo-Striker, Executioner, Juggernaut, Protector]
       effects: [Multiple Attacks, Permanent Buff 4, Permanent Buff 5]
     never:
       effects:
@@ -81,8 +81,9 @@ factions:
       But when their perfect plans are suddenly punched in the mouth, and the chaotic violence of
       the streets overwhelms their grand designs, how long can a genius survive a street fight?
     unique:
-      keywords: [Instigator, Interrogator, Tracker, Troll]
+      keywords: [Instigator, Interrogator, "Range 2", "Range 3", Tracker, Troll]
       effects:
+        - Token Generation 3     # "everyone else is just a pawn waiting to be sacrificed"
         - Counterspell
         - Searching (Tutors)
         - Card Draw 1
@@ -129,8 +130,9 @@ factions:
       But if they are ever dragged out of the shadows and forced into a fair, head-on collision,
       do they have the spine to survive it?
     unique:
-      keywords: [Extortionist, "Hustler +1", "Hustler +2", "Hustler +3", "Hustler +4", "Hustler +5", Infiltrator, Prowler]
+      keywords: [Collector, Extortionist, "Hustler +1", "Hustler +2", "Hustler +3", "Hustler +4", "Hustler +5", Infiltrator, Prowler]
       effects:
+        - Additional Action      # the ultimate tempo card, in the tempo faction
         - Hand Destruction 1
         - Hand Destruction 2
         - Hand Destruction 3
@@ -152,6 +154,9 @@ factions:
     never:
       effects:
         - Counterspell        # "they don't block" -- countering IS blocking
+        - Token Generation 1  # solo operators. A crew of hustlers is not a swarm of bodies.
+        - Token Generation 2
+        - Token Generation 3
         - Cleanse (Minor)
         - Cleanse (Major)
         - Recursion
@@ -174,6 +179,18 @@ factions:
     color: gold
     emoji: "🟨"
     reviewed: false
+    # ------------------------------------------------------------------
+    # ICONS ARE DELIBERATELY OUTSIDE THE SYSTEM.
+    # They are not a crew, they hold no Formation, and they are not required to be
+    # internally consistent. Each is a rule-breaker and a one-person army. They are
+    # being designed LAST. `exempt` switches off Job, Formation and toolkit validation
+    # so the engine stops reporting a design choice as an error.
+    # Do not park a mechanic the rest of the game needs here -- it will never ship.
+    # ------------------------------------------------------------------
+    exempt: true
+    exempt_reason: >-
+      Rule-breakers by design, designed last. Coherence checks would report the intent as a
+      defect. Influence is not a live win condition on their account.
     identity: >-
       The Icons do not fight for survival; they fight for the soul of the city. They are the
       pillars of the community, commanding absolute respect and ruling through a heavy,

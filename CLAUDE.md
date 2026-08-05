@@ -63,6 +63,27 @@ Faction identity, toolkits and window profiles live in `data/factions.yaml`. Cre
 `plan.requires` / `plan.produces` against that vocabulary so `check.py` can find enabler chains
 automatically — that is how Dre feeding Moammar was caught.
 
+## Jobs and Formations
+
+**A Job is not a Role.** The rulebook spends "Role" on faction-exclusive keywords. A Job is the
+position a Character plays for its crew; a Role is one of the tools it plays it with.
+
+- `data/jobs.yaml` — 28 Jobs in four families (front · damage · support · specialist). Every
+  Character declares one in frontmatter as `job: <key>`. Each Job carries a `signature`
+  (guidance, not law), a `factions` allow-list (null = any), and `status: built | unbuilt`.
+- `data/formations.yaml` — 8 Formations. A crew declares one; it names **four required Jobs and
+  one free slot**. **No crew has one assigned yet** — lore leads, the plan follows the lore, the
+  Formation follows the plan. Do not assign them by reading off existing cards.
+- **`Every Man For Himself` is not an exemption**, it is a different rule: no card may require a
+  state a crewmate produces (F12), and no card may reference or buff its own crew. In exchange
+  those cards get a higher individual rate. **No crew is chaotic yet** — that crew is still to be
+  designed.
+- Rules: F11 legality (error) · F12 chaotic enablers (error) · W12 signature fit · W13 Formation
+  coverage · W14 Job duplication · W15 undeclared. Plus GAP reporting of unfilled Jobs.
+
+Read [`docs/design/jobs-and-formations.md`](docs/design/jobs-and-formations.md) before touching
+any of it.
+
 `docs/rulebook/12-keywords.md` is generated** from `data/keywords.yaml`. Edit the YAML.
 7. **Append to `## Design Notes`, don't overwrite.** The history of why a card changed is worth
    more than the current state.
@@ -180,7 +201,19 @@ could theoretically remove it" is not a window.
 
 - **31 cards exist. All 31 are Ascendants**, which the rules cap at 5 per 40-card deck. There
   are no Descendants, Tactics, Attachments or Arenas. (OQ-01)
-- The **Icons** faction is five nameless stubs. (OQ-06)
+- **Six mechanics were built on 2026-08-05 and no card uses them yet**: `Range 2`/`Range 3`
+  (Aiming, Overthinkers), `Collector` (taxation, Assholes), `Breaker` (anti-PH, Warmongers),
+  `Additional Action` (Assholes), `Token Generation 1/2/3`, `Arena Rule Edit (Minor|Major)`.
+  The rules for all of them are written; the cards are not. See D-007 and D-008.
+- **The rules layer moves before the pricing layer, always.** A rulebook change invalidates card
+  tuning; a card never invalidates the rulebook. Do not tune cards while a mechanic is still
+  being designed — that is how you end up re-playtesting everything.
+- The **Icons** faction is five nameless stubs. (OQ-06) **Icons are deliberately outside the
+  system.** They are not a crew, they have no Formation, and they are not required to be
+  internally consistent — each one is a rule-breaker and a one-person army. They represent the
+  designers' mothers, and the reverence is the point. **They are being designed last.** Do not
+  use Icons as the home for a mechanic the rest of the game needs, do not fold them into crew
+  or Formation validation, and do not treat Influence as a live win condition on their account.
 - The **Influence** win condition has no printed support. (OQ-02)
 - Read `docs/design/open-questions.md` before proposing new work. Fifteen structural issues are
   already catalogued; adding a sixteenth is more useful than re-finding the first.

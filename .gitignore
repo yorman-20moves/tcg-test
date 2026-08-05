@@ -19,12 +19,3 @@ venv/
 # Scratch
 *.tmp
 /tmp/
-
-# Staging leftovers -- safe for you to delete this whole folder
-_to_delete/
-
-# Python virtual environment created by "Card Studio.bat"
-.venv/
-
-# Snapshots written by the Studio
-.snapshots/

@@ -16,6 +16,12 @@ keywords:
   faction: Assholes
   points: 3
   definition: Stealth unit. Cannot be intercepted/targeted (unless Tracker); can hit Life Points directly.
+- name: Collector
+  faction: Assholes
+  points: 3
+  definition: >-
+    Whenever an enemy Character attacks any target other than this one, that attacker takes 1
+    permanent PH damage. Taxation, not compulsion -- they may go around, they just pay for it.
 - name: Extortionist
   faction: Assholes
   points: 5
@@ -68,6 +74,18 @@ keywords:
   faction: Overthinkers
   points: 2
   definition: Can target/intercept Prowlers, bypassing stealth.
+- name: Range 2
+  faction: Overthinkers
+  points: 2
+  definition: >-
+    May Aim. Each Round it does not attack, gains an Aim counter (max 1). Its attack deals
+    printed PA x (1 + Aim counters). Stun/Fear/Silence/Bounce clears aim; damage does not.
+- name: Range 3
+  faction: Overthinkers
+  points: 4
+  definition: >-
+    May Aim. Each Round it does not attack, gains an Aim counter (max 2). Its attack deals
+    printed PA x (1 + Aim counters). Stun/Fear/Silence/Bounce clears aim; damage does not.
 - name: Troll
   faction: Overthinkers
   points: 2
@@ -88,6 +106,12 @@ keywords:
   faction: Warmongers
   points: 3
   definition: Excess PA damage beyond defender's PH spills over to Life Points.
+- name: Breaker
+  faction: Warmongers
+  points: 4
+  definition: >-
+    When this Character attacks, it deals its PA plus half the defender's PRINTED PH, rounded
+    down. The bigger the body, the worse it is to stand in front of this.
 - name: Combo-Striker
   faction: Warmongers
   points: 4

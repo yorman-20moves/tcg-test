@@ -27,6 +27,23 @@ other player at the end of every Round.
 **Reaction Window** — Step 2 of a Combat Wave, the only window in which Combat Tactics and Fast
 Abilities may be played.
 
+**Aim** — a counter placed at the End Step on a Character with **Range** that did not attack
+that Round. Each Aim counter adds one multiple of the Character's **printed** PA to its next
+attack. Stun, Fear, Silence, Bounce and leaving the Board remove all Aim counters; damage does
+not. See [Combat §Aiming](09-combat-and-stack.md#aiming-the-range-keyword).
+
+**Token** — a Character created by an effect rather than played from a zone. It is a Character
+for every rule, belongs to its creator's faction and crew, counts toward no deck limit, and is
+**removed from the Game** rather than sent to the Graveyard when it leaves the Board. See
+[Card Types §Token](05-card-types.md#token).
+
+**Additional Action** — an extra Phase 2 action taken immediately, before Initiative passes. A
+player may never take more than **two consecutive actions**; surplus is lost. See
+[Round Structure §Additional Actions](08-round-structure.md#additional-actions).
+
+**Printed** — the value shown on the card itself, before any buff, Attachment, status or other
+modifier. Multipliers always apply to printed values; additions apply afterwards.
+
 ---
 
 ## Terms used on cards that are NOT yet defined here
@@ -39,4 +56,4 @@ Each is a gate **G2** failure waiting to happen.
 - **Spell Shield** — appears in the effect table; not in the rulebook.
 - **Taxing** — appears in the effect table; not in the rulebook.
 - **Recursion** — appears in the effect table; not in the rulebook.
-- **Arena** — referenced in §4 and §5; has no rules of its own.
+- ~~**Arena**~~ — **defined**, see [Card Types §Arena](05-card-types.md#arena). *(OQ-07 closed.)*

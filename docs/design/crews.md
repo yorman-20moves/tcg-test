@@ -81,11 +81,11 @@ Every card must advance the plan by a *different* road.
 
 ## Pwners  ·  ⚠️ *draft, unreviewed*
 
-**Plan.** UNDECIDED -- are these the uncoordinated crew? Their cards suggest chaos: dice rolls, item boxes, glitches, and "You Know This Is Just A Game, Right?"
+**Plan.** UNWRITTEN. Their cards are full of randomness -- dice rolls, item boxes, glitches -- but randomness is a TEXTURE, not a plan. What are they trying to do with it?
 
 *Lore basis:* Gamers. Caleb rolls a d6 to teabag. Ruvi has an Item Box and a Glitch. Julito is a Harbinger of the Demon. Lenny is the Kawaii Connoisseur.
 
-**Coordination:** chaotic  ·  **Signature:** Randomness, glitches, breaking the fourth wall  ·  **5 cards across 3 factions** (Assholes, Overthinkers, Warmongers)
+**Coordination:** coordinated  ·  **Signature:** Randomness, glitches, breaking the fourth wall  ·  **5 cards across 3 factions** (Assholes, Overthinkers, Warmongers)
 
 | Card | Faction | The road it takes |
 |---|---|---|
@@ -95,7 +95,7 @@ Every card must advance the plan by a *different* road.
 | Lenny, the Kawaii Connoisseur | Overthinkers | _no road declared_ |
 | Ruvi, Player One | Overthinkers | _no road declared_ |
 
-> If chaotic is right, the chaos must be mechanically real -- including for their own player. That is Yorman's call, not a derivation.
+> NOT the chaotic crew. Yorman, 2026-08-05: "I don't view Pwners that way. So far, I don't think we have the chaotic crew yet, but we will be designing one soon." Corrected from `chaotic` on that basis. Pwners need a real game plan like every other crew; being random is how they do it, not what they are doing.
 
 ---
 
