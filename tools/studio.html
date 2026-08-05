@@ -776,6 +776,31 @@ const el = (t,p={},...kids)=>{const n=document.createElement(t);
   return n;};
 const esc = s => String(s??"");
 
+/* Every render below is a teardown -- replaceChildren() throws away the node the caret is
+   sitting in. A render fired from an input handler therefore ate the keystroke: focus fell to
+   <body>, the panel scrolled back to the top, and you got one letter per click. renderMain and
+   renderRail go through here, which notes which field owned the caret and hands it back to the
+   rebuilt one. The match is on an explicit data-focus key because the rebuilt node is a
+   different object than the old one -- an editable field inside a re-rendered panel needs a key
+   or it will not be restored. */
+function preservingFocus(render){
+  const live=document.activeElement;
+  const key=live&&live.dataset?live.dataset.focus:null;
+  if(!key) return render();
+  const scroller=live.closest("#main,#rail");
+  const scrolled=scroller?scroller.scrollTop:0;
+  /* type=number throws on selectionStart rather than returning null, so both ends are read
+     and re-applied defensively */
+  let head=null, tail=null;
+  try{ head=live.selectionStart; tail=live.selectionEnd; }catch{}
+  render();
+  const back=document.querySelector(`[data-focus="${CSS.escape(key)}"]`);
+  if(!back || back===live) return;             /* nothing rebuilt it -- the caret never moved */
+  if(scroller) scroller.scrollTop=scrolled;    /* the teardown collapsed the panel to zero height */
+  back.focus({preventScroll:true});
+  if(head!=null && back.setSelectionRange){ try{ back.setSelectionRange(head,tail); }catch{} }
+}
+
 const FACTION_VAR = {Warmongers:"--f-warmongers",Overthinkers:"--f-overthinkers",
                      Assholes:"--f-assholes",Icons:"--f-icons"};
 const GLYPH = {good:"✓",warning:"!",serious:"!",critical:"✕"};
@@ -1152,7 +1177,7 @@ function line(label, value, cls=""){
 /* A card-text field: the card's own words, set like printed text rather than like a form.
    Grows to fit so there is never a scrollbar inside the card's voice. */
 function cardText(label, key, placeholder, tipKey){
-  const ta=el("textarea",{class:"cardtext",placeholder,
+  const ta=el("textarea",{class:"cardtext",placeholder,"data-focus":"card:"+key,
     oninput:e=>{ draft[key]=e.target.value; grow(e.target); touch(false); }}, draft[key]||"");
   const count=el("span",{class:"cnt"});
   const grow=n=>{ n.style.height="auto"; n.style.height=Math.max(52,n.scrollHeight+2)+"px";
@@ -1227,6 +1252,7 @@ function proofPanel(s){
 
 function stepper(label, value, onChange, min=0){
   const input=el("input",{type:"number",value:value??"",min:String(min),"aria-label":label,
+    "data-focus":"step:"+label,
     oninput:e=>onChange(e.target.value===""?null:Number(e.target.value))});
   const bump=d=>{const v=(Number(input.value)||0)+d; if(v<min)return;
     input.value=v; onChange(v);};
@@ -1376,6 +1402,7 @@ function scorePanel(s){
         el("div",{class:"val"},
           el("button",{class:"sbtn",text:"−","aria-label":`less ${c.key}`,onclick:()=>set(q-1)}),
           el("input",{type:"number",min:"0",value:String(q),"aria-label":c.label,
+            "data-focus":"credit:"+c.key,
             oninput:e=>set(Math.max(0,Number(e.target.value)||0))}),
           el("button",{class:"sbtn",text:"+","aria-label":`more ${c.key}`,onclick:()=>set(q+1)})),
         el("span",{class:"pts",text:`${c.points>=0?"+":""}${c.points} ea`})),
@@ -1683,7 +1710,7 @@ function renderLibrary(main){
         el("button",{class:"mode","aria-current":libKind===k,
           onclick:()=>{libKind=k; libSel=null; renderMain();}},
           m.label, el("span",{class:"n",text:String(libRows(k).length)})))),
-    el("input",{class:"efsearch",style:"margin-top:8px",value:libQuery,
+    el("input",{class:"efsearch",style:"margin-top:8px",value:libQuery,"data-focus":"lib:q",
       placeholder:`Filter ${rows.length} ${meta.label.toLowerCase()}…`,
       oninput:e=>{libQuery=e.target.value; renderMain();}})));
 
@@ -2126,7 +2153,8 @@ function renderCrews(main){
       el("label",{class:"fl"},
         el("span",{class:"dot",style:`display:inline-block;margin-right:6px;background:var(${FACTION_VAR[m.meta.faction]||"--baseline"})`}),
         m.meta.name, dupe?el("span",{class:"warning-c",text:"  · duplicate road"}):null),
-      el("textarea",{rows:"2",placeholder:"the different road this card takes to the crew's plan",
+      el("textarea",{rows:"2","data-focus":"road:"+slug,
+        placeholder:"the different road this card takes to the crew's plan",
         oninput:e=>{entry.road=e.target.value; renderMain();}},entry.road||"")));
   }
   main.append(el("div",{class:"panel"},
@@ -2392,7 +2420,8 @@ function renderProblems(main){
   main.append(list);
 }
 
-function renderMain(){
+function renderMain(){ preservingFocus(renderMainNow); }
+function renderMainNow(){
   const main=$("#main"); main.replaceChildren();
   if(MODE==="library")  return renderLibrary(main);
   if(MODE==="factions") return renderFactions(main);
@@ -2478,8 +2507,25 @@ function lightbox(url,caption){
    syncProof() updates the name, cost and stats printed on it in place. */
 function renderArt(){ buildProof(); }
 
-function renderRail(){
-  const rail=$("#raildyn"); rail.replaceChildren();
+/* The lore packet's counterpart to syncProof: the three things in the rail that read the lore
+   text, updated without going near the textareas the words are being typed into. */
+let LORE=null;
+function syncLore(){
+  if(!LORE) return;
+  let filled=0;
+  LORE.fields.forEach((f,i)=>{
+    const val=(draft.lore[f.field]||"").trim();
+    if(val) filled++;
+    f.box.classList.toggle("done", !!val);
+    if(f.req) f.req.hidden=!!val;
+    LORE.pips[i].className=val?"on":"";
+  });
+  LORE.count.textContent=`${filled}/${DB.lorePacketFields.length}`;
+}
+
+function renderRail(){ preservingFocus(renderRailNow); }
+function renderRailNow(){
+  const rail=$("#raildyn"); rail.replaceChildren(); LORE=null;
   if(MODE!=="cards"){ return; }
   if(!current) return;
   const m=draft.meta;
@@ -2539,19 +2585,25 @@ function renderRail(){
       why:"What levelling up MEANS in the story — not the stat change. The base side should actively pursue this. If it merely happens to the card, the level-up isn't earned.",
       eg:"The bar is trashed and he loves it. Now he decides when everyone goes home."},
   };
-  const filled = DB.lorePacketFields.filter(f=>(draft.lore[f]||"").trim()).length;
+  /* The lore packet is the only place in the rail you type into, and the old handler called
+     touch(), which rebuilt the rail out from under the caret. Nothing in the rail depends on
+     the lore text except the counter, the meter and each field's own done/REQUIRED state, so
+     the fields are built once and those three are synced in place -- the same bargain
+     buildProof/syncProof already strike for the artwork. Not rebuilding is also what keeps
+     accented input working: tearing the textarea out mid-word cancels a dead-key or IME
+     composition, and no amount of focus restoring gets that back. */
+  const count=el("span",{class:"muted",style:"font-size:11px"});
+  const pips=DB.lorePacketFields.map(()=>el("i",{}));
   const lore=el("div",{class:"railsec"},
     el("div",{class:"row spread"},
-      el("h3",{text:"Lore packet"}),
-      el("span",{class:"muted",style:"font-size:11px",text:`${filled}/${DB.lorePacketFields.length}`})),
-    el("div",{class:"loremeter"},
-      ...DB.lorePacketFields.map(f=>el("i",{class:(draft.lore[f]||"").trim()?"on":""}))),
+      el("h3",{text:"Lore packet"}), count),
+    el("div",{class:"loremeter"}, ...pips),
     el("div",{class:"muted",style:"font-size:11.5px;margin-bottom:12px"},
       "Your working notes, not printed text. You write the card's flavour sentence FROM this — the one line of story inside the rules text. Fill it before you write the card."));
 
+  LORE={count, pips, fields:[]};
   for(const f of DB.lorePacketFields){
     const help=HELP[f]||{};
-    const val=(draft.lore[f]||"").trim();
     let ctx=null;
     if(f==="The Fall (printed weakness)" && brief && brief.weakness)
       ctx=`${m.faction} weakness: ${brief.weakness}`;
@@ -2559,25 +2611,30 @@ function renderRail(){
       ctx=`${crew.name} plan: ${crew.plan}`;
     if(f==="The Ascension (what the level-up MEANS)" && draft.levelupCondition)
       ctx=`Level-up condition: ${draft.levelupCondition.slice(0,150)}`;
-    lore.append(el("div",{class:`lorefield ${val?"done":""}`},
-      el("div",{class:"hd"},
-        el("span",{class:"nm",text:f}),
-        (!val && (f==="The True Detail"||f==="The Fall (printed weakness)"))
-          ? el("span",{class:"req",text:"REQUIRED"}) : null),
+    /* the badge is built for the two required fields and hidden once they are filled, rather
+       than created and destroyed, so syncLore can toggle it without rebuilding the field */
+    const req=(f==="The True Detail"||f==="The Fall (printed weakness)")
+      ? el("span",{class:"req",text:"REQUIRED"}) : null;
+    const box=el("div",{class:"lorefield"},
+      el("div",{class:"hd"}, el("span",{class:"nm",text:f}), req),
       el("div",{class:"why",text:help.why||""}),
       ctx?el("div",{class:"ctx",text:ctx}):null,
-      el("textarea",{rows:"2",placeholder:help.eg?`e.g. ${help.eg}`:"—",
-        oninput:e=>{draft.lore[f]=e.target.value; touch(false);}}, draft.lore[f]||"")));
+      el("textarea",{rows:"2","data-focus":"lore:"+f,placeholder:help.eg?`e.g. ${help.eg}`:"—",
+        oninput:e=>{draft.lore[f]=e.target.value; markDirty(); syncLore();}}, draft.lore[f]||""));
+    LORE.fields.push({field:f, box, req});
+    lore.append(box);
   }
   rail.append(lore);
+  syncLore();
 
 
 }
 
 /* ---------------- state ---------------------------------------------------------------- */
 let dirty=false;
+function markDirty(){ dirty=true; $("#savebar").hidden=false; }
 function touch(rerender=true){
-  dirty=true; $("#savebar").hidden=false;
+  markDirty();
   if(rerender){ renderMain(); }
   renderRail(); renderList();
 }
