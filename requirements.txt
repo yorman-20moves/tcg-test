@@ -3,3 +3,9 @@
 #   .venv\Scripts\activate      (Windows)   |   source .venv/bin/activate  (mac/Linux)
 #   pip install -r requirements.txt
 PyYAML>=6.0
+
+# Dev only. tools/tests/ runs standalone on a bare install --
+#   python tools/tests/test_jobs_and_formations.py
+# -- and installing pytest additionally lets `pytest tools/tests` collect the
+# same cases. Nothing in tools/ imports it at runtime.
+pytest>=8.0

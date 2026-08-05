@@ -144,3 +144,32 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# ---------------------------------------------------------------------------
+# pytest bridge.
+#
+# Every case above is registered by the @case decorator and named `_`, so pytest
+# collects nothing from this file on its own -- it ran green and empty, which is
+# worse than failing. This hands pytest the same CASES the script runs, one test
+# per case, so `pytest tools/tests` and `python tools/tests/test_...py` check
+# exactly the same things.
+#
+# The import is guarded because the script's whole point is that it runs on a
+# bare PyYAML install with no test framework present.
+# ---------------------------------------------------------------------------
+try:
+    import pytest
+except ImportError:                                             # standalone run
+    pytest = None
+
+if pytest is not None:
+
+    @pytest.mark.parametrize("label,fn,expect_zero", CASES,
+                             ids=[label for label, _fn, _z in CASES])
+    def test_rule_fires(label, fn, expect_zero):
+        found = fn()
+        if expect_zero:
+            assert not found, f"{label}: expected silence, got {len(found)}: {found}"
+        else:
+            assert found, f"{label}: expected the rule to fire, it stayed quiet"
