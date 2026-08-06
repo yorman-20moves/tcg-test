@@ -1275,10 +1275,15 @@ function stepper(label, value, onChange, min=0){
       el("button",{class:"sbtn",text:"+","aria-label":`increase ${label}`,"data-focus":"step-up:"+label,onclick:()=>bump(1)})));
 }
 
+/* The filter query outlives the re-render a tick triggers. touch() rebuilds the whole picker,
+   so a query held only in the input's own value was destroyed by the very act of ticking a
+   result -- you got one effect per retype, which is not a way to use a 51-entry list. */
+const EF_QUERY={base:"",ascended:""};
+
 function effectPicker(side){
   const chosen=draft.meta[side].effects;
   const search=el("input",{class:"efsearch",placeholder:`Filter ${DB.effects.length} effect types…`,
-    "data-focus":"efsearch:"+side});
+    "data-focus":"efsearch:"+side, value:EF_QUERY[side]||""});
   const list=el("div",{class:"eflist"});
   const selected=el("div",{class:"sel"});
   const drawSelected=()=>{
@@ -1289,7 +1294,7 @@ function effectPicker(side){
     if(!chosen.length) selected.append(el("span",{class:"muted",text:"None selected"}));
   };
   const drawList=()=>{
-    const q=search.value.toLowerCase();
+    const q=(EF_QUERY[side]||"").toLowerCase();
     const matching=DB.effects.filter(e=>e.name.toLowerCase().includes(q));
     /* selected first -- otherwise what you already picked scrolls out of sight */
     matching.sort((a,b)=>(chosen.includes(b.name)?1:0)-(chosen.includes(a.name)?1:0));
@@ -1310,7 +1315,7 @@ function effectPicker(side){
         el("span",{class:"pts",style:"margin-top:2px",text:String(e.points)}));
     }));
   };
-  search.addEventListener("input",drawList);
+  search.addEventListener("input",()=>{ EF_QUERY[side]=search.value; drawList(); });
   drawSelected(); drawList();
   return el("div",{},search,list,selected);
 }
@@ -1344,9 +1349,13 @@ function planOf(){
 }
 
 /* Mirrors scoring.py. Credits earn the Allowance; Reach CAPS it.
-   Each cost is discounted by the three tests (bite / timing / enabler). */
-function costFactor(key){
-  const scales=DB.plan.cost_tests||{}, chosen=(planOf().tests||{})[key]||{};
+   Each cost is discounted by the three tests (bite / timing / enabler).
+
+   Both take the plan explicitly rather than reaching for the module-level draft through
+   planOf(), because planOf() can only ever describe the card currently open -- which made it
+   impossible to score every card at once and check this mirror against the server's. */
+function costFactor(key, plan){
+  const scales=DB.plan.cost_tests||{}, chosen=(plan.tests||{})[key]||{};
   let f=1;
   for(const [test,opts] of Object.entries(scales)){
     const ans=chosen[test];
@@ -1354,21 +1363,64 @@ function costFactor(key){
   }
   return f;
 }
-function scorePlan(s){
-  const cfg=DB.plan, plan=planOf();
+
+/* Which factions can actually answer a card offering these windows -- the same question
+   scoring.py's Plan._answering asks, off the same window profiles in data/factions.yaml.
+   null means no faction carries a profile at all, which is the one case where falling back
+   to counting windows is right. */
+function answeringFactions(windows){
+  const briefs=DB.factions||{}, names=Object.keys(briefs);
+  if(!names.length) return null;
+  const declared=new Set(windows||[]);
+  return names.filter(n=>{
+    const prof=(briefs[n]||{}).windows||{};
+    for(const w of declared) if(prof[w]==="strong") return true;
+    return false;
+  });
+}
+
+/* The server ships its own authoritative score for every card in the bootstrap payload, which
+   makes this mirror directly testable against it. It exists because the two silently stopped
+   agreeing: this file computed Reach from how many windows were ticked, while scoring.py
+   computes it from how many factions are strong in one, so the Studio could show a Ceiling
+   check.py disagreed with and nothing said so. Stays quiet when they agree. */
+function parityCheck(){
+  const out=[];
+  for(const c of cards){
+    if(!c.score || !c.score.scorable) continue;   /* stubs: both sides agree there is nothing to score */
+    const js=scoreDraft(c), p=scorePlan(js, c.meta.plan||{});
+    const mine={budget:js.budget, baseSpent:js.baseSpent, baseDelta:js.baseDelta,
+                reach:p.reach, ceiling:p.ceiling, headroom:p.headroom};
+    for(const [field,value] of Object.entries(mine))
+      if(value!==c.score[field]) out.push({name:c.meta.name, field, js:value, py:c.score[field]});
+  }
+  return out;
+}
+
+function scorePlan(s, plan){
+  plan = plan || planOf();
+  const cfg=DB.plan;
   const table=Object.fromEntries(cfg.credits.map(c=>[c.key,c]));
   let credits=0;
-  for(const [k,q] of Object.entries(plan.pays)){
+  for(const [k,q] of Object.entries(plan.pays||{})){
     const e=table[k]; if(!e||!q) continue;
     let raw=e.points*q;
     if(k==="narrowness") raw=Math.min(raw,cfg.narrowness_cap);
-    credits+=Math.trunc(raw*costFactor(k));
+    credits+=Math.trunc(raw*costFactor(k,plan));
   }
   const valid=new Set(cfg.windows.map(w=>w.key));
-  const windows=plan.windows.filter(w=>valid.has(w)).length;
+  const declaredWindows=(plan.windows||[]).filter(w=>valid.has(w));
+  const windows=declaredWindows.length;
   const declared = credits>0 || windows>0 || plan.reach!=null;
-  const reach = plan.reach!=null ? Math.max(0,Math.min(4,plan.reach))
-              : (windows>0 ? Math.min(4,windows) : null);
+
+  /* Reach is how many FACTIONS can answer it, not how many windows you ticked. Counting
+     windows was this file's own invention, and it disagreed with the checker. */
+  const answering=answeringFactions(declaredWindows);
+  const reachComputed = windows>0
+    ? (answering===null ? Math.min(4,windows) : answering.length)
+    : null;
+  const reachOverridden = plan.reach!=null;
+  const reach = reachOverridden ? Math.max(0,Math.min(4,plan.reach)) : reachComputed;
   const allowance=s.budget+credits;
   const caps=cfg.reach_caps||{};
   let cap;
@@ -1379,7 +1431,8 @@ function scorePlan(s){
   }
   const ceiling = cap===null ? 0 : Math.min(allowance,cap);
   const total=s.baseSpent+s.ascendedSpent;
-  return {credits,windows,reach,allowance,earned:allowance,cap,ceiling,total,
+  return {credits,windows,declaredWindows,reach,reachComputed,reachOverridden,
+          answering:answering||[],allowance,earned:allowance,cap,ceiling,total,
           headroom:ceiling-total, hasPlan:declared};
 }
 
@@ -1477,6 +1530,23 @@ function scorePanel(s){
     proh);
 }
 
+/* A complaint without a move is just a complaint. The four human gates carry their own
+   description from the server and are not machine-checkable, so they get no fix line. */
+const GATE_FIX={
+  G1:"Cut impact, raise the cost, or declare a plan that earns a higher ceiling.",
+  G3:"Name the type in parentheses after the ability — (Standard Ability), (Fast Ability), (Trigger Ability) or (Passive Ability).",
+  G4:"Keywords never cross factions. Swap it for one of this faction's own, or move the card.",
+  G6:"Say how long it lasts — “until the end of the round”, “permanently”, “this turn”.",
+  G8:"Set the missing piece: a faction, a base art reference, or an explicit `crew: null` with a reason in Design Notes.",
+};
+
+/* Session-scoped, keyed by card. The four human gates were plain checkboxes with nothing behind
+   them, so any re-render silently unticked them -- reading a card against G9 and then touching a
+   stat threw the answer away. Not written to the card file: that would be a schema change, and
+   the schema is not this change's to move. */
+const HUMAN_TICKS=new Set();
+const humanKey=id=>`${draft.relPath}|${id}`;
+
 function gateStrip(){
   const g=gatesOf(draft);
   const wrap=el("div",{class:"panel"},
@@ -1498,11 +1568,17 @@ function gateStrip(){
       wrap.append(el("div",{class:"gate"},
         tipped(el("span",{class:"gid",text:id}), id),
         el("span",{class:"swatch critical-bg"}),
-        el("span",{class:"msg",text:msg})));
+        el("span",{class:"msg"}, msg,
+          GATE_FIX[id]?el("div",{class:"gatefix",text:GATE_FIX[id]}):null)));
   const human=el("div",{class:"humangates"});
+  /* No touch() here: reading a card against G9 is not an edit to the card, and marking it
+     dirty over it would put a Save prompt in front of an answer that changes no file. */
   for(const [id,desc] of Object.entries(DB.humanGates))
     human.append(el("label",{class:"hg"},
-      el("input",{type:"checkbox"}), tipped(el("b",{text:id}), id),
+      el("input",{type:"checkbox",checked:HUMAN_TICKS.has(humanKey(id)),"data-focus":"hg:"+id,
+        onchange:e=>{ const k=humanKey(id);
+          e.target.checked?HUMAN_TICKS.add(k):HUMAN_TICKS.delete(k); }}),
+      tipped(el("b",{text:id}), id),
       el("span",{class:"sec",text:desc})));
   wrap.append(human);
   return wrap;
@@ -2691,9 +2767,12 @@ async function save(){
     cards[i]=saved; current=saved; draft=structuredClone(saved);
     dirty=false; $("#savebar").hidden=true;
     renderArt();
-    /* reconcile the browser's arithmetic against the server's */
-    const local=scoreDraft(draft);
-    const drift = local.scorable && saved.score.scorable && local.baseDelta!==saved.score.baseDelta;
+    /* reconcile the browser's arithmetic against the server's -- all three numbers that decide
+       whether the card can be printed, not just the base delta */
+    const local=scoreDraft(draft), lp=scorePlan(local, draft.meta.plan||{});
+    const drift = local.scorable && saved.score.scorable &&
+      (local.baseDelta!==saved.score.baseDelta || lp.reach!==saved.score.reach
+       || lp.ceiling!==saved.score.ceiling);
     toast(drift ? "Saved — but the server scored it differently. Run tools/balance.py."
                 : `Saved to ${saved.relPath}`);
     refreshFindings();
@@ -2739,6 +2818,16 @@ async function save(){
   renderModes();
   renderList();
   if(cards.length) select(cards[0]);
+
+  /* Silent when the browser and the server agree, which is the normal case. A drift here means
+     one of the two is lying about whether a card can be printed, and you should trust check.py. */
+  const drift=parityCheck();
+  if(drift.length){
+    const first=drift[0];
+    console.warn("score parity", drift);
+    toast(`Scoring drift: ${first.name} ${first.field} — studio ${first.js}, server ${first.py}. `
+          +`${drift.length} in total; see the console.`, 9000);
+  }
 })();
 </script>
 </body>
