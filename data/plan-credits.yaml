@@ -148,7 +148,7 @@ cost_test_copy:
     question: When do you pay it, relative to the payoff?
     why: Paying afterwards is not a risk. By then you already have what you paid for.
     options:
-      before: {label: Before the payoff, note: you pay, then hope}
+      before: {label: Before the payoff, note: "you pay, then hope"}
       at_payoff: {label: At the moment it pays, note: you pay and collect together}
       after: {label: After it has landed, note: you already have the payoff}
   enabler:

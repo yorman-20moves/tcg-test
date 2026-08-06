@@ -142,6 +142,10 @@ def playtests() -> list:
 
 
 def bootstrap() -> dict:
+    # plan_config is lru_cached and was only ever invalidated when the Studio itself wrote a
+    # table, so a hand edit to data/plan-credits.yaml was invisible until the server restarted --
+    # and silently so, because the stale config still answers every question asked of it.
+    scoring.plan_config.cache_clear()
     world = rules.load_world()
     return {
         "cards": [card_payload(c) for c in card_io.load_all()],

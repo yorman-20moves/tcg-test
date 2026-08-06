@@ -62,8 +62,13 @@
      faction band can never be mistaken for a UI accent or an alarm. */
   --f-warmongers:#e23b3b; --f-overthinkers:#5570e8; --f-assholes:#3fa757; --f-icons:#e8c233;
 
-  /* status ramp — fill channel. Neutral, then the system orange escalating. */
-  --good:var(--color-ink-60); --warning:#c08a3e;
+  /* status ramp — fill channel. Neutral, then the system orange escalating.
+
+     Under-budget gets its own cool tone rather than a step on that ramp: it is a quiet
+     failure — the card simply does nothing for its cost — and there is nothing to escalate
+     to. It is deliberately NOT --color-cyan, which already means "selected"; a dim meter and
+     a pressed chip must never speak the same language. --under touches no interactive control. */
+  --good:var(--color-ink-60); --under:#5c8f9e; --warning:#c08a3e;
   --serious:var(--color-orange); --critical:#ff4d3d;
 
   --shadow:0 12px 40px rgba(0,0,0,.45);
@@ -90,7 +95,7 @@
   --color-orange-tint:rgba(186,72,5,.09); --color-cyan-tint:rgba(14,111,146,.08);
   --color-overlay:rgba(244,242,236,.90);
   --f-warmongers:#b52a2a; --f-overthinkers:#3a4fc0; --f-assholes:#227a38; --f-icons:#8a6b00;
-  --warning:#8a5a13; --critical:#c22a1c;
+  --under:#3d7383; --warning:#8a5a13; --critical:#c22a1c;
   --shadow:0 12px 34px rgba(40,32,20,.20);
 }
 
@@ -126,7 +131,7 @@ a:hover{color:var(--color-cyan-hover)}
   text-transform:uppercase; color:var(--color-ink-60);
 }
 .num,.cost,.pts,.pt,.kpi .v,.stepper input,.credit input,
-.sib td,.matrix .tot,.scorebar b,.meter .cap b,.breakdown b,.mode .n{
+.sib td,.matrix .tot,.vledger .v,.meter .cap b,.breakdown b,.mode .n{
   font-family:var(--data); font-variant-numeric:tabular-nums;
 }
 .muted{color:var(--ghost)}
@@ -328,20 +333,16 @@ a:hover{color:var(--color-cyan-hover)}
 }
 .zoomlink:hover{color:var(--key)}
 
-/* the verdict: the one place this tool is allowed to shout */
-.verdictblock{display:flex;align-items:flex-start;gap:var(--s4);flex-wrap:wrap}
-.heronum{
-  font-family:var(--display);font-size:clamp(58px,6vw,84px);line-height:.86;font-weight:400;
-  letter-spacing:-.01em;color:var(--color-ink);font-variant-numeric:tabular-nums;
-}
-.heronum.off{color:var(--critical)}
+/* the verdict. The big delta numeral and its block went with the old two-verdict layout --
+   a card is now judged by a ledger you can read, not by one number shouted at you. */
 .herolabel{margin-bottom:8px;display:block;color:var(--color-cyan)}
 .verdictword{
   font-family:var(--display);font-size:21px;font-weight:400;letter-spacing:.01em;
   text-transform:uppercase;line-height:1.05;margin-top:2px;
 }
 .verdictwhy{font-size:12px;color:var(--pencil);margin-top:5px;max-width:34ch}
-.good-c{color:var(--good)} .warning-c{color:var(--warning)}
+.good-c{color:var(--good)} .under-c{color:var(--under)} .warning-c{color:var(--warning)}
+.under-bg{background:var(--under)}
 .serious-c{color:var(--serious)} .critical-c{color:var(--critical)}
 .good-bg{background:var(--good)} .warning-bg{background:var(--warning)}
 .serious-bg{background:var(--serious)} .critical-bg{background:var(--critical)}
@@ -367,6 +368,23 @@ a:hover{color:var(--color-cyan-hover)}
 .ledger .gap{margin-top:var(--s3)}
 .ledger .neg .v{color:var(--critical)}
 
+/* the narrative ledger: sentences with the figure on the right, not a table of labels */
+.vledger{font-family:var(--data);font-size:12px;margin-top:var(--s2);max-width:580px}
+.vledger .r{display:flex;align-items:baseline;gap:var(--s2)}
+.vledger .lbl{color:var(--pencil)}
+.vledger .dots{flex:1;border-bottom:1px dotted var(--edge);transform:translateY(-3px);min-width:12px}
+.vledger .v{color:var(--key);font-variant-numeric:tabular-nums;white-space:nowrap}
+.vledger .sub{font-family:var(--text);font-size:11px;color:var(--ghost);line-height:1.45;
+  margin:1px 0 8px;max-width:54ch}
+.vledger .rule{border-top:1px solid var(--edge);margin:7px 0 6px}
+.vledger .tot .lbl,.vledger .tot .v{color:var(--key);font-weight:700}
+.vhead{margin:var(--s5) 0 4px;display:block}
+.vhead:first-child{margin-top:0}
+.notprintable{border:1px solid var(--critical);border-radius:var(--radius-btn);
+  padding:9px 11px;margin:var(--s2) 0;font-size:12px;color:var(--key);max-width:560px}
+.decision{font-size:12.5px;color:var(--pencil);margin-top:var(--s4);max-width:58ch;line-height:1.55;
+  border-left:2px solid var(--edge);padding-left:11px}
+.decision b{color:var(--key)}
 .meter{margin-top:var(--s3);max-width:460px}
 .meter .cap{display:flex;justify-content:space-between;font-size:11.5px;color:var(--pencil);margin-bottom:5px;gap:var(--s2)}
 .meter .cap b{color:var(--key);font-size:12px}
@@ -390,7 +408,7 @@ a:hover{color:var(--color-cyan-hover)}
 
 /* ---------- controls ---------- */
 .grid{display:grid;gap:var(--s3)}
-.stats{grid-template-columns:repeat(5,1fr);max-width:600px}
+.stats{grid-template-columns:repeat(4,1fr);max-width:480px}
 @media(max-width:760px){.stats{grid-template-columns:repeat(3,1fr)}}
 .stepper{background:var(--well);border:1px solid var(--rule);border-radius:var(--radius-btn);padding:9px 8px;text-align:center}
 .stepper:focus-within{border-color:var(--edge)}
@@ -544,17 +562,30 @@ select{background:var(--well);border:1px solid var(--rule);border-radius:var(--r
 }
 
 /* ---------- the score ---------- */
-.scorebar{
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:var(--s3) 0 var(--s2);
-  font-size:12px;color:var(--pencil);
-}
-.scorebar .step{display:flex;align-items:baseline;gap:5px}
-.scorebar .step b{font-size:15px;color:var(--key)}
-.scorebar .arrow{color:var(--ghost);font-size:11.5px}
-.scorebar .final{
-  padding:4px 11px;border:1px solid var(--color-cyan);border-radius:var(--radius-chip);color:var(--color-cyan);
-  font-family:var(--display);letter-spacing:.1em;text-transform:uppercase;font-weight:400;
-}
+/* a credit now spans the grid when it is priced, because its three tests and its arithmetic
+   need the width to be readable rather than cramped into a 176px cell */
+.credit .anchor{font-size:10.5px;color:var(--ghost);line-height:1.4;margin:3px 0 2px}
+.credit.on{grid-column:1/-1}
+.credit .creditmath{font-family:var(--data);font-size:11px;color:var(--key);margin-top:8px;
+  border-top:1px solid var(--rule);padding-top:7px}
+.testblock{margin-top:9px}
+.testq{font-size:12px;color:var(--key);font-weight:600}
+.testwhy{font-size:11px;color:var(--ghost);margin-top:2px;max-width:56ch;line-height:1.45}
+.testopts{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.testopt{display:flex;flex-direction:column;align-items:flex-start;gap:1px;cursor:pointer;
+  background:var(--well);border:1px solid var(--rule);border-radius:var(--radius-btn);
+  padding:6px 9px;font-size:11.5px;text-align:left;max-width:230px;color:var(--pencil)}
+.testopt:hover{border-color:var(--edge);color:var(--key)}
+.testopt[aria-pressed="true"]{border-color:var(--color-cyan);background:var(--color-cyan-tint);
+  color:var(--color-cyan)}
+.testopt .note{color:var(--ghost);font-size:10.5px;line-height:1.35}
+.testopt .mult{font-family:var(--data);font-size:10.5px;color:var(--pencil)}
+.reachtable{border:1px solid var(--rule);border-radius:var(--radius-btn);padding:8px 10px;
+  margin:4px 0 8px;font-size:11.5px;max-width:520px}
+.reachtable .rrow{display:flex;align-items:center;gap:9px;padding:3px 0}
+.reachtable .rsum{font-family:var(--data);color:var(--key);border-top:1px solid var(--rule);
+  margin-top:6px;padding-top:6px}
+.gatefix{font-size:11.5px;color:var(--color-cyan);margin-top:3px}
 .creditgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:8px;margin-top:6px}
 .credit{background:var(--well);border:1px solid var(--rule);border-radius:var(--radius-btn);padding:9px}
 .credit .lb{font-size:11px;color:var(--pencil);line-height:1.35;min-height:30px}
@@ -565,8 +596,7 @@ select{background:var(--well);border:1px solid var(--rule);border-radius:var(--r
 .credit input[type=number]{-moz-appearance:textfield}
 .credit .pts{font-size:10.5px;color:var(--ghost)}
 .credit.on{border-color:var(--color-cyan)}
-.tests{display:grid;gap:4px;margin-top:8px;border-top:1px solid var(--rule);padding-top:7px}
-.tests select{border-radius:var(--radius-chip);padding:3px 5px;font-size:11px;width:100%}
+.tests{margin-top:8px;border-top:1px solid var(--rule);padding-top:7px}
 .windows{display:grid;gap:4px;margin-top:4px}
 .win{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;cursor:pointer;padding:6px 8px;border-radius:var(--radius-btn);border:1px solid transparent;color:var(--pencil)}
 .win:hover{background:var(--well)}
@@ -811,7 +841,6 @@ function preservingFocus(render){
 const FACTION_VAR = {Warmongers:"--f-warmongers",Overthinkers:"--f-overthinkers",
                      Assholes:"--f-assholes",Icons:"--f-icons"};
 const GLYPH = {good:"✓",warning:"!",serious:"!",critical:"✕"};
-const VERDICT_WORD = {good:"In tolerance",warning:"Slightly off",serious:"Off",critical:"Badly off"};
 
 let DB=null, cards=[], current=null, draft=null;
 
@@ -1005,6 +1034,22 @@ function ceilingSeverity(delta){
   return DB.constants.severityWorst;
 }
 
+/* Magnitude and direction are different questions. Magnitude picks how loud; direction picks
+   which voice. Over runs the system's hot ramp. Under gets one cool tone and no ramp, because
+   under is a quiet failure and there is nothing to escalate to.
+
+   Under is a failure only against the BASE budget, which is checked two-sided -- an underspent
+   card is a card that does nothing for its cost. Under a CEILING is called headroom and it is
+   good, which is exactly what ceilingSeverity already encodes, so one-sided callers can never
+   reach the "under" branch. */
+function verdictOf(delta, twoSided){
+  const cls = twoSided ? severity(delta) : ceilingSeverity(delta);
+  if(cls==="good") return {dir:"on", cls:"good", glyph:"✓",
+    word: (twoSided||delta<=0) ? "in tolerance" : `${delta} headroom`};
+  if(delta>0) return {dir:"under", cls:"under", glyph:"↓", word:`${delta} under`};
+  return {dir:"over", cls, glyph: cls==="critical"?"✕":"!", word:`${-delta} over`};
+}
+
 /* ---------------- gates (mirrors tools/scoring.py) ------------------------------------ */
 function gatesOf(d){
   const m=d.meta, out={G1:[],G3:[],G4:[],G6:[],G8:[]}, s=scoreDraft(d);
@@ -1107,19 +1152,8 @@ function renderList(){
 }
 
 /* ---------------- main surface -------------------------------------------------------- */
-function meter(label, spent, budget, sev, note){
-  const max=Math.max(spent,budget,1);
-  const pct=v=>Math.min(100,(v/max)*100);
-  return el("div",{class:"meter"},
-    el("div",{class:"cap"},
-      el("span",{},label),
-      el("span",{}, el("b",{text:String(spent)}), " / ", el("b",{text:String(budget)}), note?el("span",{class:"muted",text:" "+note}):null)),
-    /* the budget is a hard mark on the track rather than a colour change, so you can see
-       the exact point the card stopped being affordable */
-    el("div",{class:"track"},
-      el("div",{class:"fill",style:`width:${pct(spent)}%;background:var(--${sev})`}),
-      el("div",{class:"budgetmark",style:`left:calc(${pct(budget)}% - 1px)`,title:`budget ${budget}`})));
-}
+/* the old meter() lived here; meterV() replaced it, so that the glyph and the word travel
+   with the fill colour rather than colour carrying the verdict on its own */
 
 /* ---------------- the proof ------------------------------------------------------------
    The card as an object, next to the arithmetic that decides whether it can be printed.
@@ -1214,43 +1248,153 @@ function faceText(){
       "[Improved Ability] (Fast Ability): what changes once it has ascended.","G3"));
 }
 
+/* meter(), but carrying the whole verdict so the glyph and the word travel with the colour
+   and nothing is left to hue alone. */
+function meterV(label, spent, limit, v){
+  const max=Math.max(spent,limit,1), pct=x=>Math.min(100,(x/max)*100);
+  return el("div",{class:"meter"},
+    el("div",{class:"cap"},
+      el("span",{},label),
+      el("span",{class:`${v.cls}-c`,style:"font-weight:600"},
+        el("span",{class:`glyph ${v.cls}-bg`,text:v.glyph}), " ",
+        el("b",{text:String(spent)}), " / ", el("b",{text:String(limit)}), " · ", v.word)),
+    el("div",{class:"track"},
+      el("div",{class:"fill",style:`width:${pct(spent)}%;background:var(--${v.cls})`}),
+      el("div",{class:"budgetmark",style:`left:calc(${pct(limit)}% - 1px)`,title:`limit ${limit}`})));
+}
+
+/* The credit's own words from data/plan-credits.yaml, with the quantity folded in. Falls back
+   to the label so a credit added later without copy still reads as a sentence. */
+function creditSentence(def, n){
+  const raw=def.sentence||("Because of "+def.label.toLowerCase());
+  return raw.replace(/\{n\}/g,String(n)).replace(/\{s\}/g, n===1?"":"s");
+}
+
+/* One ledger, read top to bottom as sentences: what the card is allowed to spend, then what it
+   actually spends, then what to do about the difference.
+
+   It replaces two separate verdicts that used to sit 500px apart in two visual languages --
+   this panel answered "on budget?" against the base budget while The Score answered "does it
+   fit?" against the Ceiling. For a card that declares a plan those are different questions with
+   different answers, and nothing on screen said which one was the real one. */
+function verdictPanel(s){
+  const m=draft.meta, cfg=DB.plan, plan=planOf(), p=scorePlan(s,plan);
+  const row=(label,value,cls="")=>el("div",{class:"r "+cls},
+    el("span",{class:"lbl",text:label}), el("span",{class:"dots"}),
+    el("span",{class:"v",text:value===null?"":String(value)}));
+  const note=t=>el("div",{class:"sub",text:t});
+  const rule=()=>el("div",{class:"rule"});
+  const isAsc=(m.subtype||"").toLowerCase()==="ascendant";
+  const led=el("div",{class:"vledger"});
+
+  led.append(row(`Because it costs ${m.cost} Energy`, m.cost*DB.constants.costMultiplier),
+             note(`Every point of Energy buys ${DB.constants.costMultiplier} points of power.`),
+             row("Because every card gets a base allowance", "+"+DB.constants.baseAllowance));
+  if(isAsc) led.append(row("Because it's an Ascendant — it has two faces",
+                           "+"+DB.constants.ascendantBonus));
+  led.append(rule());
+
+  if(!p.hasPlan){
+    /* No plan declared, so the card is held to two separate limits, exactly as _gate_g1
+       checks them: the base side against the budget, and both faces against 1.5x it. */
+    led.append(row("BASE BUDGET — what the base side may spend", s.budget, "tot"),
+               row(`Both faces together may spend ${DB.constants.ascendedMultiplier}× that`,
+                   s.ascendedBudget));
+  } else {
+    led.append(row("BASE BUDGET", s.budget, "tot"));
+    const table=Object.fromEntries(cfg.credits.map(c=>[c.key,c]));
+    for(const [k,q] of Object.entries(plan.pays||{})){
+      const def=table[k]; if(!def||!q) continue;
+      let raw=def.points*q;
+      if(k==="narrowness") raw=Math.min(raw,cfg.narrowness_cap);
+      const f=costFactor(k,plan), earned=Math.trunc(raw*f);
+      led.append(row(creditSentence(def,q), "+"+earned),
+        note(f===1 ? `${def.points} each — ${def.anchor||"see the balance philosophy"}.`
+                   : `${q} × ${def.points} = ${raw}, then ×${f} — ${def.anchor||""}`.trim()));
+    }
+    led.append(rule(),
+      row("ALLOWANCE — budget plus what it pays in other currencies", p.allowance, "tot"));
+    const known=Object.keys(DB.factions||{});
+    const cant=known.filter(n=>!p.answering.includes(n));
+    if(p.cap===null){
+      led.append(el("div",{class:"notprintable"},
+        el("b",{text:"Reach 0 — not printable. "}),
+        "No faction can answer this card in any window it declares, so there is no cap to "
+        +"collect its credits under. Declare a window some faction is strong in."));
+    } else if(p.reach!==null){
+      led.append(row(`But only ${p.reach} faction${p.reach===1?"":"s"} can answer it, `
+                     +`so it's capped at ${(cfg.reach_caps||{})[p.reach]}× base`, p.cap),
+        note((p.answering.length?`${p.answering.join(" and ")} can. `:"No faction can. ")
+          +(cant.length?`${cant.join(" and ")} ${cant.length===1?"is":"are"} blind.`:"")
+          +(p.reachOverridden?`  You have overridden this — computed Reach is ${p.reachComputed}.`:"")));
+    }
+    led.append(rule(), row("CEILING — the most this card may spend", p.ceiling, "tot"));
+  }
+
+  const names=a=>(a&&a.length)?a.join(", "):"none";
+  const act=el("div",{class:"vledger"},
+    row(`Its stats — ${DB.statKeys.map(k=>`${k} ${m.stats?.[k]??"–"}`).join(" · ")}`, s.statsTotal),
+    row(`Its base keywords — ${names(m.base?.keywords)}`, "+"+s.baseKeywordPoints),
+    row(`Its base effects — ${names(m.base?.effects)}`, "+"+s.baseEffectPoints),
+    rule(), row("BASE SIDE SPENDS", s.baseSpent, "tot"),
+    row(`Its level-up keywords — ${names(m.ascended?.keywords)}`, "+"+s.ascendedKeywordPoints),
+    row(`Its level-up effects — ${names(m.ascended?.effects)}`, "+"+s.ascendedEffectPoints),
+    rule(), row("BOTH FACES SPEND", s.baseSpent+s.ascendedSpent, "tot"));
+
+  const bars=el("div",{});
+  let head;
+  if(p.hasPlan){
+    head=verdictOf(p.headroom,false);
+    bars.append(meterV("Both faces against the Ceiling", p.total, p.ceiling, head));
+  } else {
+    head=verdictOf(s.baseDelta,true);
+    bars.append(meterV("Base side against its budget", s.baseSpent, s.budget, head),
+      meterV(`Both faces against ${DB.constants.ascendedMultiplier}× budget`,
+             s.baseSpent+s.ascendedSpent, s.ascendedBudget, verdictOf(s.ascendedDelta,false)));
+  }
+
+  return el("div",{},
+    el("span",{class:"herolabel vhead",text:"Potential power — what this card is allowed to spend"}),
+    led,
+    el("span",{class:"herolabel vhead",text:"Actual impact — what it really spends"}),
+    act, bars, decisionLine(s,p,head));
+}
+
+/* What to actually do about it. The old panel stated the verdict and stopped, which is fine
+   only if you already know what raises a ceiling and what spends one. */
+function decisionLine(s,p,v){
+  const step=DB.constants.costMultiplier;
+  if(v.dir==="on"){
+    /* A card with a plan is measured against its Ceiling, where spending less is headroom
+       rather than a fault -- so it must not be told it is "exactly on budget" while the meter
+       beside it reads 4 headroom. */
+    if(p.hasPlan && p.headroom>0)
+      return el("div",{class:"decision"}, el("b",{text:`${p.headroom} points of headroom. `}),
+        "The plan has earned more ceiling than the card spends. Either spend it — this card can "
+        +`carry ${p.headroom} more points of impact — or simplify the plan, because you are `
+        +"paying setup for power you are not taking.");
+    return el("div",{class:"decision"}, el("b",{text:"Exactly on budget. "}),
+      "It spends precisely what its cost buys.");
+  }
+  if(v.dir==="under")
+    return el("div",{class:"decision"}, el("b",{text:`${s.baseDelta} under. `}),
+      "This is weaker than its cost pays for — underpowered is as wrong as overpowered here, "
+      +`it just fails quietly instead of loudly. Add ${s.baseDelta} points of impact, or drop `
+      +`the cost by 1, which takes ${step} points of budget away with it.`);
+  const over = p.hasPlan ? -p.headroom : -s.baseDelta;
+  const blind = p.hasPlan ? Object.keys(DB.factions||{}).filter(n=>!p.answering.includes(n)) : [];
+  return el("div",{class:"decision"}, el("b",{text:`${over} over. `}),
+    `Cut ${over} points of impact, or buy more ceiling: +1 Energy buys ${step} points`,
+    p.hasPlan ? ", and giving a blind faction a window it can actually use raises the cap."
+              : ", or declare a plan that earns a higher ceiling.",
+    blind.length ? ` Right now ${blind.join(" and ")} ${blind.length===1?"has":"have"} no answer at all.` : "");
+}
+
 function proofPanel(s){
   syncProof();
-  const m=draft.meta;
   const right=el("div",{});
   if(s.scorable){
-    const sev=severity(s.baseDelta), asev=ceilingSeverity(s.ascendedDelta);
-    const over=s.baseDelta<0;
-    right.append(
-      el("span",{class:"herolabel",text:"Base side against budget"}),
-      el("div",{class:"verdictblock"},
-        el("div",{class:`heronum ${sev==="good"?"":"off"}`,
-          text:`${s.baseDelta===0?"":over?"+":"−"}${Math.abs(s.baseDelta)}`}),
-        el("div",{style:"flex:1;min-width:180px"},
-          el("div",{class:`verdictword ${sev}-c`},
-            el("span",{class:`glyph ${sev}-bg`,text:GLYPH[sev]}), " ",
-            s.baseDelta===0?"Exactly on budget"
-              :`${Math.abs(s.baseDelta)} ${over?"over":"under"} — ${VERDICT_WORD[sev]}`),
-          el("div",{class:"verdictwhy",
-            text: over ? "This card is stronger than its cost pays for. Cut points, raise the cost, or declare a plan that earns a higher ceiling."
-                : s.baseDelta>0 ? "This card is weaker than its cost pays for. Underpowered is as wrong as overpowered here — it just fails quietly instead of loudly."
-                : "The card spends exactly what its cost buys."}))),
-      /* one ledger, two totals: what the cost entitles it to, and what it actually spent.
-         The old layout said this three times over -- a breakdown row, a budget sentence
-         and two meters -- so the composition lives inside the receipt now. */
-      el("div",{class:"ledger"},
-        line(`cost ${m.cost} × ${DB.constants.costMultiplier}`, m.cost*DB.constants.costMultiplier),
-        line("base allowance", "+"+DB.constants.baseAllowance),
-        (m.subtype||"").toLowerCase()==="ascendant"
-          ? line("Ascendant", "+"+DB.constants.ascendantBonus) : null,
-        line("budget", s.budget, "total"),
-        line("stats", s.statsTotal, "gap"),
-        line("keywords", s.baseKeywordPoints),
-        line("effects", s.baseEffectPoints),
-        line("this card spends", s.baseSpent, "total"+(s.baseDelta<0?" neg":""))),
-      meter("Base side", s.baseSpent, s.budget, sev),
-      meter("Base + level-up", s.baseSpent+s.ascendedSpent, s.ascendedBudget, asev,
-            `ceiling ×${DB.constants.ascendedMultiplier}`));
+    right.append(verdictPanel(s));
   } else {
     right.append(
       el("span",{class:"herolabel",text:"Not scorable yet"}),
@@ -1436,34 +1580,23 @@ function scorePlan(s, plan){
           headroom:ceiling-total, hasPlan:declared};
 }
 
+/* The controls that raise the ceiling. What they add up to is stated once, in the verdict
+   panel at the top of the page -- this panel used to repeat the whole sum in its own bar. */
 function scorePanel(s){
   const cfg=DB.plan, plan=planOf(), p=scorePlan(s);
-  const sev = p.headroom<0 ? severity(p.headroom) : "good";
-
-  const bar=el("div",{class:"scorebar"},
-    el("span",{class:"step"},term("budget","budget"),' ',el("b",{text:String(s.budget)})),
-    el("span",{class:"arrow",text:"+"}),
-    el("span",{class:"step"},term("credits","credits"),' ',el("b",{text:String(p.credits)})),
-    el("span",{class:"arrow",text:"="}),
-    el("span",{class:"step"},term("allowance","allowance"),' ',el("b",{text:String(p.allowance)})),
-    el("span",{class:"arrow",
-      text: p.cap===null ? "· Reach 0 — NOT PRINTABLE"
-          : p.reach===null ? (p.credits>0 ? "· set Reach to collect these credits"
-                                           : "· no plan declared — held to base budget")
-          : `· capped by Reach ${p.reach} at ${p.cap}`}),
-    tipped(el("span",{class:"step final"},"CEILING ",el("b",{text:String(p.ceiling)})),"ceiling",{underline:false}),
-    el("span",{class:"arrow",text:"·"}),
-    el("span",{class:"step"},term("impact","spends"),' ',el("b",{text:String(p.total)}),
-      el("span",{class:`${sev}-c`,style:"font-weight:600;margin-left:8px"},
-        el("span",{class:`swatch ${sev}-bg`}),
-        p.headroom>=0?`${p.headroom} headroom`:`${-p.headroom} OVER`)));
 
   const grid=el("div",{class:"creditgrid"});
   for(const c of cfg.credits){
     const q=plan.pays[c.key]||0;
     const set=v=>{ if(v<=0) delete plan.pays[c.key]; else plan.pays[c.key]=v; touch(); };
+    /* The anchor is the entire justification for the price. It used to be a title= attribute,
+       which is to say it was invisible. */
+    let raw=c.points*q;
+    if(c.key==="narrowness") raw=Math.min(raw,cfg.narrowness_cap);
+    const f=costFactor(c.key,plan);
     grid.append(el("div",{class:`credit ${q?"on":""}`},
-      el("div",{class:"lb",text:c.label,title:c.anchor||""}),
+      el("div",{class:"lb",text:c.label}),
+      c.anchor?el("div",{class:"anchor",text:`Worth ${c.points} because ${c.anchor}.`}):null,
       el("div",{class:"rw"},
         el("div",{class:"val"},
           el("button",{class:"sbtn",text:"−","aria-label":`less ${c.key}`,
@@ -1474,29 +1607,71 @@ function scorePanel(s){
           el("button",{class:"sbtn",text:"+","aria-label":`more ${c.key}`,
             "data-focus":"credit-up:"+c.key,onclick:()=>set(q+1)})),
         el("span",{class:"pts",text:`${c.points>=0?"+":""}${c.points} ea`})),
-      q?el("div",{class:"tests"}, ...Object.entries(cfg.cost_tests||{}).map(([test,opts])=>
-        el("select",{"aria-label":`${c.key} ${test}`,"data-focus":"test:"+c.key+":"+test,onchange:e=>{
-          plan.tests=plan.tests||{}; plan.tests[c.key]=plan.tests[c.key]||{};
-          if(e.target.value) plan.tests[c.key][test]=e.target.value;
-          else delete plan.tests[c.key][test];
-          touch();
-        }},
-        el("option",{value:"",selected:!((plan.tests||{})[c.key]||{})[test]},test+"…"),
-        ...Object.keys(opts).map(o=>el("option",{value:o,
-          selected:((plan.tests||{})[c.key]||{})[test]===o},`${test}: ${o}`))))):null));
+      /* The three tests were three dropdowns reading "bite…", "timing…", "enabler…". One of
+         the answers multiplies the credit by zero. Nothing on screen said so. */
+      q?el("div",{class:"tests"}, ...Object.entries(cfg.cost_tests||{}).map(([test,opts])=>{
+        const copy=(cfg.cost_test_copy||{})[test]||{};
+        const chosen=((plan.tests||{})[c.key]||{})[test];
+        const pick=v=>{ plan.tests=plan.tests||{}; plan.tests[c.key]=plan.tests[c.key]||{};
+          if(v) plan.tests[c.key][test]=v; else delete plan.tests[c.key][test];
+          touch(); };
+        return el("div",{class:"testblock"},
+          el("div",{class:"testq",text:copy.question||test}),
+          copy.why?el("div",{class:"testwhy",text:copy.why}):null,
+          el("div",{class:"testopts"}, ...Object.keys(opts).map(o=>{
+            const oc=((copy.options||{})[o])||{};
+            return el("button",{class:"testopt","aria-pressed":chosen===o,
+              "data-focus":`test:${c.key}:${test}:${o}`,
+              onclick:()=>pick(chosen===o?null:o)},
+              el("b",{text:oc.label||o}),
+              oc.note?el("span",{class:"note",text:oc.note}):null,
+              el("span",{class:"mult",text:"×"+Number(opts[o]).toFixed(1)}));
+          })));
+      })):null,
+      q?el("div",{class:"creditmath",
+        text: f===1 ? `${q} × ${c.points} = ${raw} points earned`
+                    : `${q} × ${c.points} = ${raw}  →  ×${f}  →  ${Math.trunc(raw*f)} points earned`}):null));
+  }
+
+  /* Reach stops being a number to guess at. It is computed from which factions are strong in
+     the windows this card actually offers, which is the same question scoring.py asks. */
+  const reachBox=el("div",{});
+  if(p.declaredWindows.length){
+    const tbl=el("div",{class:"reachtable"});
+    for(const n of Object.keys(DB.factions||{})){
+      const prof=(DB.factions[n]||{}).windows||{};
+      const hit=p.declaredWindows.find(w=>prof[w]==="strong");
+      const wl=(cfg.windows.find(w=>w.key===hit)||{}).label;
+      tbl.append(el("div",{class:"rrow"},
+        factionChip(n),
+        el("span",{class:hit?"good-c":"critical-c",text:hit?"✓":"✗"}),
+        el("span",{class:"muted",text:hit?`strong at ${wl}`:"blind at every window you declared"})));
+    }
+    const mult=(cfg.reach_caps||{})[p.reachComputed];
+    tbl.append(el("div",{class:"rsum",
+      text:`→ computed Reach ${p.reachComputed} → cap ${mult===null||mult===undefined?"none — not printable":mult+"× base = "+Math.trunc(s.budget*Number(mult))}`}));
+    reachBox.append(tbl);
+  } else {
+    reachBox.append(el("div",{class:"muted",style:"font-size:11.5px;margin:4px 0 8px"},
+      "Declare a window below and this fills in — Reach is computed from which factions are "
+      +"strong in the windows you offer, not from how many windows there are."));
   }
 
   const reachRow=el("div",{class:"row",style:"gap:8px;flex-wrap:wrap;margin:2px 0 8px"},
-    el("span",{class:"sec",style:"font-size:12.5px"},"Factions that can answer this card:"));
+    el("span",{class:"sec",style:"font-size:12.5px"},"Override it:"));
   for(const n of [0,1,2,3,4]){
-    const on=p.reach===n;
+    const on=p.reachOverridden && p.reach===n;
     reachRow.append(el("button",{class:"chip","aria-pressed":on,
-      title:n===0?"nobody can answer it — not printable":`cap = base x ${(cfg.reach_caps||{})[n]}`,
+      title:n===0?"nobody can answer it — not printable":`cap = base × ${(cfg.reach_caps||{})[n]}`,
       "data-focus":"reach:"+n,
       onclick:()=>{ plan.reach=n; touch(); }}, String(n)));
   }
+  if(p.reachOverridden)
+    reachRow.append(el("button",{class:"chip","data-focus":"reach:auto",
+      onclick:()=>{ delete plan.reach; touch(); }},"use computed"));
   reachRow.append(el("span",{class:"muted",style:"font-size:11.5px"},
-    "not how many windows — how many factions can do something, using tools their toolkit allows"));
+    "only if you know something the window profiles in data/factions.yaml do not"));
+  reachBox.append(reachRow);
 
   const wins=el("div",{class:"windows"});
   for(const w of cfg.windows){
@@ -1518,12 +1693,14 @@ function scorePanel(s){
 
   return el("div",{class:"panel"},
     el("div",{class:"row spread"},
-      el("h3",{text:"The Score — what this card earns"}),
+      el("h3",{text:"What raises the ceiling"}),
       el("span",{class:"muted",style:"font-size:11.5px",
         text:p.hasPlan?"plan declared":"no plan — capped at base budget"})),
-    bar,
+    el("label",{class:"fl",text:"Energy cost — the only control here that raises the budget directly"}),
+    el("div",{class:"grid",style:"grid-template-columns:repeat(4,1fr);max-width:480px"},
+      stepper("Cost", draft.meta.cost, v=>{draft.meta.cost=v; touch();}, 0)),
     el("label",{class:"fl",text:"What it pays (beyond Energy)"}), grid,
-    el("label",{class:"fl"},term("reach","Reach")), reachRow,
+    el("label",{class:"fl"},term("reach","Reach")), reachBox,
     el("label",{class:"fl"},"Which ",term("window","windows")," exist — each must name a real card or rule"), wins,
     el("div",{class:"muted",style:"font-size:11.5px;margin-top:10px"},
       "Every window you give back raises the ceiling by 25%. Nothing paid and no windows = today's budget, unchanged."),
@@ -1551,7 +1728,7 @@ function gateStrip(){
   const g=gatesOf(draft);
   const wrap=el("div",{class:"panel"},
     el("div",{class:"row spread",style:"margin-bottom:10px"},
-      el("h3",{text:"Gates"}),
+      el("h3",{text:"Can it be printed"}),
       el("span",{class:"muted",style:"font-size:11.5px",text:"machine-checked · G2/G5/G7/G9 are your call"})));
   const pills=el("div",{class:"gatepills"});
   for(const [id,fails] of Object.entries(g)){
@@ -2518,6 +2695,25 @@ function renderProblems(main){
 }
 
 function renderMain(){ preservingFocus(renderMainNow); }
+/* Everything that spends the ceiling, in the order the verdict lists it: stats, then the base
+   side, then the level-up side. This was three panels with the stat steppers in a fourth,
+   sitting above two read-only panels. */
+function spendPanel(){
+  const m=draft.meta;
+  return el("div",{class:"panel"},
+    el("h3",{text:"What spends it"}),
+    el("label",{class:"fl",text:"Stats — the largest single line of spend"}),
+    el("div",{class:"grid stats",style:"margin-top:var(--s3)"},
+      ...DB.statKeys.map(k=>stepper(k, m.stats?.[k],
+        v=>{m.stats=m.stats||{}; m.stats[k]=v; touch();}))),
+    el("div",{class:"side-rule",text:"Base side"}),
+    el("label",{class:"fl"},"Keywords — ",m.faction||"?"," only (",term("G4"),")"), keywordChips("base"),
+    el("label",{class:"fl",text:"Effect types"}), effectPicker("base"),
+    el("div",{class:"side-rule lvl",text:"Level-up"}),
+    el("label",{class:"fl",text:"Keywords gained"}), keywordChips("ascended"),
+    el("label",{class:"fl",text:"Effect types"}), effectPicker("ascended"));
+}
+
 function renderMainNow(){
   const main=$("#main"); main.replaceChildren();
   if(MODE==="library")  return renderLibrary(main);
@@ -2547,32 +2743,20 @@ function renderMainNow(){
 
   main.append(proofPanel(s));
 
-  /* Order follows the job: the dials you turn first, then the two verdicts that say
-     whether the card can be printed, then its content, then its context. Cost & stats
-     used to sit fifth, below three read-only panels -- it is the control you reach for
-     the moment the proof says the number is wrong. */
-  main.append(el("div",{class:"panel"},
-    el("h3",{text:"Cost & stats"}),
-    el("div",{class:"grid stats",style:"margin-top:var(--s3)"},
-      stepper("Cost", m.cost, v=>{m.cost=v; touch();}, 0),
-      ...DB.statKeys.map(k=>stepper(k, m.stats?.[k],
-        v=>{m.stats=m.stats||{}; m.stats[k]=v; touch();})))));
-
-  main.append(gateStrip());
+  /* These two panels are the two halves of the verdict above, in the same order: everything
+     that raises the ceiling, then everything that spends it. Whichever half of the verdict is
+     wrong tells you which panel to scroll to. Cost and the stats used to share one panel; they
+     are split because cost is the only control that raises a ceiling and the stats are the
+     largest single thing that spends one. */
   if(s.scorable) main.append(scorePanel(s));
+  else main.append(el("div",{class:"panel"},
+    el("h3",{text:"What raises the ceiling"}),
+    el("label",{class:"fl",text:"Energy cost"}),
+    el("div",{class:"grid",style:"grid-template-columns:repeat(4,1fr);max-width:480px"},
+      stepper("Cost", m.cost, v=>{m.cost=v; touch();}, 0))));
 
-  /* The printed words live in the proof now, beside the face and the budget. What is left
-     here is the priced mechanics -- the things that actually move the meters. */
-  main.append(el("div",{class:"panel"},
-    el("h3",{text:"Base side — priced mechanics"}),
-    el("label",{class:"fl"},"Keywords — ",m.faction||"?"," only (",term("G4"),")"), keywordChips("base"),
-    el("label",{class:"fl",text:"Effect types"}), effectPicker("base")));
-
-  main.append(el("div",{class:"panel"},
-    el("h3",{text:"Level-up side — priced mechanics"}),
-    el("label",{class:"fl",text:"Keywords gained"}), keywordChips("ascended"),
-    el("label",{class:"fl",text:"Effect types"}), effectPicker("ascended")));
-
+  main.append(spendPanel());
+  main.append(gateStrip());
   main.append(jobPanel(draft));
   main.append(siblingTable());
 
