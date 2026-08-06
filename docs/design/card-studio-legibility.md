@@ -82,7 +82,7 @@ there would be the original bug returning.
 
 *Commits `248fca3`, `9b71fa5`.*
 
-## 6. Filter and gate state — C2, C3
+## 6. Filter and gate state — C2, C3 ✅ done
 
 Both are state held only in a DOM node that `touch()` throws away.
 
@@ -92,7 +92,7 @@ Both are state held only in a DOM node that `touch()` throws away.
   deliberately does **not** call `touch()` — reading a card against G9 is not an edit to the
   card, and marking it dirty over it would be wrong.
 
-## 7. Reach, computed the way the checker computes it — C4
+## 7. Reach, computed the way the checker computes it — C4 ✅ done
 
 Mirrors `Plan.reach_value()` exactly:
 
@@ -116,7 +116,7 @@ card on boot. Silent when they agree; a toast naming the first divergence when t
 ships permanently — it is the guard that would have caught C4 the day it appeared. `save()`'s
 drift check extends from `baseDelta` alone to `reach` and `ceiling` too.
 
-## 8. The verdict panel — F1, F2
+## 8. The verdict panel — F1, F2 ✅ done
 
 One ledger, read top to bottom as sentences: what the card is allowed to spend, then what it
 actually spends, then what to do about the difference. Replaces the arithmetic half of
@@ -178,7 +178,7 @@ A discounted credit shows its arithmetic on its own row: `2 × 5 = 10 → ×0.5 
   removes 3 points of budget.`
 - **On** — `Exactly on budget. It spends precisely what its cost buys.`
 
-## 9. Status colour
+## 9. Status colour ✅ done
 
 The rule in the `studio.html` CSS header holds: **hue belongs to faction, fill belongs to
 status.** Warmongers own red and Assholes own green, so status may not use them.
@@ -202,7 +202,7 @@ dim meter and a pressed chip start speaking the same language.
 
 Colour never carries meaning alone: every state ships its glyph and its word.
 
-## 10. The teaching layer — F3
+## 10. The teaching layer — F3 ✅ done
 
 Printed on screen: anything that changes a number being chosen. Left in tooltips: vocabulary.
 The existing `GLOSSARY` / `tipped()` / `ruleDocs` machinery is extended, not replaced.
@@ -218,7 +218,7 @@ The existing `GLOSSARY` / `tipped()` / `ruleDocs` machinery is extended, not rep
   each ✓. The 0–4 chips remain, relabelled as an explicit override.
 - **Every machine gate failure gains a fix line.**
 
-## 11. Page structure
+## 11. Page structure ✅ done
 
 Five blocks. Blocks 2 and 3 are the two halves of the verdict in the same order, so the half of
 the verdict that is wrong tells you which panel to scroll to.
@@ -268,3 +268,8 @@ of spend.
 - Opening a card whose `plan` holds only `requires` makes `planOf()` write back empty `pays: {}`
   and `windows: []`. Harmless — `new_card()` writes those keys anyway — but it is a diff you did
   not make.
+- **`data/factions.yaml` names its fifth window `race`; `data/plan-credits.yaml` names it
+  `orthogonal`.** Nothing reconciles them, so a card declaring the `orthogonal` window finds no
+  faction strong in it, computes Reach 0, and is reported as not printable. Verified against
+  `scoring.py`, which agrees — so this is a live data inconsistency, not a Studio bug. One of the
+  two names has to give.
