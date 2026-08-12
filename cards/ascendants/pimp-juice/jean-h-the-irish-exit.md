@@ -16,10 +16,20 @@ base:
   effects:
   - Soft Removal (Bounce)
   - Untargetable
+  abilities:
+  - name: Ghosting
+    type: Fast Ability
+    immersion: e draws all the squad's heat, then effortlessly vanishes out the back.
+    mechanics: Pay 1 Energy at any time to completely remove Jean H from the Board. He returns to your side of the Board at the start of the next Round's Phase 1 (The Refresh).
 ascended:
   keywords: []
   effects:
   - Protection (Immunity)
+  abilities:
+  - name: Untouchable
+    type: Passive Ability
+    immersion: When fully in the zone, fatal consequences just slip right past Jean.
+    mechanics: While Jean H has at least one Beer or Blunt Attachment equipped to him, his Physical Health (PH) and Mental Health (MH) cannot be reduced below 1.
 art:
   base: JeanHTheIrshExit
   ascended: JeanHTheIrshExitLVLUP

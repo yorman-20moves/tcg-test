@@ -1,9 +1,22 @@
 # 13. Glossary of Universal Terms
 
-**Countering** — if an ability or card states that it *Counters* an opponent's card, action, or
-Combat Wave, it completely invalidates it. The countered card is sent to the Graveyard and none
-of its effects resolve. If a Combat Wave is countered, all attacks within the wave are negated
-and the wave immediately ends.
+**Countering** *(verb)* — if an ability or card states that it *Counters* an opponent's card,
+action, or Combat Wave, it completely invalidates it. The countered card is sent to the Graveyard
+and none of its effects resolve. If a Combat Wave is countered, all attacks within the wave are
+negated and the wave immediately ends.
+
+> **Not to be confused with a Counter** *(noun)*, below. To *Counter* something is to negate it;
+> a *Counter* is a marker sitting on a Character. Nothing in the game does both.
+
+**Counter** *(noun)* — a physical marker placed on a Character by a card effect.
+
+- Every Counter is **named** by the effect that creates it — an **Aim** counter, an **EX** counter,
+  a **Salt** counter. Counters of different names never interact.
+- A Counter has **no inherent effect.** It does something only because some card's text reads it.
+- Counters are **public information.** Either player may count them at any time.
+- Counters are removed when the Character **leaves the Board**, and never carry to another copy.
+- Counters **survive an Ascendant's flip**, in both directions, unless the card says otherwise.
+- A card that creates Counters must print a **maximum**, or it fails gameplay gate **G6**.
 
 **Murdered** — a Character whose PH or MH has reached 0 through active damage or a card effect.
 Murdered Characters go to their **original owner's** Graveyard.
@@ -40,6 +53,15 @@ for every rule, belongs to its creator's faction and crew, counts toward no deck
 **Additional Action** — an extra Phase 2 action taken immediately, before Initiative passes. A
 player may never take more than **two consecutive actions**; surplus is lost. See
 [Round Structure §Additional Actions](08-round-structure.md#additional-actions).
+
+**Descent** — an Ascendant flipping **back** to its base side, because its own text told it to.
+Damage carries across; statuses and Counters persist; the Level-Up condition becomes live again. No
+effect may force an *opponent's* Ascendant to Descend. See
+[Ascendants §Descent](10-ascendants.md#descent).
+
+**Roll** — the game's only randomizer. The ability's controller rolls one **d6**, publicly, at
+resolution; the result is sealed and cannot be re-rolled or modified. A roll is a telegraph, not an
+interaction window. See [Randomization](14-randomization.md).
 
 **Printed** — the value shown on the card itself, before any buff, Attachment, status or other
 modifier. Multipliers always apply to printed values; additions apply afterwards.

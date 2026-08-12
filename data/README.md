@@ -6,7 +6,7 @@ engine reads them directly, and `docs/rulebook/12-keywords.md` is generated from
 
 | File | Contents |
 |---|---|
-| `keywords.yaml` | 22 faction-exclusive Roles, with point cost and owning faction |
+| `keywords.yaml` | 22 faction-exclusive keywords, with point cost and owning faction |
 | `effects.yaml` | 52 effect types with point costs — the vocabulary abilities are priced in |
 | `status-effects.yaml` | 6 statuses. **Contains a known conflict with the rulebook — see OQ-08** |
 

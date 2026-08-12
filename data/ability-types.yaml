@@ -1,0 +1,30 @@
+# The four ability types. Source of truth for gate G3 and for the Studio's Type dropdown.
+# docs/rulebook/06-character-anatomy.md is GENERATED from this file -- edit here, then run
+# python tools/generate.py
+#
+# `requires_joiner` is what makes a type self-describing. It declares how the type's gate joins
+# to its effect when the ability prints:
+#
+#   Standard / Fast  ->  a COST you pay        "Pay 1 Energy and Sacrifice an ally: Deal 3 damage."
+#   Trigger / Passive ->  a CONDITION that holds "Whenever Julito Murders a Character, place a counter."
+#
+# Adding a fifth type means defending it in docs/design/decisions.md against at least two
+# existing types -- the same rule that governs pricing a new keyword.
+
+ability_types:
+- key: standard
+  name: Standard Ability
+  when_usable: Only during Phase 2, as your single alternating action.
+  requires_joiner: ': '
+- key: fast
+  name: Fast Ability
+  when_usable: The only abilities fast enough for the Reaction Window or the Stack.
+  requires_joiner: ': '
+- key: trigger
+  name: Trigger Ability
+  when_usable: Costs no action. Fires automatically the moment its condition is met.
+  requires_joiner: ', '
+- key: passive
+  name: Passive Ability
+  when_usable: Always on, continuously, while the Character is face-up on the Board.
+  requires_joiner: ', '

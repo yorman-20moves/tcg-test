@@ -17,11 +17,25 @@ base:
   effects:
   - Direct Damage/Heal 2
   - Permanent Buff 1
+  abilities:
+  - name: Bouncer
+    immersion: Benny takes the bullet just to keep his friends breathing.
+    mechanics: As a Reaction, Benny can intercept one attack per Combat Wave intended for Life Points or another Character, forcefully changing the attacker's target to himself.
+    keyword: Protector
+  - name: A1 Drinkz
+    type: Fast Ability
+    immersion: Benny cracks open his personal stash to put his friends back on their feet.
+    mechanics: Once per round, Pay 1 Energy to grant an allied Character +1 Physical Attack (PA) and heal them for 2 Physical Health (PH).
 ascended:
   keywords: []
   effects:
   - Direct Damage/Heal 3
   - Permanent Buff 3
+  abilities:
+  - name: Premium Stash
+    type: Passive Ability
+    immersion: Benny pours the good stuff, making his allies hit harder.
+    mechanics: '[A1 Drinkz] now costs 0 Energy to activate, grants +3 Physical Attack (PA), and heals 3 Physical Health (PH).'
 art:
   base: BennyBlancoTitanOfTheTopshelf
   ascended: BennyBlancoTitanOfTheTopshelflvlup
@@ -40,9 +54,11 @@ Keywords: Protector
 
 ### Rules Text
 
-[Bouncer] (Protector): Benny takes the bullet just to keep his friends breathing. As a Reaction, Benny can intercept one attack per Combat Wave intended for Life Points or another Character, forcefully changing the attacker's target to himself.
+[Bouncer] (Protector): Benny takes the bullet just to keep his friends breathing.
+As a Reaction, Benny can intercept one attack per Combat Wave intended for Life Points or another Character, forcefully changing the attacker's target to himself.
 
-[A1 Drinkz] (Fast Ability): Benny cracks open his personal stash to put his friends back on their feet. Once per round, Pay 1 Energy to grant an allied Character +1 Physical Attack (PA) and heal them for 2 Physical Health (PH).
+[A1 Drinkz] (Fast Ability): Benny cracks open his personal stash to put his friends back on their feet.
+Once per round, Pay 1 Energy to grant an allied Character +1 Physical Attack (PA) and heal them for 2 Physical Health (PH).
 
 ## Level-Up
 
@@ -52,7 +68,8 @@ Benny sees his crew hurting and opens the premium stash. When Benny has successf
 
 ### Ascended Rules Text
 
-[Premium Stash] (Passive Ability): Benny pours the good stuff, making his allies hit harder. [A1 Drinkz] now costs 0 Energy to activate, grants +3 Physical Attack (PA), and heals 3 Physical Health (PH).
+[Premium Stash] (Passive Ability): Benny pours the good stuff, making his allies hit harder.
+[A1 Drinkz] now costs 0 Energy to activate, grants +3 Physical Attack (PA), and heals 3 Physical Health (PH).
 
 ## Lore
 

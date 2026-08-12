@@ -156,19 +156,42 @@ both want them to exist.
 
 ---
 
-## OQ-08 · Exhausted has two contradictory definitions — `OPEN` — **severity: medium**
+## OQ-08 · Exhausted has two contradictory definitions — `DECIDED` — **severity: medium**
+
+**Resolved 2026-08-05 in favour of the Elements sheet.** See [D-011](decisions.md).
+**Exhausted halves both PA and MA, rounded down**, applied to the printed value with buffs added
+afterwards. The rulebook's +1 Energy attacker tax is retired. Rules in
+[§11 Status Effects](../rulebook/11-status-effects.md).
+
+*Original:* two entirely different effects — one a tax, the other a debuff — priced differently, with
+the rulebook authoritative by default and `data/status-effects.yaml` carrying a warning.
 
 | Source | Definition |
 |---|---|
 | Rulebook §11 | Costs an **additional 1 Energy** to declare them as an attacker |
 | Elements sheet | Attack power (physical and mental) is **halved** |
 
-These are entirely different effects — one is a tax, the other is a debuff — and they'd be
-priced differently. The rulebook is authoritative for now and `data/status-effects.yaml` carries
-a warning. Pick one.
+**What decided it was a card.** Caleb's `[Teabag]` applies Exhausted on a 1–3, so half his base side
+was undefined text. His text is valid under either reading — what changed is whether the card is any
+*good*. The Elements definition makes afflicted Characters lose fights and die afflicted, which is
+exactly what feeds his Salt counters; the tax version does nothing for him. This is the only case so
+far where the rulebook lost, and it lost because it had been winning by default rather than by
+anyone deciding it should.
 
-Same class of problem: the Elements sheet has a sixth unnamed status with the note
-*"tate qieto - low attack but lowers your attack"* — an undesigned idea sitting in a data file.
+---
+
+## OQ-17 · An unnamed seventh status is sitting in the spreadsheet — `OPEN` — **severity: low**
+
+Split out of OQ-08 so that resolving that one did not bury this. The Elements sheet carries a status
+with no name and the note *"tate qieto - low attack but lowers your attack"* — an undesigned idea
+parked in a data file.
+
+It is not in `data/status-effects.yaml`, not in [§11](../rulebook/11-status-effects.md), and no card
+references it. Either design it or delete the note; leaving a half-idea in a source file is how the
+Exhausted conflict happened in the first place.
+
+Worth noting it may be redundant now. With OQ-08 resolved, **Exhausted** *is* "lowers your attack,"
+so this fragment may simply be an earlier draft of the status that just won.
 
 ---
 
@@ -286,15 +309,83 @@ clause that taxes the *length* of a plan rather than banning it.
 
 ---
 
+## OQ-16 · Ascendants have no ascended stat block — `OPEN` — **severity: medium**
+
+[§10](../rulebook/10-ascendants.md) promises that the flip reveals *"its ultimate form **and
+stats**."* It does not. The frontmatter schema carries **one** `stats` map, no card in the pool has
+ascended stats, and `tools/scoring.py` charges `stats_total` exactly once, against the base side.
+
+So an Ascendant's second face can change its keywords, its effects and its abilities — but never its
+numbers. Every ascended side in the game is a stat-line freeze.
+
+**How it surfaced (D-010).** Ruvi's `[The Glitch]` bypassed the Reaction Window to deal "his Physical
+Attack (PA) damage" directly to Life Points. His PA is **1**. The ability that broke the game's most
+sacred rule dealt one damage, and there was no ascended stat block to make it otherwise. It was
+repointed at his MA (5) instead, which works — but the underlying gap affects all 31 cards, not Ruvi.
+
+**Why it is not merely cosmetic.** It compounds **OQ-04**. If the ascended side is both unpriced
+*and* unable to move its stats, then every level-up in the game is forced to express itself purely
+as added text — which is exactly the pressure toward "just bigger" that lore gate **L7** and
+dimension **D6** exist to resist. Two constraints pushing the same direction produce a pool of
+Ascendants whose second faces all read alike.
+
+**Options:** add an optional `ascended_stats` map to the schema and charge the delta (small change,
+needs a scoring rule for what a stat *change* costs); or state in §10 that ascended stats are
+deliberately frozen and strike the promise from the text. Either is fine. **Having the rulebook
+promise something the schema cannot express is not.**
+
+---
+
+## OQ-18 · Ten abilities put a keyword where the ability type belongs — `OPEN` — **severity: medium**
+
+Found by the structured ability model (D-013), which made it checkable for the first time. Ten
+abilities across eight cards declare a **keyword** in the slot the rulebook reserves for the ability
+**type**:
+
+| Card | Ability | Claims |
+|---|---|---|
+| Enzo | `[Street Tax]` · `[Improved Street Tax]` | Hustler +1 · Hustler +2 |
+| RoaR | `[What's a Handicap?]` | Juggernaut |
+| Silly | `[First Blood]` | Combo-Striker |
+| Whiteboy | `[Masochist]` · `[Built Different]` | Protector · Berserker |
+| Angel, The Smiling Saboteur | `[False Savior]` | Infiltrator |
+| Benny Blanco | `[Bouncer]` | Protector |
+| Julio | `[The Meek Executioner]` | Executioner |
+| Dilo | `[The Takeover]` | Extortionist |
+
+[§6](../rulebook/06-character-anatomy.md) requires every ability to declare one of four types, so
+each of these is a live **G3** failure that the old prose-regex accepted because it matched any
+recognised term in the brackets. `check.py` now reports all ten — **it is the worksheet.**
+
+**Migration deliberately did not guess.** Which type each one is depends on the rulebook, not a
+heuristic: `[Masochist] (Protector)` reads like a Fast Ability from "As a Reaction," but that is a
+rules decision. The `keyword` field is filled and correct on all ten; only `type` is blank.
+
+**Two of them are a second, worse bug**, and it is the one that could not be seen before at all:
+
+- **Julio** `[The Meek Executioner]` claims `Executioner`, but his `ascended.keywords` is empty.
+- **Angel G** `[The Main Event]` claimed `Juggernaut` inside its prose, and his `ascended.keywords`
+  is empty too.
+
+So both cards print a keyword they do not own and are not charged for — Executioner is 2 points,
+Juggernaut is 3. G3 now enforces that an ability's `keyword` must appear in that side's `keywords`,
+which is what surfaced them. Either add the keyword to the frontmatter and pay for it, or cut the
+claim from the ability.
+
+---
+
 ## Suggested order
 
 The dependencies matter more than the severities.
 
 1. **OQ-06 (Icons) + OQ-02 (Influence)** — one decision, unblocks a faction and a win condition
 2. **OQ-01 (build a real card pool)** — the biggest single unlock; everything gets testable
-3. **OQ-04 (price the ascended side)** — do it before designing more Ascendants, not after
+3. **OQ-04 (price the ascended side) + OQ-16 (let it change its stats)** — one sitting; both
+   constrain the same face, and Descent (D-010) is the first lever either of them has. Do it before
+   designing more Ascendants, not after
 4. **OQ-09 + OQ-11 (Pacifier, Infiltrator)** — two keywords likely mispriced
 5. **OQ-05 (mental combat)** — decide whether MA lives or dies
 6. **OQ-03 (the clock)** — needs a real pool to test against
-7. **OQ-07, OQ-08, OQ-10, OQ-12** — cleanup and lore, cheap, do them between the big ones
+7. **OQ-10, OQ-12, OQ-17** — cleanup and lore, cheap, do them between the big ones
+   *(OQ-07 and OQ-08 are done)*
 8. **OQ-13** — before it's expensive

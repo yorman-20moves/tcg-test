@@ -16,12 +16,26 @@ base:
   effects:
   - Hand Destruction 1
   - Status Application (Minor)
+  abilities:
+  - name: Gag Order
+    type: Fast Ability
+    immersion: Dilo guarantees that secrets stay off the record.
+    mechanics: Pay 1 Energy to inflict Silenced on an enemy Character until the end of the Round.
+  - name: You Break It, You Buy It
+    type: Trigger Ability
+    immersion: Damaging assets triggers an immediate, non-negotiable tax.
+    mechanics: If your opponent Murders an allied Character or destroys an allied Tactic/Attachment, they must discard a card from their Hand.
 ascended:
   keywords:
   - Extortionist
   effects:
   - Hand Destruction 1
   - Permanent Buff 2
+  abilities:
+  - name: The Takeover
+    immersion: Now an equal partner, his personal cut grows with every collection.
+    mechanics: When Dilo successfully lands an attack on Life Points, your opponent discards a card from their hand. Every time he successfully triggers this, he permanently gains +2 Physical Attack (PA) and +2 Physical Health (PH).
+    keyword: Extortionist
 art:
   base: DiloTheSilk-TieSilencer
   ascended: DiloTheSilk-TieSilencerLVLUP
@@ -38,9 +52,11 @@ status: ported
 
 ### Rules Text
 
-[Gag Order] (Fast Ability):Dilo guarantees that secrets stay off the record. Pay 1 Energy to inflict Silenced on an enemy Character until the end of the Round.
+[Gag Order] (Fast Ability): Dilo guarantees that secrets stay off the record.
+Pay 1 Energy to inflict Silenced on an enemy Character until the end of the Round.
 
-[You Break It, You Buy It] (Trigger Ability): Damaging assets triggers an immediate, non-negotiable tax. If your opponent Murders an allied Character or destroys an allied Tactic/Attachment, they must discard a card from their Hand.
+[You Break It, You Buy It] (Trigger Ability): Damaging assets triggers an immediate, non-negotiable tax.
+If your opponent Murders an allied Character or destroys an allied Tactic/Attachment, they must discard a card from their Hand.
 
 ## Level-Up
 
@@ -52,7 +68,8 @@ Keywords gained: Extortionist
 
 ### Ascended Rules Text
 
-[The Takeover] (Extortionist): Now an equal partner, his personal cut grows with every collection. When Dilo successfully lands an attack on Life Points, your opponent discards a card from their hand. Every time he successfully triggers this, he permanently gains +2 Physical Attack (PA) and +2 Physical Health (PH).
+[The Takeover] (Extortionist): Now an equal partner, his personal cut grows with every collection.
+When Dilo successfully lands an attack on Life Points, your opponent discards a card from their hand. Every time he successfully triggers this, he permanently gains +2 Physical Attack (PA) and +2 Physical Health (PH).
 
 ## Lore
 

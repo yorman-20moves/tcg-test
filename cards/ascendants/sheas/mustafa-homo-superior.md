@@ -16,10 +16,23 @@ base:
   effects:
   - Direct Damage/Heal 2
   - Protection (Immunity)
+  abilities:
+  - name: You're Definitely Gay
+    type: Fast Ability
+    immersion: Mustafa tears their egos apart with just a few words.
+    mechanics: Pay 1 Energy to inflict 2 Mental Attack (MA) damage to a target Character.
+  - name: Fierce Friend
+    type: Fast Ability
+    mechanics: Pay 1 Energy to intercept any source of Mental damage intended for an ally; Mustafa takes the damage instead.
 ascended:
   keywords: []
   effects:
   - Mass Removal (Wipes)
+  abilities:
+  - name: The Outing
+    type: Standard Ability
+    immersion: Mustafa forces everyone to see how weak they really are.
+    mechanics: Pay 2 Energy to inflict Mental Attack (MA) damage to every other Character on the Board equal to the exact difference between their current Mental Health (MH) and Mustafa's current Mental Health (MH).
 art:
   base: MustafaHomo-Superior
   ascended: MustafaHomo-SuperiorLVLUp

@@ -16,10 +16,22 @@ base:
   effects:
   - Soft Removal (Stun)
   - Status Application (Minor)
+  abilities:
+  - name: Paralyzing Presence
+    type: Trigger Ability
+    immersion: Julio freezes his victims in pure panic just by walking into the room.
+    mechanics: When summoned to the Board, inflict Stun on one enemy Character with a lower Physical Attack (PA) than Julio until the end of the Round.
+  - name: The Ooze Gauntlet
+    type: Fast Ability
+    mechanics: Pay 1 Energy to inflict Fear on an enemy Character that has a lower PA than him until the end of the Round.
 ascended:
   keywords: []
   effects:
   - Hard Removal
+  abilities:
+  - name: The Meek Executioner
+    immersion: Julio just walks up and snaps their frozen necks.
+    keyword: Executioner
 art:
   base: JulioTheTyrantoftheTaintedTouch
   ascended: JulioTheTyrantoftheTaintedTouchLVLUp

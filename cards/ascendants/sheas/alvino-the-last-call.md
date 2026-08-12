@@ -16,11 +16,21 @@ base:
   effects:
   - Direct Damage/Heal 1
   - Status Application (Minor)
+  abilities:
+  - name: A Round of Shots
+    type: Standard Ability
+    immersion: Alvino forces you to drink up, and he doesn't take no for an answer.
+    mechanics: Once per round, Pay 1 Energy to hand a target Character a drink. They gain a temporary +2 Physical Attack (PA) buff until the end of the Round, but instantly take 1 permanent Mental Health (MH) damage.
 ascended:
   keywords: []
   effects:
   - Counterspell
   - Soft Removal (Bounce)
+  abilities:
+  - name: Closing Time
+    type: Fast Ability
+    immersion: Alvino decides the fun is over, and it's time to kick everyone out.
+    mechanics: During the Reaction Window, pay 1 Energy to Counter an enemy Character's attack or ability aimed at an allied Character or the controlling player's Life Points. When Alvino successfully counters a character they are immedietly returned to their owners hand.
 art:
   base: AlvinoTheLastCallv2
   ascended: AlvinoTheLastCallv2LVLUP
@@ -37,7 +47,8 @@ status: ported
 
 ### Rules Text
 
-[A Round of Shots] (Standard Ability): Alvino forces you to drink up, and he doesn't take no for an answer. Once per round, Pay 1 Energy to hand a target Character a drink. They gain a temporary +2 Physical Attack (PA) buff until the end of the Round, but instantly take 1 permanent Mental Health (MH) damage.
+[A Round of Shots] (Standard Ability): Alvino forces you to drink up, and he doesn't take no for an answer.
+Once per round, Pay 1 Energy to hand a target Character a drink. They gain a temporary +2 Physical Attack (PA) buff until the end of the Round, but instantly take 1 permanent Mental Health (MH) damage.
 
 ## Level-Up
 
@@ -47,7 +58,8 @@ Alvino watches the bar get completely trashed, and he loves it. Once 4 Character
 
 ### Ascended Rules Text
 
-[Closing Time] (Fast Ability): Alvino decides the fun is over, and it's time to kick everyone out. During the Reaction Window, pay 1 Energy to Counter an enemy Character's attack or ability aimed at an allied Character or the controlling player's Life Points. When Alvino successfully counters a character they are immedietly returned to their owners hand.
+[Closing Time] (Fast Ability): Alvino decides the fun is over, and it's time to kick everyone out.
+During the Reaction Window, pay 1 Energy to Counter an enemy Character's attack or ability aimed at an allied Character or the controlling player's Life Points. When Alvino successfully counters a character they are immedietly returned to their owners hand.
 
 ## Lore
 

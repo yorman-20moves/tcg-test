@@ -4,7 +4,7 @@ The three typefaces of the 20 Moves design system, self-hosted so the workbench
 does not need the internet to look like itself. `tools/studio.py` serves this
 directory at `/fonts/`; `tools/studio.html` declares them with `@font-face`.
 
-| File | Family | Role in the system |
+| File | Family | What it is for |
 |---|---|---|
 | `Anton-400.woff2` | Anton | Display — headings and the one hero numeral |
 | `Inter-var.woff2` | Inter (variable, 100–900) | Body, controls, nav |

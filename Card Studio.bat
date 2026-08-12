@@ -1,11 +1,11 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title Card Studio
+title Known Associates - Card Studio
 
 echo.
 echo   ==========================================
-echo     CARD STUDIO
+echo     KNOWN ASSOCIATES - CARD STUDIO
 echo   ==========================================
 echo.
 

@@ -36,22 +36,23 @@ had no way to express.**
 
 # Part One — Three decisions before anything else
 
-## 1. It's called a **Job**, not a Role
-
-Your rulebook already says: *"Keywords are specific **Roles** that a Character plays on the
-Board. Each Role is completely exclusive to its specific Faction."*
-
-So "Role" is taken, and it means something narrower — a faction-exclusive mechanic. Using it for
-two things would break the one vocabulary you've been strict about.
+## 1. It's called a **Job**
 
 **Job** is the catalogue's own term ("Team Job"), and it's the right language for this world:
 *what's your job in this crew?* Clean separation:
 
-> **Keyword / Role** — a faction-exclusive mechanic. *Protector. Prowler. Troll.*
+> **Keyword** — a faction-exclusive mechanic. *Protector. Prowler. Troll.*
 > **Job** — what you do for your crew. *Warden. Ghost. Quartermaster.*
 >
-> A Job is usually *expressed through* Roles, but it isn't one. Two Wardens in different
+> A Job is usually *expressed through* keywords, but it isn't one. Two Wardens in different
 > factions do the same job with different tools.
+
+*This section used to open by explaining that "Job" was needed because the rulebook had spent the
+word **Role** on keywords. It had — §12 was titled "Exclusive Keywords (The Roles)" and called
+keywords "Roles a Character plays." **That synonym was retired in D-015**: one concept with two
+names cost a paragraph of disambiguation everywhere it appeared, including here, and "Role" reads
+like a position, which is what a Job is. The two words were swapped from where intuition puts
+them. There is now one word for each concept.*
 
 ## 2. You already have four of the catalogue's six axes. Don't add them again.
 

@@ -16,12 +16,25 @@ base:
   - Hustler +1
   effects:
   - Energy Gen from Keyword
+  abilities:
+  - name: Street Tax
+    immersion: Enzo doesn't ask for a cut, he just beats it out of you.
+    mechanics: When Enzo lands a hit, he generates 1 temporary Energy. This is added to your available Energy immediately but expires at the end of your turn (Phase 3).
+    keyword: Hustler +1
 ascended:
   keywords:
   - Hustler +2
   effects:
   - Energy Gen 2
   - Status Application (Minor)
+  abilities:
+  - name: Improved Street Tax
+    immersion: Enzo turns dirty money into a brutal beatdown.
+    mechanics: When Enzo lands a hit, he generates 2 temporary Energy. This is added to your available Energy immediately but expires at the end of Phase 3.
+    keyword: Hustler +2
+  - name: Blood Money
+    type: Trigger Ability
+    mechanics: When he attacks, he temporarily increases his Physical Attack (PA) by the amount of unspent Energy currently sitting in your Bank until the end of the Round.
 art:
   base: EnzoPurveyorofProfanePleasures4thCrown
   ascended: EnzoPurveyorofProfanePleasures4thCrownlvlup
@@ -40,7 +53,8 @@ Keywords: Hustler +1
 
 ### Rules Text
 
-[Street Tax] (Hustler +1): Enzo doesn't ask for a cut, he just beats it out of you. When Enzo lands a hit, he generates 1 temporary Energy. This is added to your available Energy immediately but expires at the end of your turn (Phase 3).
+[Street Tax] (Hustler +1): Enzo doesn't ask for a cut, he just beats it out of you.
+When Enzo lands a hit, he generates 1 temporary Energy. This is added to your available Energy immediately but expires at the end of your turn (Phase 3).
 
 ## Level-Up
 
@@ -53,7 +67,8 @@ Keywords gained: Hustler +2
 
 ### Ascended Rules Text
 
-[Improved Street Tax] (Hustler +2): Enzo turns dirty money into a brutal beatdown. When Enzo lands a hit, he generates 2 temporary Energy. This is added to your available Energy immediately but expires at the end of Phase 3.
+[Improved Street Tax] (Hustler +2): Enzo turns dirty money into a brutal beatdown.
+When Enzo lands a hit, he generates 2 temporary Energy. This is added to your available Energy immediately but expires at the end of Phase 3.
 
 [Blood Money] (Trigger Ability): When he attacks, he temporarily increases his Physical Attack (PA) by the amount of unspent Energy currently sitting in your Bank until the end of the Round.
 

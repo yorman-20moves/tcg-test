@@ -15,10 +15,20 @@ base:
   keywords: []
   effects:
   - Opponent energy generation
+  abilities:
+  - name: The First Hit is Free
+    type: Trigger Ability
+    immersion: Corazon gives you the first hit as a gift, but the rest will cost you.
+    mechanics: Whenever he successfully lands a strike on an enemy Character or Life Points, the opponent is forced to add 1 temporary Energy to their Resource Row until the end of the Round.
 ascended:
   keywords: []
   effects:
   - Status Application (Major)
+  abilities:
+  - name: The Collection
+    type: Passive Ability
+    immersion: Corazon lets the withdrawals hit hard, forcing them to pay up with everything they have.
+    mechanics: While he is face-up on the Board, the maximum Physical Health (PH) of all enemy Characters is permanently reduced by an amount equal to the total number of Unused cards in the opponent's Resource Row (plus any of their temporary Energy).
 art:
   base: CorazontheContrabandCassanova
   ascended: CorazontheContrabandCassanovaLVLUp
@@ -40,7 +50,8 @@ plan:
 
 ### Rules Text
 
-[The First Hit is Free] (Trigger Ability): Corazon gives you the first hit as a gift, but the rest will cost you. Whenever he successfully lands a strike on an enemy Character or Life Points, the opponent is forced to add 1 temporary Energy to their Resource Row until the end of the Round.
+[The First Hit is Free] (Trigger Ability): Corazon gives you the first hit as a gift, but the rest will cost you.
+Whenever he successfully lands a strike on an enemy Character or Life Points, the opponent is forced to add 1 temporary Energy to their Resource Row until the end of the Round.
 
 ## Level-Up
 
@@ -50,7 +61,8 @@ Corazon knows they are hooked, and now it's time to collect. When Corazon has su
 
 ### Ascended Rules Text
 
-[The Collection] (Passive Ability): Corazon lets the withdrawals hit hard, forcing them to pay up with everything they have. While he is face-up on the Board, the maximum Physical Health (PH) of all enemy Characters is permanently reduced by an amount equal to the total number of Unused cards in the opponent's Resource Row (plus any of their temporary Energy).
+[The Collection] (Passive Ability): Corazon lets the withdrawals hit hard, forcing them to pay up with everything they have.
+While he is face-up on the Board, the maximum Physical Health (PH) of all enemy Characters is permanently reduced by an amount equal to the total number of Unused cards in the opponent's Resource Row (plus any of their temporary Energy).
 
 ## Lore
 

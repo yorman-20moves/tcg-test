@@ -15,10 +15,20 @@ base:
   keywords: []
   effects:
   - Counterspell
+  abilities:
+  - name: Not Tonight, Boyo
+    type: Fast Ability
+    immersion: Linda blocks their nonsense with pure Irish spite.
+    mechanics: Pay 1 Energy during the Reaction Window to Counter an opponent's Standard or Combat Tactic.
 ascended:
   keywords: []
   effects:
   - Soft Removal (Stun)
+  abilities:
+  - name: Lockdown
+    type: Fast Ability
+    immersion: Linda drops the shields right on their heads, crushing them.
+    mechanics: Once per Round, pay 1 Energy to drop inescapable hard-light barriers on up to two target enemy Characters, inflicting Stunned until the end of the Round.
 art:
   base: LindaBTheUltimateCock-Block
   ascended: LindaBTheUltimateCock-Blocklvlup

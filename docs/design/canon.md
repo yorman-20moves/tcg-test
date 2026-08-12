@@ -5,9 +5,28 @@ L3.** Everything here is currently unwritten, and that is the finding.
 
 ---
 
+## The Game
+
+**Name:** **Known Associates** — decided 2026-08-06, [D-014](decisions.md).
+
+**Founding edition:** **Known Associates: Local Legends.**
+
+**The name is used flat.** Applying police-file language to a friend group is the joke. No card,
+no flavour sentence and no rulebook line may *acknowledge* that it is one — see **Register**,
+below. This is the easiest place in the project to break that rule by accident.
+
+**It deliberately does not cover the Icons.** A mother is kin, not an associate. `factions.yaml`
+already marks them `exempt: true`, outside the system by design, and the name excluding them
+hardens it: everybody else is on the list, your mother isn't on anybody's.
+
+---
+
 ## The City
 
 **Name:** _UNDECIDED — lore rubric gate WG1. Nothing else on this page can be written first._
+
+> The **game** now has a name; the **city** does not. D-014 deliberately kept them separate, so
+> WG1 is unchanged and still blocks the Timeline, Places and Arenas (OQ-07).
 
 **What the crews are fighting over:** _UNDECIDED — WG2._
 

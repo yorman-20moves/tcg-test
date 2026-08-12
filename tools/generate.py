@@ -14,6 +14,7 @@ Never hand-edit those three. Edit the YAML and run this.
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -59,8 +60,9 @@ def factions_doc(world: rules.World) -> str:
 
 def keywords_doc(world: rules.World) -> str:
     order = [(f["name"], f.get("emoji", "")) for f in world.factions]
-    out = [BANNER, "", "# 12. Factions & Exclusive Keywords (The Roles)", "",
-           "Keywords are **Roles** a Character plays. Each is exclusive to its faction; a card",
+    out = [BANNER, "", "# 12. Faction-Exclusive Keywords", "",
+           "A **keyword** is a named mechanic a Character carries. Each is exclusive to its",
+           "faction; a card",
            "carrying another faction's keyword is a hard error (F2).", "",
            "Point values are the budget cost charged by `tools/scoring.py`.", ""]
     for name, emoji in order:
@@ -102,11 +104,46 @@ def crews_doc(world: rules.World) -> str:
     return "\n".join(out).rstrip() + "\n"
 
 
+def ability_types_table(world: rules.World) -> str:
+    """Just the table. §6 is mostly hand-written prose, so this target owns a delimited region
+    rather than the whole file -- generating the file would drag the rulebook's voice into
+    Python."""
+    out = ["| Type | When it can be used |", "|---|---|"]
+    for entry in card_io.ability_types():
+        out.append(f"| **{entry['name']}** | {entry['when_usable']} |")
+    return "\n".join(out)
+
+
 TARGETS = {
     "docs/rulebook/03-factions.md": factions_doc,
     "docs/rulebook/12-keywords.md": keywords_doc,
     "docs/design/crews.md": crews_doc,
 }
+
+# The working contract exists under two names because agents disagree about which to read, and
+# README.md sends humans to AGENTS.md. Keeping both by hand is how it drifted -- see rule F13 and
+# D-016. CLAUDE.md is canonical; AGENTS.md is a byte-identical mirror, generated. Byte-identical
+# rather than banner-topped on purpose: a banner would make the two files differ forever, and F13
+# compares bytes.
+CONTRACT_MIRROR = {"AGENTS.md": "CLAUDE.md"}
+
+
+# Files where generation owns one delimited REGION and a human owns the rest.
+REGION_TARGETS = {
+    "docs/rulebook/06-character-anatomy.md": ("ability-types", ability_types_table),
+}
+
+REGION_OPEN = "<!-- GENERATED:{name} — from data/{name}.yaml via tools/generate.py -->"
+REGION_CLOSE = "<!-- /GENERATED:{name} -->"
+
+
+def _replace_region(text: str, name: str, body: str) -> str:
+    opening, closing = REGION_OPEN.format(name=name), REGION_CLOSE.format(name=name)
+    pattern = re.compile(re.escape(opening) + r".*?" + re.escape(closing), re.DOTALL)
+    replacement = f"{opening}\n{body}\n{closing}"
+    if not pattern.search(text):
+        raise SystemExit(f"no '{name}' generated region found — expected the marker:\n  {opening}")
+    return pattern.sub(lambda _: replacement, text, count=1)
 
 
 def main() -> int:
@@ -131,6 +168,47 @@ def main() -> int:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(fresh, encoding="utf-8")
             print(f"  written {relative}")
+    for mirror, canonical in CONTRACT_MIRROR.items():
+        source = card_io.REPO_ROOT / canonical
+        target = card_io.REPO_ROOT / mirror
+        fresh = source.read_bytes()
+        if target.exists() and target.read_bytes() == fresh:
+            print(f"  ok      {mirror}  (mirror of {canonical})")
+        elif args.check:
+            stale.append(mirror)
+            print(f"  STALE   {mirror}  (mirror of {canonical})")
+        else:
+            target.write_bytes(fresh)
+            print(f"  written {mirror}  (mirror of {canonical})")
+
+    for relative, (name, builder) in REGION_TARGETS.items():
+        path = card_io.REPO_ROOT / relative
+        current = path.read_text(encoding="utf-8")
+        fresh = _replace_region(current, name, builder(world))
+        if current == fresh:
+            print(f"  ok      {relative}  (region {name!r})")
+        elif args.check:
+            stale.append(relative)
+            print(f"  STALE   {relative}  (region {name!r})")
+        else:
+            path.write_text(fresh, encoding="utf-8")
+            print(f"  written {relative}  (region {name!r})")
+
+    # Card bodies are generated too: the Rules Text sections are built from `abilities`, so a
+    # hand edit there is stale by construction rather than by convention.
+    cards = card_io.load_all()
+    drifted = [c for c in cards if c.path.read_text(encoding="utf-8") != card_io.render(c)]
+    if drifted and args.check:
+        stale += [c.rel_path for c in drifted]
+        for card in drifted:
+            print(f"  STALE   {card.rel_path}")
+    elif drifted:
+        for card in drifted:
+            card.path.write_text(card_io.render(card), encoding="utf-8")
+        print(f"  written {len(drifted)} card body/bodies")
+    else:
+        print(f"  ok      {len(cards)} card bodies")
+
     if stale:
         print(f"\n{len(stale)} generated file(s) out of date — run: python tools/generate.py")
     return 1 if stale else 0

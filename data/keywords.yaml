@@ -1,4 +1,4 @@
-# Faction-exclusive Character keywords ('Roles').
+# Faction-exclusive Character keywords.
 # points = budget cost charged against a card's point budget (see tools/balance.py).
 # Negative points = the keyword is a drawback the designer is PAID for.
 # Source of truth. tools/balance.py reads this file.

@@ -1,12 +1,23 @@
-# AGENTS.md — working on this project
+# AGENTS.md / CLAUDE.md — working on this project
 
 Read this before touching anything. It is the contract, not an overview.
 
+**This file exists twice.** `AGENTS.md` and `CLAUDE.md` are one document under two names —
+agents disagree about which filename to read, and `README.md` sends human collaborators to
+`AGENTS.md`. They must stay **byte-identical**: edit one, copy it over the other in the same
+change. `python tools/check.py` blocks on any difference (rule **F13**). If they have already
+drifted and it is not obvious which side is newer, **`CLAUDE.md` is canonical** — that is the
+one an agent auto-loads, so it is where edits land.
+
 ## What this is
 
-A 1-on-1 trading card game where the cards are the designer's real friends, organized into
-four **factions** (methodology) and six **crews** (loyalty). Two things have to be excellent:
+**Known Associates** — a 1-on-1 trading card game where the cards are the designer's real
+friends, organized into four **factions** (methodology) and six **crews** (loyalty). The founding
+edition is **Known Associates: Local Legends** (D-014). Two things have to be excellent:
 the **gameplay** and the **lore**. Both have rubrics. Use them.
+
+**The name is used flat.** Applying police-file language to a friend group is the joke; nothing
+printed may acknowledge that it is one. The register never winks — see `docs/design/canon.md`.
 
 ## Source of truth — in order
 
@@ -53,10 +64,39 @@ dimension is weakest and why it still ships.
    ```
    `check.py` is the one that matters. It validates all three levels at once and its exit code
    is the number of blocking errors.
-6. ****Three documents are GENERATED and must never be hand-edited:**
-`docs/rulebook/03-factions.md` (from `data/factions.yaml`), `docs/rulebook/12-keywords.md`
-(from `data/keywords.yaml`), and `docs/design/crews.md` (from `data/crews.yaml`). Edit the YAML
-and run `python tools/generate.py`. `generate.py --check` fails if any is stale.
+6. **Generated content must never be hand-edited.** Edit the source, then run
+   `python tools/generate.py`. `generate.py --check` fails if anything is stale.
+
+   | Generated | From |
+   |---|---|
+   | `docs/rulebook/03-factions.md` — whole file | `data/factions.yaml` |
+   | `docs/rulebook/12-keywords.md` — whole file | `data/keywords.yaml` |
+   | `docs/design/crews.md` — whole file | `data/crews.yaml` |
+   | `docs/rulebook/06-character-anatomy.md` — the ability-types table only | `data/ability-types.yaml` |
+   | **every card's `### Rules Text` and `### Ascended Rules Text`** | that card's `abilities:` frontmatter |
+   | **`AGENTS.md` — whole file** | **`CLAUDE.md`** (this file) |
+
+   **This document is that last row.** It exists under two names because agents disagree about
+   which filename to read and `README.md` sends humans to `AGENTS.md`. **`CLAUDE.md` is
+   canonical; `AGENTS.md` is a byte-identical generated mirror.** Edit this file, run
+   `generate.py`, and never edit `AGENTS.md`. Keeping both by hand is exactly how they drifted
+   (D-016).
+
+   **`check.py` enforces all of it** — rule **F14** blocks on any stale generated file, stale
+   region, or card body that no longer matches its frontmatter, and **F13** blocks on the two
+   contract copies disagreeing. You do not have to remember to run `generate.py --check`
+   separately; the one command covers it.
+
+   That last row is the one that changes how you work. **An ability is data.** It lives in
+   frontmatter as a record with `name`, `type`, `immersion`, `mechanics` and optional `requires`
+   and `role`; the printed prose is built from it by `card_io.print_ability()`. Editing the Rules
+   Text section of a card by hand is no longer legal — the next `generate.py` overwrites it. Edit
+   the frontmatter, or use the Studio's ability editor. Gate G3 reads the `type` field, so a card
+   can no longer fail it because a regex could not parse a sentence.
+
+   The delimited region in `06-character-anatomy.md` is marked with
+   `<!-- GENERATED:ability-types ... -->` / `<!-- /GENERATED:ability-types -->`. Prose outside
+   those markers is hand-written and stays that way.
 
 Faction identity, toolkits and window profiles live in `data/factions.yaml`. Crew plans live in
 `data/crews.yaml`. Board conditions live in `data/game-states.yaml`, and every card declares
@@ -65,8 +105,9 @@ automatically — that is how Dre feeding Moammar was caught.
 
 ## Jobs and Formations
 
-**A Job is not a Role.** The rulebook spends "Role" on faction-exclusive keywords. A Job is the
-position a Character plays for its crew; a Role is one of the tools it plays it with.
+**A Job is not a keyword.** A Job is the position a Character plays for its crew; a keyword
+is one of the tools it plays it with. Two Wardens in different factions do the same job with
+different tools. See D-015 for the vocabulary decision behind those two words.
 
 - `data/jobs.yaml` — 28 Jobs in four families (front · damage · support · specialist). Every
   Character declares one in frontmatter as `job: <key>`. Each Job carries a `signature`
@@ -84,7 +125,6 @@ position a Character plays for its crew; a Role is one of the tools it plays it 
 Read [`docs/design/jobs-and-formations.md`](docs/design/jobs-and-formations.md) before touching
 any of it.
 
-`docs/rulebook/12-keywords.md` is generated** from `data/keywords.yaml`. Edit the YAML.
 7. **Append to `## Design Notes`, don't overwrite.** The history of why a card changed is worth
    more than the current state.
 8. **Lore gate L2 (the dignity line) is not negotiable and not a joke gate.** These are real

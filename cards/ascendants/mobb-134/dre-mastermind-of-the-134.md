@@ -16,10 +16,20 @@ base:
   keywords: []
   effects:
   - Searching (Tutors)
+  abilities:
+  - name: The Master Plan
+    type: Trigger Ability
+    immersion: He took the chaos of the streets and turned it into law.
+    mechanics: When summoned, search your Main Deck or Graveyard for the 134 Bible Attachment and immediately equip it to him. During Phase 3 (The End Step), trigger the effects of all Commandment cards currently on your side of the Board.
 ascended:
   keywords: []
   effects:
   - Mass Removal (Wipes)
+  abilities:
+  - name: The Final Verdict
+    type: Trigger Ability
+    immersion: Street brawls are for the faithless and Dre demands biblical erasure of all nonbelievers.
+    mechanics: During Phase 3, activate all Commandments on your side of the Board. If 7 or more are activated, immediately destroy every Character, Tactic, and Attachment on the opponent's Board.
 art:
   base: DreMastermindofthe134
   ascended: DreMastermindofthe134lvlup
@@ -42,7 +52,8 @@ plan:
 
 ### Rules Text
 
-[The Master Plan] (Trigger Ability): He took the chaos of the streets and turned it into law. When summoned, search your Main Deck or Graveyard for the 134 Bible Attachment and immediately equip it to him. During Phase 3 (The End Step), trigger the effects of all Commandment cards currently on your side of the Board.
+[The Master Plan] (Trigger Ability): He took the chaos of the streets and turned it into law.
+When summoned, search your Main Deck or Graveyard for the 134 Bible Attachment and immediately equip it to him. During Phase 3 (The End Step), trigger the effects of all Commandment cards currently on your side of the Board.
 
 ## Level-Up
 
@@ -52,7 +63,8 @@ As more people obey the commandments, the true prophecy begins..During Phase 3, 
 
 ### Ascended Rules Text
 
-[The Final Verdict] (Trigger Ability): Street brawls are for the faithless and Dre demands biblical erasure of all nonbelievers. During Phase 3, activate all Commandments on your side of the Board. If 7 or more are activated, immediately destroy every Character, Tactic, and Attachment on the opponent's Board.
+[The Final Verdict] (Trigger Ability): Street brawls are for the faithless and Dre demands biblical erasure of all nonbelievers.
+During Phase 3, activate all Commandments on your side of the Board. If 7 or more are activated, immediately destroy every Character, Tactic, and Attachment on the opponent's Board.
 
 ## Lore
 

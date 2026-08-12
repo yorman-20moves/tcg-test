@@ -95,6 +95,13 @@ effects:
 - name: Mass Removal (Wipes)
   points: 8
   description: Destroy all characters or deal massive global damage.
+- name: Mass Status Application
+  points: 6
+  description: >-
+    Apply one temporary status to every Character on the Board other than the source. Priced above
+    Arena Rule Edit (Major) = 5, which is the same shape -- a symmetric ban on a whole category of
+    action -- because an Arena is a destroyable object and this is not. Priced below Mass Removal
+    = 8, which ends the board permanently rather than at the End Step. See D-010.
 - name: Multiple Attacks
   points: 5
   description: Character can attack multiple times in one Combat Wave.

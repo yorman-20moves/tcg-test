@@ -17,11 +17,24 @@ base:
   effects:
   - Energy Gen 1
   - Resource Denial
+  abilities:
+  - name: False Savior
+    immersion: Angel smiles right in your face while he picks your pocket.
+    mechanics: When summoned, place Angel onto the opponent's Board. The opponent takes control of him to attack or pay costs, but they cannot activate his printed abilities, and their other Characters cannot attack him.
+    keyword: Infiltrator
+  - name: The Siphon
+    type: Trigger Ability
+    mechanics: During Phase 1 (The Refresh), force the opponent to change 1 card in their Resource Row to Used (they lose 1 Energy this Round), and the controlling player gains +1 temporary Energy until the end of Phase 3.
 ascended:
   keywords: []
   effects:
   - Mass Removal (Wipes)
   - Status Application (Major)
+  abilities:
+  - name: The Betrayal
+    type: Passive Ability
+    immersion: Angel snaps the trap shut and ruins them all.
+    mechanics: The moment he levels up, he deals 4 Mental Attack (MA) damage to every Character on the opponent's Board. As long as he remains face-up, the maximum Mental Health (MH) of all enemy Characters is reduced by 4 (minimum of 1).
 art:
   base: AngelTheSmilingSaboteur
   ascended: AngelTheSmilingSaboteurLVLUP
@@ -43,7 +56,8 @@ Keywords: Infiltrator
 
 ### Rules Text
 
-[False Savior] (Infiltrator): Angel smiles right in your face while he picks your pocket. When summoned, place Angel onto the opponent's Board. The opponent takes control of him to attack or pay costs, but they cannot activate his printed abilities, and their other Characters cannot attack him.
+[False Savior] (Infiltrator): Angel smiles right in your face while he picks your pocket.
+When summoned, place Angel onto the opponent's Board. The opponent takes control of him to attack or pay costs, but they cannot activate his printed abilities, and their other Characters cannot attack him.
 
 [The Siphon] (Trigger Ability): During Phase 1 (The Refresh), force the opponent to change 1 card in their Resource Row to Used (they lose 1 Energy this Round), and the controlling player gains +1 temporary Energy until the end of Phase 3.
 
@@ -55,7 +69,8 @@ Angel finally shows his true colors. Once Angel has successfully siphoned 4 Ener
 
 ### Ascended Rules Text
 
-[The Betrayal] (Passive Ability): Angel snaps the trap shut and ruins them all. The moment he levels up, he deals 4 Mental Attack (MA) damage to every Character on the opponent's Board. As long as he remains face-up, the maximum Mental Health (MH) of all enemy Characters is reduced by 4 (minimum of 1).
+[The Betrayal] (Passive Ability): Angel snaps the trap shut and ruins them all.
+The moment he levels up, he deals 4 Mental Attack (MA) damage to every Character on the opponent's Board. As long as he remains face-up, the maximum Mental Health (MH) of all enemy Characters is reduced by 4 (minimum of 1).
 
 ## Lore
 

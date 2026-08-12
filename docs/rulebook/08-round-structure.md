@@ -12,7 +12,8 @@ Both players execute these steps at the same time.
 1. **Draw** — both players draw 1 card.
    *If your Main Deck is empty you simply do not draw. There is no automatic loss for running
    out of cards; you must win with what remains on the board and in hand, or concede.*
-2. **Un-tap** — turn all horizontally exhausted cards in your Resource Row vertically.
+2. **Un-tap** — turn all horizontal **Used** cards in your Resource Row back to vertical. See
+   [§7 Used and Unused Energy](07-economy.md#used-and-unused-energy).
 3. **The Blind Commit** — both players take **0, 1, 2, or 3** cards from Hand and place them
    face-down on the table. Once both players are **Locked**, the cards are flipped
    simultaneously into their Resource Rows, raising maximum Energy capacity.

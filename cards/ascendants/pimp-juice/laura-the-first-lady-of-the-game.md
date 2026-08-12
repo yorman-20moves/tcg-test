@@ -16,11 +16,24 @@ base:
   effects:
   - Protection (Immunity)
   - Status Application (Minor)
+  abilities:
+  - name: Fatal Attraction
+    type: Fast Ability
+    immersion: Laura breaks their minds, making them take bullets for her.
+    mechanics: Pay 2 Energy to target an enemy Character. Until the end of the Round, any damage that would be dealt to Laura is redirected and dealt to that hypnotized enemy Character instead.
+  - name: Sweet Talk
+    type: Fast Ability
+    mechanics: Pay 1 Energy to grant any Character +4 Mental Health (MH) until the end of the Round.
 ascended:
   keywords: []
   effects:
   - Protection (Immunity)
   - Status Application (Minor)
+  abilities:
+  - name: The Madame
+    type: Passive Ability
+    immersion: Laura ensures her slaves don't just protect her, they do it in terror.
+    mechanics: '[Fatal Attraction] now costs 0 Energy. Any enemy Character that takes damage on her behalf is immediately inflicted with Fear.'
 art:
   base: LauraTheFirstladyofTheGame
   ascended: LauraTheFirstladyofTheGameLVLUp

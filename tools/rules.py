@@ -8,9 +8,9 @@ Hard errors (F*) block. Warnings (W*) are read and judged. See docs/design/studi
 """
 from __future__ import annotations
 
+import difflib
 import re
 from dataclasses import dataclass, field
-from functools import lru_cache
 
 import yaml
 
@@ -89,7 +89,7 @@ def _table(filename: str, key: str) -> list:
 RETIRED = "retired"
 
 
-@lru_cache(maxsize=1)
+@card_io.cached_on("data", "cards")
 def load_world() -> World:
     return World(
         factions=_table("factions.yaml", "factions"),
@@ -250,7 +250,7 @@ def f6_f7_card_gates(world: World) -> list[Finding]:
     return findings
 
 
-@lru_cache(maxsize=1)
+@card_io.cached_on("docs/rulebook", "data")
 def defined_terms() -> set[str]:
     """Every term the rulebook or the data files define."""
     terms = set()
@@ -322,7 +322,7 @@ def f9_broken_references(world: World) -> list[Finding]:
 
 # ------------------------------------------------------------------ jobs & formations
 #
-# A Job is what a Character does for its crew; a Role (keyword) is one of the tools it does it
+# A Job is what a Character does for its crew; a keyword is one of the tools it does it
 # with. These rules check that the claim and the mechanics agree, and that a crew's five slots
 # actually cover the Formation it declared.
 #
@@ -806,11 +806,101 @@ def w10_faction_gaps(world: World) -> list[Finding]:
     return findings
 
 
+# ------------------------------------------------------------------ the contract itself
+
+CONTRACT_FILES = ("CLAUDE.md", "AGENTS.md")     # canonical first
+
+
+def f13_contract_drift(world: World) -> list[Finding]:
+    """The working contract exists twice and the two copies disagree.
+
+    AGENTS.md and CLAUDE.md are one document under two names -- agents disagree about which
+    filename to read, and README.md sends human collaborators to AGENTS.md. When the two
+    drift, whoever followed the README is handed a stale contract and is never told. That is
+    how a hand-edit of generated Rules Text gets waved through: hard rule 6 is only as strong
+    as the copy you happen to have open.
+    """
+    # Takes `world` for the uniform rule signature. This one reads the repo, not the game.
+    canonical, mirror = CONTRACT_FILES
+    raw = {}
+    for name in CONTRACT_FILES:
+        path = card_io.REPO_ROOT / name
+        if not path.exists():
+            return [Finding("F13", "error", name, "the working contract is missing",
+                            where=name,
+                            fix=f"Restore it as a byte-identical copy of {canonical}.")]
+        raw[name] = path.read_bytes()
+    if raw[canonical] == raw[mirror]:
+        return []
+
+    left = raw[mirror].decode("utf-8", "replace").splitlines()
+    right = raw[canonical].decode("utf-8", "replace").splitlines()
+    changed = sum(1 for line in difflib.unified_diff(left, right, n=0)
+                  if line[:1] in "+-" and not line.startswith(("+++", "---")))
+    first = next((i + 1 for i, (a, b) in enumerate(zip(left, right)) if a != b),
+                 min(len(left), len(right)) + 1)
+    detail = (f"{changed} differing lines, the first at line {first}" if changed
+              else "the text matches but the bytes do not -- line endings or a trailing newline")
+    return [Finding("F13", "error", "the working contract",
+                    f"{mirror} and {canonical} have drifted apart: {detail}",
+                    where=f"{mirror}:{first}",
+                    fix=f"{canonical} is canonical and {mirror} is generated from it. Check "
+                        f"whether the {mirror} side holds an edit worth keeping and fold it "
+                        f"into {canonical} first, then run: python tools/generate.py")]
+
+
+def f14_generated_stale(world: World) -> list[Finding]:
+    """Generated content was hand-edited, so the file and its source disagree.
+
+    Hard rule 6 lists five kinds of generated content, and every card's Rules Text is one of
+    them since abilities became data (D-013). Nothing in check.py could see a hand edit to any
+    of it -- only `generate.py --check` could, and rule 5 sends people to check.py. So the
+    single command that is supposed to validate all three levels was blind to the whole class
+    of drift that hard rule 6 exists to prevent.
+
+    F13 owns the AGENTS.md/CLAUDE.md pair, which has a more specific diagnosis, so it is
+    skipped here rather than reported twice.
+    """
+    import generate                       # deferred: generate imports rules, not the reverse
+
+    findings = []
+    for relative, builder in generate.TARGETS.items():
+        path = card_io.REPO_ROOT / relative
+        current = path.read_text(encoding="utf-8") if path.exists() else ""
+        if current != builder(world):
+            findings.append(Finding(
+                "F14", "error", relative, "generated file is stale or was hand-edited",
+                where=relative,
+                fix="Edit the source in data/, then run: python tools/generate.py"))
+
+    for relative, (name, builder) in generate.REGION_TARGETS.items():
+        path = card_io.REPO_ROOT / relative
+        current = path.read_text(encoding="utf-8")
+        if current != generate._replace_region(current, name, builder(world)):
+            findings.append(Finding(
+                "F14", "error", relative,
+                f"the generated '{name}' region is stale or was hand-edited",
+                where=relative,
+                fix=f"Edit data/{name}.yaml, then run: python tools/generate.py"))
+
+    for card in world.cards:
+        if card.path.read_text(encoding="utf-8") != card_io.render(card):
+            findings.append(Finding(
+                "F14", "error", card.name,
+                "the card body no longer matches its frontmatter -- the Rules Text sections are "
+                "generated from `abilities:`",
+                where=card.rel_path,
+                fix="Edit the abilities in frontmatter or in the Studio, then run: "
+                    "python tools/generate.py"))
+    return findings
+
+
 # ------------------------------------------------------------------ runner
 
 HARD = [f1_unique_conflicts, f10_keyword_ownership, f2_f3_toolkit_violations, f4_over_ceiling, f5_reach_overclaim,
         f6_f7_card_gates, f8_undefined_terms, f9_broken_references,
-        f11_job_legality, f12_chaotic_crew_enablers]
+        f11_job_legality, f12_chaotic_crew_enablers, f13_contract_drift,
+        f14_generated_stale]
 SOFT = [w1_window_coverage, w2_enabler_chains, w3_crew_diversity, w4_crew_plan_missing,
         w5_twins, w6_scaling_text, w7_ceiling_quota, w8_dead_entries, w9_lore_gates,
         w10_faction_gaps, w11_no_flavour,

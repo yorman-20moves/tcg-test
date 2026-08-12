@@ -17,10 +17,24 @@ base:
   - Protector
   effects:
   - Permanent Buff 2
+  abilities:
+  - name: Masochist
+    immersion: Whiteboy takes the hit and lets the pain make him stronger.
+    mechanics: As a Reaction, Whiteboy can intercept one attack per Combat Wave intended for Life Points or another Character, forcefully changing the attacker's target to himself.
+    keyword: Protector
+  - name: Built Different
+    immersion: Whiteboy always wants the smoke.
+    mechanics: Every time Whiteboy takes permanent Physical Health (PH) damage, he gains +2 Physical Attack (PA).
+    keyword: Berserker
 ascended:
   keywords: []
   effects:
   - Direct Damage/Heal 3
+  abilities:
+  - name: Guardian Angel
+    type: Trigger Ability
+    immersion: Whiteboy watches as his wounds heal like he has some guardian angel.
+    mechanics: During Phase 3 (The End Step), Whiteboy heals 3 Physical Health (PH).
 art:
   base: whiteboy5thCrown
   ascended: whiteboy5thCrownlvlup
@@ -39,9 +53,11 @@ Keywords: Berserker, Protector
 
 ### Rules Text
 
-[Masochist] (Protector): Whiteboy takes the hit and lets the pain make him stronger. As a Reaction, Whiteboy can intercept one attack per Combat Wave intended for Life Points or another Character, forcefully changing the attacker's target to himself.
+[Masochist] (Protector): Whiteboy takes the hit and lets the pain make him stronger.
+As a Reaction, Whiteboy can intercept one attack per Combat Wave intended for Life Points or another Character, forcefully changing the attacker's target to himself.
 
-[Built Different] (Berserker): Whiteboy always wants the smoke. Every time Whiteboy takes permanent Physical Health (PH) damage, he gains +2 Physical Attack (PA).
+[Built Different] (Berserker): Whiteboy always wants the smoke.
+Every time Whiteboy takes permanent Physical Health (PH) damage, he gains +2 Physical Attack (PA).
 
 ## Level-Up
 
@@ -52,7 +68,8 @@ When Whiteboy survives a total of 8 or more cumulative damage across the game, h
 
 ### Ascended Rules Text
 
-[Guardian Angel] (Trigger Ability): Whiteboy watches as his wounds heal like he has some guardian angel. During Phase 3 (The End Step), Whiteboy heals 3 Physical Health (PH).
+[Guardian Angel] (Trigger Ability): Whiteboy watches as his wounds heal like he has some guardian angel.
+During Phase 3 (The End Step), Whiteboy heals 3 Physical Health (PH).
 
 ## Lore
 

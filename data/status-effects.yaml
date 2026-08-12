@@ -1,6 +1,7 @@
-# Status effects. NOTE: these descriptions came from the spreadsheet's Elements sheet and
-# CONFLICT with rulebook section 11 for 'Exhausted'. See docs/design/open-questions.md (OQ-08).
-# The rulebook is authoritative until that conflict is resolved.
+# Status effects. Descriptions came from the spreadsheet's Elements sheet.
+# The 'Exhausted' conflict with rulebook section 11 was RESOLVED 2026-08-05 in favour of this
+# file's definition -- attack power halved, not a +1 Energy attacker tax. See D-011.
+# Rulebook section 11 remains authoritative for wording; this file exists for tooling.
 
 status_effects:
 - name: Feared
@@ -12,6 +13,6 @@ status_effects:
 - name: Shattered
   description: The Character is mentally broken. They cannot have their Mental Health (MH) healed by abilities or Tactics. Additionally, the next time they take Mental Attack (MA) damage, they take an extra 1 permanent MH damage until shattered is removed.
 - name: Exhausted
-  description: The character is physically spent. They're attack power (both physical and mental) is halved for the duration of the effect.
+  description: The Character is physically spent. Both their Physical Attack (PA) and Mental Attack (MA) are halved, rounded down, for the duration of the effect. Halving applies to the printed value; buffs are added afterwards.
 - name: Silenced
   description: The Character is completely shut down from communicating, leading, or using tech. All of their printed Character abilities are blanked (turned off) for the duration of the effect.

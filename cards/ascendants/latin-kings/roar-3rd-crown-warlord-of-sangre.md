@@ -16,10 +16,24 @@ base:
   - Juggernaut
   effects:
   - Multiple Attacks
+  abilities:
+  - name: Point Out The Strongest One
+    type: Trigger Ability
+    immersion: RoaR just wants to fight the biggest guy in the room.
+    mechanics: When summoned, bypass the Combat Wave limit and immediately attack the enemy Character with the highest Physical Attack (PA).
+  - name: What’s a Handicap?
+    immersion: RoaR crushes anyone stupid enough to stand in his way.
+    mechanics: If RoaR's attack is defended, any Physical Attack (PA) damage that exceeds the defender’s remaining Physical Health (PH) spills over directly to the opponent’s Life Points.
+    keyword: Juggernaut
 ascended:
   keywords: []
   effects:
   - Permanent Buff 5
+  abilities:
+  - name: Did you know you can wield weapons with BOTH HANDS?
+    type: Passive Ability
+    immersion: RoaR stops holding back and grabs his weapon with both hands.
+    mechanics: His Physical Attack (PA) is permanently locked at 10, plus an additional amount equal to half of your opponent's remaining Life Points (rounded down).
 art:
   base: RoaRWarlordoftheWickedWrath3rdCrown
   ascended: RoaRWarlordoftheWickedWrath3rdCrownLVL2
@@ -44,7 +58,8 @@ Keywords: Juggernaut
 [Point Out The Strongest One] (Trigger Ability): RoaR just wants to fight the biggest guy in the room.
 When summoned, bypass the Combat Wave limit and immediately attack the enemy Character with the highest Physical Attack (PA).
 
-[What’s a Handicap?] (Juggernaut): RoaR crushes anyone stupid enough to stand in his way. If RoaR's attack is defended, any Physical Attack (PA) damage that exceeds the defender’s remaining Physical Health (PH) spills over directly to the opponent’s Life Points.
+[What’s a Handicap?] (Juggernaut): RoaR crushes anyone stupid enough to stand in his way.
+If RoaR's attack is defended, any Physical Attack (PA) damage that exceeds the defender’s remaining Physical Health (PH) spills over directly to the opponent’s Life Points.
 
 ## Level-Up
 

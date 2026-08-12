@@ -10,9 +10,8 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from functools import lru_cache
 
-from card_io import STAT_KEYS, Card, load_table
+from card_io import STAT_KEYS, Card, ability_type_names, cached_on, load_table
 
 COST_TO_BUDGET_MULTIPLIER = 3
 BUDGET_BASE_ALLOWANCE = 1
@@ -40,22 +39,22 @@ HUMAN_ONLY_GATES = {
 }
 
 
-@lru_cache(maxsize=1)
+@cached_on("data/keywords.yaml")
 def keyword_points() -> dict[str, int]:
     return {k["name"]: int(k["points"]) for k in load_table("keywords.yaml", "keywords")}
 
 
-@lru_cache(maxsize=1)
+@cached_on("data/keywords.yaml")
 def keyword_faction() -> dict[str, str]:
     return {k["name"]: k["faction"] for k in load_table("keywords.yaml", "keywords")}
 
 
-@lru_cache(maxsize=1)
+@cached_on("data/effects.yaml")
 def effect_points() -> dict[str, int]:
     return {e["name"]: int(e["points"]) for e in load_table("effects.yaml", "effects")}
 
 
-@lru_cache(maxsize=1)
+@cached_on("data/plan-credits.yaml")
 def plan_config() -> dict:
     """The Score's credit table and window multiplier. See docs/design/balance-philosophy.md."""
     import yaml
@@ -67,7 +66,7 @@ def plan_config() -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
-@lru_cache(maxsize=1)
+@cached_on("data/status-effects.yaml")
 def status_names() -> tuple[str, ...]:
     return tuple(s["name"] for s in load_table("status-effects.yaml", "status_effects") if s["name"])
 
@@ -376,17 +375,30 @@ def _gate_g1(card: Card, result: Score, tolerance: int) -> list[str]:
 
 
 def _gate_g3(card: Card) -> list[str]:
+    """Ability type declared, and the keyword it claims is one the side actually has.
+
+    This reads FIELDS. It used to regex the prose, which is how it once told Decoy that
+    `[Improved Sangre Por Sangre]` "declares no ability type" while the card plainly read
+    `(Fast Ability)` -- one stray colon defeated the pattern and the gate then asserted absence
+    from its own failure to parse. A false negative is now structurally impossible: there is no
+    sentence to misread.
+    """
     failures = []
-    known = set(ABILITY_TYPES) | set(keyword_points())
-    for text in (card.rules_text, card.ascended_text):
-        for ability_name, declared in re.findall(r"\[([^\]]+)\]\s*(\([^)]*\))?", text):
-            if ability_name in ABILITY_TYPES:
-                continue
+    known_types = set(ability_type_names())
+    for side in ("base", "ascended"):
+        face = card.side(side)
+        for ability in face["abilities"]:
+            name = ability.get("name") or "(unnamed)"
+            declared = (ability.get("type") or "").strip()
             if not declared:
-                failures.append(f"G3: ability [{ability_name}] declares no ability type")
-            elif declared.strip("()") not in known:
-                failures.append(f"G3: ability [{ability_name}] declares unknown type "
-                                f"'{declared.strip('()')}'")
+                failures.append(f"G3: ability [{name}] has no type")
+            elif declared not in known_types:
+                failures.append(f"G3: ability [{name}] declares unknown type '{declared}'")
+
+            claimed = (ability.get("keyword") or "").strip()
+            if claimed and claimed not in face["keywords"]:
+                failures.append(f"G3: ability [{name}] claims keyword '{claimed}' but the "
+                                f"{side} side does not declare it")
     return failures
 
 

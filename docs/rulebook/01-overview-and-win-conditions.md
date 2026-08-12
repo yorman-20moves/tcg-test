@@ -1,9 +1,16 @@
 # 1. Game Overview & Win Conditions
 
-A 1-on-1 trading card game where you command different versions of your friends across
-distinct factions. Players alternate single actions to outmaneuver each other, manage a
-shared Round structure, and fight for dominance across physical, mental, and social
+**Known Associates** is a 1-on-1 trading card game where you command different versions of your
+friends across distinct factions. Players alternate single actions to outmaneuver each other,
+manage a shared Round structure, and fight for dominance across physical, mental, and social
 battlegrounds.
+
+The founding edition is **Known Associates: Local Legends**.
+
+> **"Edition" is not a rules term.** Nothing in
+> [deck construction](02-deck-construction-and-zones.md) references a set, and nothing may until
+> this rulebook defines set legality in the same change. Naming an edition creates no rotation,
+> no set symbol and no format.
 
 ## Match Structure
 

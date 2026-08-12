@@ -16,10 +16,26 @@ base:
   effects:
   - Direct Damage/Heal 2
   - Searching (Tutors)
+  abilities:
+  - name: Kawaii Glow-Up
+    type: Fast Ability
+    immersion: Lenny hands out a magical makeover that heals wounds.
+    mechanics: Pay 1 Energy to instantly restore 2 Physical Health (PH) or Mental Health (MH) to a target allied Character.
+  - name: Kawaii Summon
+    type: Trigger Ability
+    immersion: When summoned, search your deck for a Kawaii Guardian and summon it.
 ascended:
   keywords: []
   effects:
   - Status Immunity
+  abilities:
+  - name: Kawaii Immunity
+    type: Passive Ability
+    immersion: Lenny changes the rules so that nothing ugly is allowed.
+    mechanics: All allied Characters are completely immune to negative status effects.
+  - name: Optimal Pathing
+    type: Passive Ability
+    mechanics: Allied Pwner Characters have the Energy cost of their abilities reduced by 1.
 art:
   base: LennytheKawaiiConnoisseur
   ascended: LennytheKawaiiConnoisseurLVLUP

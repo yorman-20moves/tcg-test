@@ -15,10 +15,21 @@ base:
   keywords: []
   effects:
   - Status Application (Minor)
+  abilities:
+  - name: The Heel Turn
+    type: Trigger Ability
+    immersion: Angel grabs a steel chair and a live mic to mock the crowd.
+    mechanics: When summoned, inflict Fear on a target enemy Character.
 ascended:
   keywords: []
   effects:
   - Permanent Buff 3
+  abilities:
+  - name: The Main Event
+    type: Passive Ability
+    immersion: Angel soaks up the boos and becomes unstoppable.
+    mechanics: Angel permanently gains +3 Physical Attack (PA) and the Juggernaut keyword. (If his attack is defended, any PA damage that exceeds the defender’s remaining PH spills over directly to the opponent’s Life Points).
+    keyword: Juggernaut
 art:
   base: null
   ascended: null
@@ -47,7 +58,8 @@ When Angel attacks an enemy afflicted with Fear, he levels up.
 
 ### Ascended Rules Text
 
-[The Main Event] (Passive Ability): (Juggernaut) Angel soaks up the boos and becomes unstoppable. Angel permanently gains +3 Physical Attack (PA) and the Juggernaut keyword. (If his attack is defended, any PA damage that exceeds the defender’s remaining PH spills over directly to the opponent’s Life Points).
+[The Main Event] (Passive Ability · Juggernaut): Angel soaks up the boos and becomes unstoppable.
+Angel permanently gains +3 Physical Attack (PA) and the Juggernaut keyword. (If his attack is defended, any PA damage that exceeds the defender’s remaining PH spills over directly to the opponent’s Life Points).
 
 ## Lore
 

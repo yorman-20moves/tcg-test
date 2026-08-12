@@ -5,16 +5,20 @@ Status effects are debilitating conditions placed on a Character. This section i
 
 | Status | Effect |
 |---|---|
-| **Exhausted** | Pushing this Character into a fight requires heavy investment. It costs an **additional 1 Energy** to declare them as an attacker. |
+| **Exhausted** | Physically spent. Both **PA and MA are halved**, rounded down. |
 | **Feared** | Terrified. Cannot declare attacks, and takes **+1 damage** from all incoming sources. |
 | **Shattered** | Mentally broken. **MH cannot be healed.** On the next separate combat or effect that deals MA damage to them, they take an extra **1 permanent MH damage**, then Shattered is removed. |
 | **Silenced** | Shut down. All printed Character abilities are **blanked**. |
 | **Stunned** | Completely paralyzed. Cannot declare attacks, use abilities, or act as a **Protector**. |
 | **Wounded** | Physically broken. **PH cannot be healed.** On the next separate combat or effect that deals PA damage to them, they take an extra **1 permanent PH damage**, then Wounded is removed. |
 
-> **Open question (OQ-08):** The spreadsheet's Elements sheet defines **Exhausted** as
-> *"attack power (both physical and mental) is halved"* — a completely different effect from the
-> +1 Energy tax above. One of these is dead text. Until resolved, the rulebook wins.
+**Halving is a multiplier, so it applies to printed values.** Halve the **printed** PA or MA first,
+round down, then add buffs, Attachments and Permanent Buffs on top — the same order the
+[Glossary](13-glossary.md) entry for **Printed** sets for Range's multiplier. A Character with a
+printed 5 PA and a +2 Attachment attacks for `(5 ÷ 2 → 2) + 2 = 4`, not 3.
+
+*(OQ-08 resolved 2026-08-05, D-011. The rulebook previously defined Exhausted as a +1 Energy tax on
+declaring an attacker; that text is retired.)*
 
 ## Design notes
 

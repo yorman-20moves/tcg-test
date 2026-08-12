@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Card Studio</title>
+<title>Known Associates — Card Studio</title>
 <style>
 /* ============================================================================
    CARD STUDIO — built on the 20 Moves design system (dark cinematic).
@@ -467,6 +467,15 @@ textarea:hover,.efsearch:hover{border-color:var(--edge)}
 textarea:focus,input:focus,select:focus{outline:none;border-color:var(--color-cyan);box-shadow:0 0 0 3px var(--color-cyan-glow)}
 label.fl{display:block;margin:var(--s4) 0 6px}
 select{background:var(--well);border:1px solid var(--rule);border-radius:var(--radius-btn);padding:6px 8px}
+/* A native <select> popup is a separate OS surface. It takes the control's own background and
+   colour, and a TRANSLUCENT background there has nothing to composite against -- --well is
+   rgba(255,255,255,.046), so every dropdown list rendered as near-invisible grey on grey. The
+   popup needs opaque colour and an explicit text colour. --bench sits one step off the page
+   background, so the closed control still reads as an input. */
+select,select.efsearch{color:var(--key);background-color:var(--bench)}
+select option,select optgroup{background-color:var(--bench);color:var(--key)}
+select option:disabled{color:var(--faint)}
+select option:checked{background-color:var(--color-cyan-tint);color:var(--key)}
 
 /* ---------- rail ---------- */
 .railsec{border-bottom:1px solid var(--rule);padding:var(--s4) var(--s3)}
@@ -728,6 +737,46 @@ select{background:var(--well);border:1px solid var(--rule);border-radius:var(--r
   padding:11px 14px;font-family:var(--text);font-size:13.5px;line-height:1.72;
   color:var(--color-ink);resize:none;overflow:hidden;min-height:52px;display:block;
 }
+/* --- abilities ---------------------------------------------------------------------
+   A collapsed ability is one line: its name and its type. Expanding it is how you edit.
+   The row reads as a printed card entry, not as a form, which is the same reason the
+   rules text was set as prose before it became data. */
+.abilities{display:flex;flex-direction:column;gap:6px}
+.abadd{margin-left:auto;background:none;border:1px dashed var(--color-border-med);
+  color:var(--ghost);border-radius:var(--radius-btn);padding:2px 9px;
+  font-family:var(--data);font-size:10.5px;letter-spacing:.04em;cursor:pointer}
+.abadd:hover{border-color:var(--color-cyan);color:var(--color-cyan);border-style:solid}
+.ability{border:1px solid var(--color-border);border-left:2px solid var(--color-border-med);
+  border-radius:0 var(--radius-btn) var(--radius-btn) 0;background:var(--color-bg-input)}
+.ability.open{border-left-color:var(--color-cyan)}
+.abhead{display:flex;align-items:center;gap:4px;padding:6px 8px 6px 0}
+.abtoggle{flex:1;display:flex;align-items:baseline;gap:8px;background:none;border:none;
+  text-align:left;cursor:pointer;color:var(--color-ink);padding:2px 10px;min-width:0}
+.abcaret{font-family:var(--data);color:var(--ghost);width:9px;flex:none}
+.abname{font-family:var(--text);font-size:13.5px;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap}
+.abtype{font-family:var(--data);font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ghost);flex:none;margin-left:auto;padding-left:10px}
+.abmove,.abdel{background:none;border:none;color:var(--ghost);cursor:pointer;
+  font-family:var(--data);font-size:12px;padding:2px 5px;border-radius:3px;flex:none}
+.abmove:hover:not(:disabled),.abdel:hover{background:var(--lift);color:var(--color-ink)}
+.abmove:disabled{opacity:.25;cursor:default}
+.abdel:hover{color:var(--critical)}
+.abbody{padding:2px 12px 12px;display:flex;flex-direction:column;gap:7px;
+  border-top:1px solid var(--color-border)}
+.abrow{display:flex;align-items:flex-start;gap:9px}
+.ablbl{flex:none;width:74px;padding-top:9px;text-align:right}
+.abrow .efsearch{flex:1;min-width:0}
+.abrow input.efsearch{padding:7px 10px;font-family:var(--text);font-size:13.5px}
+.abfield{min-height:38px;padding:7px 10px;line-height:1.6}
+.abprintwrap{display:flex;align-items:flex-start;gap:9px;padding-top:7px;
+  border-top:1px dashed var(--color-border)}
+.abprintwrap .slug{flex:none;width:74px;text-align:right;padding-top:2px}
+.abprint{flex:1;margin:0;font-family:var(--text);font-size:12.5px;line-height:1.62;
+  color:var(--ghost);white-space:pre-wrap;word-break:break-word;min-width:0}
+.abempty{padding:10px 13px;font-family:var(--data);font-size:11px;
+  color:var(--ghost);border:1px dashed var(--color-border);
+  border-radius:var(--radius-btn)}
 .cardtext:hover{border-color:var(--color-border-med)}
 .cardtext:focus{outline:none;border-color:var(--color-cyan);border-left-color:var(--color-cyan);
   box-shadow:0 0 0 3px var(--color-cyan-glow)}
@@ -746,7 +795,7 @@ select{background:var(--well);border:1px solid var(--rule);border-radius:var(--r
       <span class="colorbar" aria-hidden="true">
         <i style="background:var(--f-warmongers)"></i><i style="background:var(--f-overthinkers)"></i><i style="background:var(--f-assholes)"></i><i style="background:var(--f-icons)"></i>
       </span>
-      <b>Card Studio</b>
+      <b>Known Associates</b><span class="muted">Card Studio</span>
     </div>
     <nav id="modes" aria-label="Screens"></nav>
     <div class="mastright">
@@ -813,6 +862,19 @@ const esc = s => String(s??"");
    rebuilt one. The match is on an explicit data-focus key because the rebuilt node is a
    different object than the old one -- an editable field inside a re-rendered panel needs a key
    or it will not be restored. */
+/* Which ability row is expanded, as "side:index". Render-scoped UI state, not card data. */
+let OPEN_ABILITY=null;
+
+/* Auto-growing textareas used to size themselves inside requestAnimationFrame. On every
+   re-render the boxes therefore collapsed to their CSS minimum, preservingFocus restored
+   scrollTop against the COLLAPSED panel, and the browser clamped it to the smaller
+   scrollHeight - clientHeight. grow() then restored the height a frame later without undoing
+   the clamp, so the view landed somewhere else. Sizing synchronously, before scroll is
+   restored, removes the clamp entirely. */
+let GROWERS=[];
+function registerGrower(fn){ GROWERS.push(fn); }
+function flushGrowers(){ const fns=GROWERS; GROWERS=[]; for(const fn of fns) fn(); }
+
 function preservingFocus(render){
   /* Scroll is saved unconditionally, before anything asks about focus. It used to be saved
      only when the caret sat in a keyed text field, so every checkbox, chip and <select> --
@@ -829,6 +891,7 @@ function preservingFocus(render){
   try{ head=live.selectionStart; tail=live.selectionEnd; }catch{}
 
   render();
+  flushGrowers();          /* heights are final BEFORE scrollTop is written, so nothing clamps */
 
   panes.forEach((p,i)=>{ p.scrollTop=tops[i]; });
   if(!key) return;
@@ -896,7 +959,7 @@ const GLOSSARY = {
   never:["Never","This faction may never have this tool, even though other factions share it."],
   shared:["Shared","Any faction may use this, unless a faction has explicitly marked it never."],
 
-  Job:["Job","The position a Character plays for its crew — not a keyword. A keyword is a Role: one of the tools it plays the position with."],
+  Job:["Job","The position a Character plays for its crew — not a keyword. A keyword is one of the tools it plays the position with."],
   Formation:["Formation","The five-person structure a crew declares: four required Jobs and one free slot."],
   coordinated:["Coordinated","The crew advances one shared plan, and cards may enable each other."],
   chaotic:["Chaotic","Not an exemption from validation, a different rule: no card may require a state a crewmate produces, and none may reference its own crew. In exchange those cards get a higher individual rate."],
@@ -1064,13 +1127,15 @@ function gatesOf(d){
         out.G1.push(`ascended side exceeds base budget ×${DB.constants.ascendedMultiplier} by ${Math.abs(s.ascendedDelta)} (OQ-04)`);
     }
   }
-  const known=new Set([...DB.abilityTypes,...Object.keys(DB.kwPts)]);
-  for(const text of [d.rulesText,d.ascendedText]){
-    for(const mm of esc(text).matchAll(/\[([^\]]+)\]\s*(\([^)]*\))?/g)){
-      const [,name,declared]=mm;
-      if(DB.abilityTypes.includes(name)) continue;
-      if(!declared) out.G3.push(`ability [${name}] declares no ability type`);
-      else if(!known.has(declared.slice(1,-1))) out.G3.push(`ability [${name}] declares unknown type '${declared.slice(1,-1)}'`);
+  /* G3 reads FIELDS now, exactly as tools/scoring.py does. No regex over the card's prose,
+     so the browser and the server cannot disagree about whether a type was declared. */
+  for(const side of ["base","ascended"]){
+    for(const ab of (m[side]?.abilities||[])){
+      const nm=ab.name||"(unnamed)";
+      if(!ab.type) out.G3.push(`ability [${nm}] has no type`);
+      else if(!DB.abilityTypes.includes(ab.type)) out.G3.push(`ability [${nm}] declares unknown type '${ab.type}'`);
+      if(ab.keyword && !(m[side]?.keywords||[]).includes(ab.keyword))
+        out.G3.push(`ability [${nm}] claims keyword '${ab.keyword}' but the ${side} side does not declare it`);
     }
   }
   for(const side of ["base","ascended"])
@@ -1227,7 +1292,7 @@ function cardText(label, key, placeholder, tipKey){
   const count=el("span",{class:"cnt"});
   const grow=n=>{ n.style.height="auto"; n.style.height=Math.max(52,n.scrollHeight+2)+"px";
                   count.textContent=(n.value||"").trim()?`${n.value.trim().length} chars`:"empty"; };
-  requestAnimationFrame(()=>grow(ta));
+  registerGrower(()=>grow(ta));
   const lbl=el("span",{class:"slug",text:label});
   if(tipKey) tipped(lbl, tipKey);
   return el("div",{}, el("div",{class:"textlabel"}, lbl, count), ta);
@@ -1236,16 +1301,117 @@ function cardText(label, key, placeholder, tipKey){
 /* The card's words, next to the card's face, next to the card's arithmetic. Reading the
    text and the budget in two different scroll positions is how a card gets priced without
    anyone re-reading what it actually does. */
+/* --- abilities ------------------------------------------------------------------------
+   An ability is a record, not a paragraph. The printed line underneath each one is built by
+   the same grammar tools/card_io.py uses, so what you read here is what the card will say. */
+
+const ABILITY_FIELDS=[
+  ["immersion","Immersion","The sentence that puts the player inside the card's world."],
+  ["requires","Requires","The gate: a cost for Standard/Fast, a condition for Trigger/Passive. Optional."],
+  ["mechanics","Mechanics","What it does, in rules language. Who chooses, how many, when it ends."],
+];
+
+function abilitiesOf(side){
+  const block=(draft.meta[side]=draft.meta[side]||{});
+  return (block.abilities=block.abilities||[]);
+}
+
+/* The grammar from card_io.print_ability(), so the preview cannot drift from the file. */
+function printAbility(ab){
+  const slot=[ab.type,ab.keyword].filter(Boolean).join(" · ");
+  const head=slot?`[${ab.name||""}] (${slot}):`:`[${ab.name||""}]:`;
+  let mech=(ab.mechanics||"").trim();
+  if((ab.requires||"").trim())
+    mech=`${ab.requires.trim()}${(DB.abilityJoiners||{})[ab.type]||": "}${mech}`;
+  const imm=(ab.immersion||"").trim();
+  return (imm&&mech)?`${head} ${imm}
+${mech}`:`${head} ${imm||mech}`.trimEnd();
+}
+
+function abilityRow(side, index){
+  const list=abilitiesOf(side), ab=list[index];
+  const open=OPEN_ABILITY===`${side}:${index}`;
+  const bump=()=>{ touch(false); renderMain(); };
+
+  const field=(key,label,hint)=>{
+    const ta=el("textarea",{class:"cardtext abfield",placeholder:hint,
+      "data-focus":`ab:${side}:${index}:${key}`,
+      oninput:e=>{ ab[key]=e.target.value; grow(e.target); touch(false);
+                   const pv=e.target.closest(".abbody").querySelector(".abprint");
+                   if(pv) pv.textContent=printAbility(ab); }}, ab[key]||"");
+    const grow=n=>{ n.style.height="auto"; n.style.height=Math.max(38,n.scrollHeight+2)+"px"; };
+    registerGrower(()=>grow(ta));
+    return el("div",{class:"abrow"}, el("span",{class:"slug ablbl",text:label}), ta);
+  };
+
+  const typeSel=el("select",{class:"efsearch",onchange:e=>{ab.type=e.target.value;bump();}},
+    ...[""].concat(DB.abilityTypes).map(t=>el("option",{value:t,selected:(ab.type||"")===t,
+      text:t||"— no type (fails G3) —"})));
+
+  /* Which faction keyword this ability delivers, if any -- Whiteboy's [Masochist] IS his
+     Protector. Filtered to the card's own faction, so G4 cannot be violated by construction. */
+  const ownKw=Object.keys(DB.kwFaction||{}).filter(k=>DB.kwFaction[k]===draft.meta.faction);
+  const kwSel=el("select",{class:"efsearch",onchange:e=>{ab.keyword=e.target.value||undefined;bump();}},
+    ...[""].concat(ownKw).map(k=>el("option",{value:k,selected:(ab.keyword||"")===k,
+      text:k||"— no keyword —"})));
+
+  const header=el("div",{class:"abhead"},
+    el("button",{class:"abtoggle",title:open?"collapse":"expand",
+      onclick:()=>{OPEN_ABILITY=open?null:`${side}:${index}`;renderMain();}},
+      el("span",{class:"abcaret",text:open?"⌄":"›"}),
+      el("span",{class:"abname",text:ab.name||"(unnamed ability)"}),
+      el("span",{class:"abtype "+(ab.type?"":"bad-c"),
+        text:ab.type?(ab.keyword?`${ab.type} · ${ab.keyword}`:ab.type):"no type"})),
+    el("button",{class:"abmove",title:"move up",disabled:index===0,
+      onclick:()=>{list.splice(index-1,0,list.splice(index,1)[0]);OPEN_ABILITY=null;bump();},
+      text:"↑"}),
+    el("button",{class:"abmove",title:"move down",disabled:index===list.length-1,
+      onclick:()=>{list.splice(index+1,0,list.splice(index,1)[0]);OPEN_ABILITY=null;bump();},
+      text:"↓"}),
+    el("button",{class:"abdel",title:"delete this ability",
+      onclick:()=>{ if(!confirm(`Delete [${ab.name||"unnamed"}] from the ${side} side?`)) return;
+                    list.splice(index,1); OPEN_ABILITY=null; bump(); },
+      text:"✕"}));
+
+  if(!open) return el("div",{class:"ability"}, header);
+  return el("div",{class:"ability open"}, header,
+    el("div",{class:"abbody"},
+      el("div",{class:"abrow"}, el("span",{class:"slug ablbl",text:"Name"}),
+        el("input",{class:"efsearch",value:ab.name||"","data-focus":`ab:${side}:${index}:name`,
+          oninput:e=>{ab.name=e.target.value;touch(false);
+            const h=e.target.closest(".ability").querySelector(".abname");
+            if(h) h.textContent=e.target.value||"(unnamed ability)";}})),
+      el("div",{class:"abrow"}, el("span",{class:"slug ablbl",text:"Type"}), typeSel,
+        el("span",{class:"slug ablbl",text:"Keyword"}), kwSel),
+      ...ABILITY_FIELDS.map(([k,l,h])=>field(k,l,h)),
+      el("div",{class:"abprintwrap"},
+        el("span",{class:"slug",text:"prints as"}),
+        el("pre",{class:"abprint",text:printAbility(ab)}))));
+}
+
+function abilityList(side){
+  const list=abilitiesOf(side);
+  return el("div",{class:"abilities"},
+    el("div",{class:"textlabel"},
+      tipped(el("span",{class:"slug",text:side==="base"?"Base abilities":"Ascended abilities"}),"G3"),
+      el("button",{class:"abadd",text:"+ Add ability",
+        onclick:()=>{ list.push({name:"",type:"",immersion:"",mechanics:""});
+                      OPEN_ABILITY=`${side}:${list.length-1}`; touch(false); renderMain(); }})),
+    ...(list.length?list.map((_,i)=>abilityRow(side,i))
+                   :[el("div",{class:"abempty",text:"No abilities. This card does nothing yet."})]));
+}
+
+/* The card's words, next to the card's face, next to the card's arithmetic. Reading the
+   text and the budget in two different scroll positions is how a card gets priced without
+   anyone re-reading what it actually does. */
 function faceText(){
   return el("div",{class:"facetext"},
     el("div",{class:"side-rule",text:"Base side"}),
-    cardText("Rules text","rulesText",
-      "[Ability Name] (Standard Ability): what it does, who chooses, how many.","G3"),
+    abilityList("base"),
     el("div",{class:"side-rule lvl",text:"Level-up"}),
     cardText("Level-up condition","levelupCondition",
       "What has to happen for this Character to ascend.","Ascendant"),
-    cardText("Ascended rules text","ascendedText",
-      "[Improved Ability] (Fast Ability): what changes once it has ascended.","G3"));
+    abilityList("ascended"));
 }
 
 /* meter(), but carrying the whole verdict so the glyph and the word travel with the colour
@@ -1473,7 +1639,7 @@ function keywordChips(side){
       on?chosen.splice(chosen.indexOf(k.name),1):chosen.push(k.name); touch();}},
       k.name, el("span",{class:"pts",text:(k.points>0?"+":"")+k.points}));
   }), mine.length?null:el("span",{class:"muted",text:"No keywords defined for this faction"}));
-  /* Definitions always on screen. Having to remember what a Role does, or hover to find out,
+  /* Definitions always on screen. Having to remember what a keyword does, or hover to find out,
      is the friction this removes -- there are only a handful per faction, so show them all. */
   const defs=el("div",{class:"kwdefs"}, ...mine.map(k=>
     el("div",{class:`kwdef ${chosen.includes(k.name)?"on":""}`},
@@ -2211,9 +2377,8 @@ function renderFactions(main){
 }
 
 /* --------------------------------- JOBS ----------------------------------- */
-/* A Job is what a Character does for its crew. A Role (keyword) is one of the tools it does
-   it with. The rulebook already spends "Role" on faction-exclusive keywords, so these are
-   deliberately different words for deliberately different things. */
+/* A Job is what a Character does for its crew. A keyword is one of the tools it does it with.
+   Two different words for two different things. See D-015 for the vocabulary decision. */
 
 const jobsAll     = () => DB.jobs || [];
 const jobByKey    = k => jobsAll().find(j => j.key === k) || null;
@@ -2273,7 +2438,7 @@ function jobPanel(d){
 
   const body=[el("h3",{text:"Job — what this card does for its crew"}),
               el("div",{class:"muted",style:"font-size:11.5px;margin-top:3px"},
-                "Not the same as a keyword. A keyword is a Role: one of the tools. The Job is the position."),
+                "Not the same as a keyword. A keyword is one of the tools; the Job is the position."),
               picker];
 
   if(job){

@@ -1,9 +1,7 @@
 # Jobs -- what a Character does for its crew.
 #
-# NOT the same thing as a Role. The rulebook already spends "Role" on faction-exclusive
-# keywords ("Keywords are specific Roles that a Character plays on the Board"). A Job is what
-# you do; a Role is one of the tools you do it with. Two Wardens in different factions do the
-# same Job with different tools.
+# NOT the same thing as a keyword. A Job is what you do; a keyword is one of the tools you do
+# it with. Two Wardens in different factions do the same Job with different tools.
 #
 # Every Character declares exactly one `job:` in its frontmatter.
 #

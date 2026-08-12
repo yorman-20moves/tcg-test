@@ -48,6 +48,13 @@ credits:
     points: 5
     anchor: Hard Removal = 5 -- you are doing removal to yourself
     sentence: Because it sacrifices {n} of your own Character{s}
+  - key: ascension_spent
+    label: Gives up its own ascended side (Descends)
+    points: 4
+    anchor: >-
+      below characters_consumed (5) -- you keep the body and may re-ascend; equal to
+      board_state_required (4) -- re-ascending is exactly that state, engineered again
+    sentence: Because it gives up its own ascended side
   - key: attachments_consumed
     label: Your own Attachments consumed
     points: 2

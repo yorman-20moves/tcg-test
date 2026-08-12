@@ -16,10 +16,23 @@ base:
   - Combo-Striker
   effects:
   - Multiple Attacks
+  abilities:
+  - name: First Blood
+    immersion: Silly throws his dagger before they even see him coming.
+    mechanics: Silly's combat resolves in two strikes. He deals his first strike without receiving simultaneous retaliation. If the target survives, they resolve a second strike normally as simultaneous combat.
+    keyword: Combo-Striker
+  - name: Street Sweep
+    type: Trigger Ability
+    mechanics: When he Murders a Character, he may immediately declare an additional attack against a new target for 0 Energy, bypassing the once-per-Round Combat Wave limit.
 ascended:
   keywords: []
   effects:
   - Protection (Immunity)
+  abilities:
+  - name: '#1 Hitman'
+    type: Passive Ability
+    immersion: Silly walks right through the bullets and never stops.
+    mechanics: While attacking, Silly's Physical Health (PH) cannot be reduced below 1.
 art:
   base: SillyVanguardofViciousVictories2ndCrown
   ascended: SillyVanguardofViciousVictories2ndCrownlvlup
@@ -38,7 +51,8 @@ Keywords: Combo-Striker
 
 ### Rules Text
 
-[First Blood] (Combo-Striker): Silly throws his dagger before they even see him coming. Silly's combat resolves in two strikes. He deals his first strike without receiving simultaneous retaliation. If the target survives, they resolve a second strike normally as simultaneous combat.
+[First Blood] (Combo-Striker): Silly throws his dagger before they even see him coming.
+Silly's combat resolves in two strikes. He deals his first strike without receiving simultaneous retaliation. If the target survives, they resolve a second strike normally as simultaneous combat.
 
 [Street Sweep] (Trigger Ability): When he Murders a Character, he may immediately declare an additional attack against a new target for 0 Energy, bypassing the once-per-Round Combat Wave limit.
 

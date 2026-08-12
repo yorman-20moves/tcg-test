@@ -104,6 +104,10 @@ def write_table(filename: str, key: str, rows: list) -> None:
                 break
     body = yaml.safe_dump({key: rows}, sort_keys=False, allow_unicode=True, width=100)
     path.write_text("\n".join(header) + "\n" + body, encoding="utf-8")
+    # Loaders reload themselves when their sources' mtimes change (card_io.cached_on), so this
+    # is belt-and-braces -- but it is earned here. A write followed immediately by a read is
+    # exactly where a rewrite can land inside one filesystem clock tick at an identical byte
+    # length, which is the one change an mtime stamp cannot see.
     rules.load_world.cache_clear()
     scoring.plan_config.cache_clear()
 
@@ -131,6 +135,7 @@ def rule_docs() -> dict:
 
 
 def findings_payload() -> list[dict]:
+    # Same-tick guard as write_table: this runs straight after card and table writes.
     rules.load_world.cache_clear()
     return [f.as_dict() for f in rules.worklist(rules.run_all())]
 
@@ -142,10 +147,14 @@ def playtests() -> list:
 
 
 def bootstrap() -> dict:
-    # plan_config is lru_cached and was only ever invalidated when the Studio itself wrote a
-    # table, so a hand edit to data/plan-credits.yaml was invisible until the server restarted --
-    # and silently so, because the stale config still answers every question asked of it.
-    scoring.plan_config.cache_clear()
+    # Nothing to invalidate by hand. Every loader in tools/ is keyed on its own sources'
+    # mtimes (card_io.cached_on), so a refresh picks up hand edits to any data/*.yaml, any
+    # card, the rulebook and the art folder alike.
+    #
+    # This used to clear plan_config only, which meant a hand edit to data/effects.yaml stayed
+    # invisible until the server restarted -- and an effect the running process had never heard
+    # of reads as an unknown name, so the symptom looked like a broken card rather than a stale
+    # server. Enumerating caches at the call site was the bug; the list was never complete.
     world = rules.load_world()
     return {
         "cards": [card_payload(c) for c in card_io.load_all()],
@@ -166,7 +175,8 @@ def bootstrap() -> dict:
         "factions": faction_briefs(),
         "lorePacketFields": list(card_io.LORE_PACKET_FIELDS),
         "statKeys": list(card_io.STAT_KEYS),
-        "abilityTypes": list(scoring.ABILITY_TYPES),
+        "abilityTypes": list(card_io.ability_type_names()),
+        "abilityJoiners": card_io.ability_joiners(),
         "durationPhrases": list(scoring.DURATION_PHRASES),
         "humanGates": scoring.HUMAN_ONLY_GATES,
         "plan": scoring.plan_config(),
@@ -195,6 +205,16 @@ def apply_edit(payload: dict) -> dict:
     card.levelup_condition = payload.get("levelupCondition", card.levelup_condition)
     card.ascended_text = payload.get("ascendedText", card.ascended_text)
     card.lore = payload.get("lore", card.lore)
+
+    # A card that declares no plan should carry no `plan` key. The browser always sends the
+    # empty skeleton, so saving an otherwise untouched card still rewrote the file -- which
+    # makes "did I change anything?" unanswerable from git diff, on exactly the screen where
+    # that question matters most.
+    plan = card.meta.get("plan")
+    if isinstance(plan, dict) and not (plan.get("pays") or plan.get("windows")
+                                       or plan.get("tests") or plan.get("reach") is not None):
+        card.meta.pop("plan")
+
     card_io.save(card)
     return card_payload(card_io.load(target))
 
@@ -532,7 +552,7 @@ def main() -> int:
     # images, and those should not queue behind each other either.
     server = ThreadingHTTPServer(("127.0.0.1", args.port), partial(StudioHandler))
     server.daemon_threads = True
-    print(f"Card Studio — {len(cards)} cards loaded")
+    print(f"Known Associates · Card Studio — {len(cards)} cards loaded")
     print(f"  {url}")
     print("  Edits save straight to cards/**/*.md. Ctrl-C to stop.\n")
     if not args.no_browser:

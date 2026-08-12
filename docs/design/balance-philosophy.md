@@ -121,6 +121,7 @@ built to work together. A cost that one of your own crewmates removes was never 
 | Each Energy paid above the cost | **+3** | your table prices "gain 1 Energy" at 3 |
 | Each 2 Life Points paid | **+1** | your table prices 1 damage at 1 |
 | Each of your Characters sacrificed | **+5** | your table prices "destroy a Character" at 5 |
+| An Ascendant giving up its own ascended side | **+4** | below sacrificing a Character (5) — you keep the body |
 | Each of your Attachments consumed | **+2** | |
 | Each Character required on board | **+2** | |
 | Each Attachment required in play | **+2** | |
@@ -132,6 +133,35 @@ built to work together. A cost that one of your own crewmates removes was never 
 
 Then apply the three tests to every line. Most cards lose about half their raw credits to the
 tests, and that is the system working.
+
+## Pricing a random effect
+
+Some abilities roll a d6 and do a different thing on each result. One rule, in two halves:
+
+> **A random effect is priced at its most expensive outcome. A bad outcome earns no credit.**
+
+An ability with four branches is **one** effect costing whatever its biggest branch costs — not the
+sum of all four, and not their average.
+
+**Why not the average.** Averaging makes variance a *discount*, and a discount on variance means
+the most swingy card in the game is also the most point-efficient. Design a few cards under that
+rule and the whole set drifts toward slot machines, because rolling dice is the cheapest way to buy
+impact. Two places your own tables already reject averaging:
+
+- `data/effects.yaml` has never priced by frequency. `Direct Damage/Heal 4` costs 4 whether you
+  draw the card in game one or never.
+- **Range 3** charges 4 for the ×3 shot, not the average of aiming zero, one or two Rounds. A
+  variable outcome priced at its ceiling is already the precedent in the file.
+
+**Why the second half matters as much.** If a branch *hurts* you — Ruvi's Banana Peel deals him a
+point of permanent MH damage on a 1 or 2 — it earns **no** credit. Crediting a one-in-three downside
+while charging for the best upside would price the same variance twice, in opposite directions, and
+hand back most of what the first half just collected. **Variance is a choice the controller makes,
+not a cost the card pays.**
+
+The consequence for the designer is clean: a die table is not a way to get more card for your
+points. It is a way to make the same points feel different every time you draw them, which is a
+[D9 table-theatre](../rubrics/gameplay-rubric.md) win and nothing else.
 
 ---
 

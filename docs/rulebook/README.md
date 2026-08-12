@@ -17,8 +17,9 @@ gets logged in [`../design/open-questions.md`](../design/open-questions.md).
 | 09 | [The Combat Wave & The Stack](09-combat-and-stack.md) | Declaration, Reaction Window, LIFO resolution |
 | 10 | [Ascendants & Leveling Up](10-ascendants.md) | The VIP Area, the Flip, permadeath |
 | 11 | [Status Effects](11-status-effects.md) | The six statuses |
-| 12 | [Keywords](12-keywords.md) | Faction-exclusive Roles |
+| 12 | [Keywords](12-keywords.md) | Faction-exclusive keywords, and what each costs |
 | 13 | [Glossary](13-glossary.md) | Universal terms |
+| 14 | [Randomization](14-randomization.md) | The Roll — who rolls, when, and why it is sealed |
 
 ## Editing rules
 

@@ -15,10 +15,20 @@ base:
   keywords: []
   effects:
   - Searching (Tutors)
+  abilities:
+  - name: Heart of the Cards
+    type: Fast Ability
+    immersion: Moammar is crazy, but he always has a plan.
+    mechanics: Pay 2 Energy to search your Main Deck for a Warmonger Tactic card, reveal it, place it in your Hand, and shuffle your deck.
 ascended:
   keywords: []
   effects:
   - Permanent Buff 5
+  abilities:
+  - name: The One-Punch
+    type: Trigger Ability
+    immersion: Moammar throws one punch with all his power, not caring if he dies.
+    mechanics: He can only declare an attack once per Game. When he attacks, permanently increase his Physical Attack (PA) by the opponent's current Life Points. During Phase 3 (The End Step), the recoil Murders Moammar.
 art:
   base: Moammarthe1punchmachinegun2ndversion
   ascended: Moammarthe1punchmachinegun2ndversionlvlup

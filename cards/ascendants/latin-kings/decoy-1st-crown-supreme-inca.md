@@ -7,8 +7,8 @@ faction: Overthinkers
 crew: Latin Kings
 cost: 5
 stats:
-  PA: 1
-  PH: 4
+  PA: 2
+  PH: 5
   MA: 4
   MH: 3
 base:
@@ -16,18 +16,34 @@ base:
   effects:
   - Direct Damage/Heal 5
   - Permanent Buff 2
+  abilities:
+  - name: La Familia
+    type: Passive Ability
+    immersion: Decoy's punishment for hesitation is far more agonizing than anything the enemy could inflict.
+    mechanics: All allied Latin Kings gain +2 Physical Attack (PA).
+  - name: Sangre Por Sangre
+    type: Fast Ability
+    immersion: Blood pays for blood, and Decoy uses his pawns as living weapons.
+    mechanics: Sacrifice an allied Latin King. Deal permanent Physical Health (PH) damage equal to the Sacrificed Character's current PA to a target enemy Character.
+    requires: 1 Energy
 ascended:
   keywords: []
   effects:
   - Permanent Buff 5
   - Prevent Multiple Attacks
+  abilities:
+  - name: 5 Point Strike
+    type: Passive Ability
+    immersion: Decoy channels the collective fury of his entire empire into one devastating blow.
+    mechanics: During a Combat Wave where Decoy is an attacker, his Physical Attack (PA) is increased by the total combined PA of all other allied Latin Kings on the Board.
+  - name: Improved Sangre Por Sangre
+    type: Fast Ability
+    immersion: He executes his own pawns with such calculated, visceral brutality that the enemy line completely freezes in shock.
+    mechanics: 'Pay 1 Energy and Sacrifice an allied Latin King: Deal permanent Physical Health (PH) damage equal to the Sacrificed Character''s current PA to a target enemy Character. If this damage Murders the target, completely Counter the opponent''s Combat Wave (if active), or prevent them from declaring a Combat Wave this Round.'
 art:
   base: DecoyOverlordoftheOminousOrders1stCrown
   ascended: DecoyOverlordoftheOminousOrders1stCrownlvlup
 status: ported
-plan:
-  produces:
-  - own_crew_assembled
 ---
 
 # Decoy, 1st Crown - Supreme Inca
@@ -36,13 +52,15 @@ plan:
 
 ## Base Side
 
-`Cost 5` — **PA 1 / PH 4 / MA 4 / MH 3**
+`Cost 5` — **PA 2 / PH 5 / MA 4 / MH 3**
 
 ### Rules Text
 
-[La Familia] (Passive Ability): Decoy's punishment for hesitation is far more agonizing than anything the enemy could inflict. All allied Latin Kings gain +2 Physical Attack (PA).
+[La Familia] (Passive Ability): Decoy's punishment for hesitation is far more agonizing than anything the enemy could inflict.
+All allied Latin Kings gain +2 Physical Attack (PA).
 
-[Sangre Por Sangre] (Fast Ability): Blood pays for blood, and Decoy uses his pawns as living weapons. Pay 1 Energy and Sacrifice an allied Latin King: Deal permanent Physical Health (PH) damage equal to the Sacrificed Character's current PA to a target enemy Character.
+[Sangre Por Sangre] (Fast Ability): Blood pays for blood, and Decoy uses his pawns as living weapons.
+1 Energy: Sacrifice an allied Latin King. Deal permanent Physical Health (PH) damage equal to the Sacrificed Character's current PA to a target enemy Character.
 
 ## Level-Up
 
@@ -52,9 +70,11 @@ Decoy stands over his fallen brothers and steps up to end the war. When Decoy ha
 
 ### Ascended Rules Text
 
-[5 Point Strike] (Passive Ability): Decoy channels the collective fury of his entire empire into one devastating blow. During a Combat Wave where Decoy is an attacker, his Physical Attack (PA) is increased by the total combined PA of all other allied Latin Kings on the Board.
+[5 Point Strike] (Passive Ability): Decoy channels the collective fury of his entire empire into one devastating blow.
+During a Combat Wave where Decoy is an attacker, his Physical Attack (PA) is increased by the total combined PA of all other allied Latin Kings on the Board.
 
-[Improved Sangre Por Sangre]: (Fast Ability): He executes his own pawns with such calculated, visceral brutality that the enemy line completely freezes in shock. Pay 1 Energy and Sacrifice an allied Latin King: Deal permanent Physical Health (PH) damage equal to the Sacrificed Character's current PA to a target enemy Character. If this damage Murders the target, completely Counter the opponent's Combat Wave (if active), or prevent them from declaring a Combat Wave this Round.
+[Improved Sangre Por Sangre] (Fast Ability): He executes his own pawns with such calculated, visceral brutality that the enemy line completely freezes in shock.
+Pay 1 Energy and Sacrifice an allied Latin King: Deal permanent Physical Health (PH) damage equal to the Sacrificed Character's current PA to a target enemy Character. If this damage Murders the target, completely Counter the opponent's Combat Wave (if active), or prevent them from declaring a Combat Wave this Round.
 
 ## Lore
 

@@ -15,10 +15,20 @@ base:
   keywords: []
   effects:
   - Status Application (Major)
+  abilities:
+  - name: Flipping the Script
+    type: Fast Ability
+    immersion: Juan gets off on twisting your reality.
+    mechanics: Pay 2 Life Points to permanently swap the current Physical Health (PH) and Mental Health (MH) values of any targeted Character.
 ascended:
   keywords: []
   effects:
   - Direct Damage/Heal 5
+  abilities:
+  - name: The Ultimate Troll
+    type: Standard Ability
+    immersion: Juan violently laughs in your face while he steals your world from you.
+    mechanics: 'Pay 1 Energy to completely swap your current Life Point total with your opponent''s Life Point total. (Note: This ability can only successfully resolve once per Game. If the opponent Counters it, Juan can try again next Round).'
 art:
   base: JuanTheLastLaugh
   ascended: JuanTheLastLaughLVLUP
@@ -35,7 +45,8 @@ status: ported
 
 ### Rules Text
 
-[Flipping the Script] (Fast Ability): Juan gets off on twisting your reality. Pay 2 Life Points to permanently swap the current Physical Health (PH) and Mental Health (MH) values of any targeted Character.
+[Flipping the Script] (Fast Ability): Juan gets off on twisting your reality.
+Pay 2 Life Points to permanently swap the current Physical Health (PH) and Mental Health (MH) values of any targeted Character.
 
 ## Level-Up
 

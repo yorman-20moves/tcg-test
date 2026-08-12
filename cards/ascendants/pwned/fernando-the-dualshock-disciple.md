@@ -15,11 +15,21 @@ base:
   keywords: []
   effects:
   - Direct Damage/Heal 5
+  abilities:
+  - name: Checkpoint
+    type: Fast Ability
+    immersion: Fernando just reloads his save file to dodge the damage.
+    mechanics: Pay 1 Energy to remove all permanent Physical Health (PH) and Mental Health (MH) damage from Fernando.
 ascended:
   keywords: []
   effects:
   - Permanent Buff 5
   - Protection (Immunity)
+  abilities:
+  - name: Platinum Trophy
+    type: Passive Ability
+    immersion: Fernando breaks the game to make himself immortal.
+    mechanics: The stat bonuses provided by The 8MB Memory Card, The Scratched Black Disc, and The 10th DualShock Controller are doubled. Additionally, if Fernando would be Murdered, you may destroy one of those three specific Attachments instead to keep him alive at 1 PH and 1 MH.
 art:
   base: FernandoTheDualShockDisciple
   ascended: FernandoTheDualShockDiscipleLVLUP

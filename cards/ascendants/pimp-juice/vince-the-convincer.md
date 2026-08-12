@@ -16,10 +16,20 @@ base:
   effects:
   - Direct Damage/Heal 1
   - Status Application (Minor)
+  abilities:
+  - name: The Suggestion
+    type: Fast Ability
+    immersion: Vince tricks them into shooting their own friends.
+    mechanics: During the Reaction Window, pay 2 Energy to redirect an attacker's declared attack to any other viable target. Realizing they've been played inflicts 1 Mental Attack (MA) damage to the attacker.
 ascended:
   keywords: []
   effects:
   - Hard Removal
+  abilities:
+  - name: The Hijack
+    type: Standard Ability
+    immersion: Vince completely hijacks their mind and makes them fight for him.
+    mechanics: Once per Round, target an enemy Character with a Mental Health (MH) lower than Vince's Mental Attack (MA). Move them to your side of the Board to fight for you until Phase 3.
 art:
   base: VinceTheConvincerupdated
   ascended: VinceTheConvincerupdatedLVLUP

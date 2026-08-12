@@ -1,6 +1,7 @@
-# TCG — Working Repository
+# Known Associates — Working Repository
 
-A 1-on-1 trading card game where the cards are my friends.
+A 1-on-1 trading card game where the cards are my friends. The founding edition is
+**Known Associates: Local Legends**.
 
 **Faction** is *how you fight* — Warmongers, Overthinkers, Assholes, Icons. **Crew** is *what
 you're trying to do* — Latin Kings, Mobb 134, Shea's, Pimp Juice, Pwners, Fury Park. They're
@@ -316,6 +317,11 @@ Point it at [`AGENTS.md`](AGENTS.md). That's the working contract: source-of-tru
 the hard rules, the gate and rule codes, and the two things it must never invent (a rules term,
 and a Lore Packet True Detail).
 
+The same document is also committed as [`CLAUDE.md`](CLAUDE.md), because tools disagree about
+which filename to look for. **`CLAUDE.md` is the one to edit** — `AGENTS.md` is generated from it
+by `python tools/generate.py`, and `python tools/check.py` fails if the two ever disagree. Read
+either; write only the first.
+
 Ask for the rubric output with every proposal, and ask it to argue *against* the card. "Score
 this" produces flattery; "find the gate this fails, and if it truly fails none, make the
 strongest case it shouldn't be printed" produces design notes.
@@ -349,7 +355,7 @@ data/                  THE SOURCE OF TRUTH
   factions.yaml          identity, unique/never toolkits, window profiles
   crews.yaml             plans, lore basis, coordination, per-card roads
   game-states.yaml       board-condition vocabulary (drives enabler detection)
-  keywords.yaml          faction-exclusive Roles + point costs
+  keywords.yaml          faction-exclusive keywords + point costs
   effects.yaml           effect types + point costs
   plan-credits.yaml      the Score: credit values, reach caps, cost tests
   status-effects.yaml
